@@ -41,5 +41,11 @@ def test_reference_build_imports_accudist_before_rtools_changes_path():
         for index, step in enumerate(steps)
         if step.get("uses", "").startswith("r-lib/actions/setup-r@")
     )
+    rng_step = next(
+        step for step in steps if "gen_rng_reference.py" in step.get("run", "")
+    )
 
     assert install_index < import_index < setup_r_index
+    assert steps[import_index]["working-directory"] == "${{ runner.temp }}"
+    assert "${{ github.workspace }}/tools/gen_rng_reference.py" in rng_step["run"]
+    assert rng_step["working-directory"] == "${{ runner.temp }}"
