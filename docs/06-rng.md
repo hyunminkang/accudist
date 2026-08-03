@@ -1,0 +1,151 @@
+---
+id: rng
+title: Random generation
+status: normative
+audience: agents
+updated: 2026-08-02
+---
+
+# 06 — Random generation
+
+**Milestone M4.** Do not start this before M1–M3 are green.
+
+## The headline caveat
+
+**accudist's `r*` functions do not reproduce R's `set.seed()`.**
+
+R's default RNG is Mersenne-Twister. Standalone Rmath's `sunif.c` is a
+Marsaglia-MultiCarry generator over two global `unsigned int`s:
+
+```c
+static unsigned int I1 = 1234, I2 = 5678;
+double unif_rand(void) {
+    I1 = 36969 * (I1 & 0177777) + (I1 >> 16);
+    I2 = 18000 * (I2 & 0177777) + (I2 >> 16);
+    return ((I1 << 16) ^ (I2 & 0177777)) * 2.328306437080797e-10;
+}
+```
+
+The *sampling algorithms* (`rpois`, `rbinom`, …) are identical to R's. Only the uniform
+stream differs — which is enough to make every draw different.
+
+This must be stated in:
+
+- the module docstring of `accudist/_rng.py`
+- the docstring of **every** `r*` function
+- the README, in the feature list, not a footnote
+- a `RuntimeWarning`-free but prominent note in the published docs
+
+Do not soften this. A user who assumes R-compatibility here and publishes a
+"replication" gets a silently wrong result. If R-identical streams are ever wanted,
+that is a separate feature requiring R's `RNG.c` — see
+[ADR-0010](adr/0010-rng-inclusion.md) for what was considered and why it was deferred.
+
+## State model
+
+The vendored globals are **not patched**. `set_seed`/`get_seed` already exist and are
+exactly the swap primitives needed.
+
+```python
+class RNG:
+    def __init__(self, i1: int = 1234, i2: int = 5678): ...
+    def rpois(self, n, lambda_): ...
+    # ... one method per r* function
+```
+
+Every draw:
+
+```python
+with _rng_lock:                    # module-level threading.Lock
+    _ufuncs.set_seed(self._i1, self._i2)   # install this stream
+    out = _draw(...)                        # run the whole vectorised draw
+    self._i1, self._i2 = _ufuncs.get_seed() # save it back
+return out
+```
+
+Properties this buys:
+
+- independent, reproducible streams per `RNG` object
+- thread safety with zero patches to vendored code
+- correctness under free-threaded CPython
+
+The lock is held for the **entire** draw, not per element. Two threads drawing
+concurrently serialise; they do not interleave into garbage.
+
+### Module-level functions
+
+`ad.rpois(...)` and friends operate on a default `RNG` instance, `ad.default_rng()`.
+`ad.set_seed(i1, i2)` and `ad.get_seed()` read and write that instance, mirroring the
+Rmath C API.
+
+```python
+ad.set_seed(1234, 5678)
+ad.rpois(5, 0.1)
+
+rng = ad.RNG(42, 99)          # independent stream
+rng.rpois(5, 0.1)             # safe to call from another thread
+```
+
+## Signatures
+
+`r*` differs from d/p/q: the C symbol returns **one** draw; the public function returns
+`n`.
+
+```python
+r<dist>(n, <params...>)      #  -> float64 array of length n
+```
+
+- `n` is the draw count and is **not** passed to C.
+- Remaining parameters broadcast against shape `(n,)`, following R's recycling. A
+  parameter array longer than `n` is an error, not a silent truncation.
+- Where R names the count `nn` because `n` is taken by a distribution parameter, keep
+  `nn`: `rhyper(nn, m, n, k)`, `rwilcox(nn, m, n)`, `rsignrank(nn, n)`.
+- Returns `float64`, as R does — not integers, even for discrete distributions.
+
+Implementation: a generated ufunc over the broadcast parameters, evaluated once per
+draw, inside the lock.
+
+## Composed non-central draws
+
+Only `rchisq` has a C non-central implementation. The other three are composed in R
+code and must be composed identically — **the order of the underlying draws is part of
+the result**:
+
+| function | with `ncp` |
+|---|---|
+| `rchisq(n, df, ncp)` | C `rnchisq(df, ncp)` |
+| `rbeta(n, s1, s2, ncp)` | `X = rchisq(n, 2*s1, ncp=ncp); X / (X + rchisq(n, 2*s2))` |
+| `rf(n, df1, df2, ncp)` | `(rchisq(n, df1, ncp=ncp)/df1) / (rchisq(n, df2)/df2)` |
+| `rt(n, df, ncp)` | `rnorm(n, ncp) / sqrt(rchisq(n, df)/df)` |
+
+All composed draws happen **inside a single acquisition of the lock**, so the
+composition is atomic with respect to other threads.
+
+`rnbeta` is declared in `Rmath.h` and defined nowhere. Do not reference it.
+
+## `rmultinom` — bespoke
+
+`void rmultinom(int n, double *prob, int K, int *rN)` fills a caller-provided integer
+vector. It gets a hand-written wrapper in `_bespoke.py` returning an `(n, K)` int array,
+under the RNG lock. It is also the one place `MATHLIB_ERROR` fires on bad input rather
+than allocation (`"rbinom: probability sum should be 1, but is %g"`), which the shim
+turns into `ACCUDIST_ALLOC`; the wrapper must special-case this into a `ValueError`
+with the real message. Do not report a probability-sum error as `MemoryError`.
+
+## Testing
+
+`r*` cannot be tested against R golden vectors — the streams differ by design. Test
+instead:
+
+1. **Reproducibility.** Same seed, same draws, across runs, platforms, and Python
+   versions. Committed golden vectors generated by *accudist itself*, clearly labelled
+   as self-referential in `tests/data/rng/`.
+2. **Stream independence.** Two `RNG` objects with different seeds are uncorrelated;
+   two with the same seed agree exactly.
+3. **Thread safety.** 8 threads × 10 000 draws from independent `RNG`s reproduce their
+   single-threaded sequences exactly.
+4. **Distributional correctness.** Kolmogorov–Smirnov / chi-square goodness-of-fit
+   against accudist's *own* `p*` functions, at a tolerance loose enough not to flake
+   (fixed seeds, α = 1e-6). This is what actually catches a broken sampler.
+5. **Composed non-central draws** consume RNG draws in the documented order — assert
+   the seed state after a call.
