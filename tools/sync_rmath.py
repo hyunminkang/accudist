@@ -102,7 +102,16 @@ def _extract(archive_path: Path, destination: Path, version: str) -> None:
 def _apply_patches(destination: Path) -> None:
     for patch in sorted((VENDOR / "patches").glob("[0-9][0-9][0-9][0-9]-*.patch")):
         subprocess.run(
-            ["patch", "--batch", "--forward", "--fuzz=0", "-p1", "-i", str(patch)],
+            [
+                "patch",
+                "--batch",
+                "--forward",
+                "--fuzz=0",
+                "--no-backup-if-mismatch",
+                "-p1",
+                "-i",
+                str(patch),
+            ],
             cwd=destination,
             check=True,
         )
