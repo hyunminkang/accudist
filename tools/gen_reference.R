@@ -6,7 +6,7 @@ if (length(args) >= 2 && args[[1]] == "--only") only <- args[[2]]
 
 script_arg <- commandArgs(trailingOnly = FALSE)
 script_path <- sub("^--file=", "", script_arg[grepl("^--file=", script_arg)])
-root <- normalizePath(file.path(dirname(script_path), ".."))
+root <- normalizePath(file.path(dirname(script_path), ".."), winslash = "/", mustWork = TRUE)
 system_name <- unname(Sys.info()[["sysname"]])
 machine_name <- tolower(unname(Sys.info()[["machine"]]))
 system_key <- switch(system_name, Darwin = "macos", Linux = "linux", Windows = "windows",
@@ -31,12 +31,19 @@ if (status != 0) stop("reference plan generation failed")
 
 bridge_dir <- tempfile(pattern = "accudist-reference-")
 dir.create(bridge_dir)
-bridge_source <- file.path(bridge_dir, "reference_bridge.c")
-file.copy(file.path(root, "tools", "reference_bridge.c"), bridge_source)
-bridge <- file.path(bridge_dir, paste0("reference_bridge", .Platform$dynlib.ext))
+bridge_dir <- normalizePath(bridge_dir, winslash = "/", mustWork = TRUE)
+bridge_source <- file.path(bridge_dir, "reference_bridge.c", fsep = "/")
+bridge_template <- file.path(root, "tools", "reference_bridge.c", fsep = "/")
+if (!file.copy(bridge_template, bridge_source)) stop("failed to copy reference bridge")
+bridge_source <- normalizePath(bridge_source, winslash = "/", mustWork = TRUE)
+bridge <- file.path(
+  bridge_dir,
+  paste0("reference_bridge", .Platform$dynlib.ext),
+  fsep = "/"
+)
 compile <- system2(
   file.path(R.home("bin"), "R"),
-  c("CMD", "SHLIB", "-o", bridge, bridge_source),
+  c("CMD", "SHLIB", "-o", shQuote(bridge), shQuote(bridge_source)),
   stdout = TRUE,
   stderr = TRUE
 )
