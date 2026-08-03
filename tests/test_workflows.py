@@ -20,3 +20,26 @@ def test_installed_package_tests_run_outside_the_checkout():
 
     assert pytest_step["working-directory"] == "${{ runner.temp }}"
     assert "${{ github.workspace }}/tests" in pytest_step["run"]
+
+
+def test_reference_build_imports_accudist_before_rtools_changes_path():
+    workflow = yaml.safe_load((ROOT / ".github/workflows/reference.yml").read_text())
+    steps = workflow["jobs"]["generate"]["steps"]
+
+    install_index = next(
+        index
+        for index, step in enumerate(steps)
+        if step.get("run") == "python -m pip install ."
+    )
+    import_index = next(
+        index
+        for index, step in enumerate(steps)
+        if 'import accudist' in step.get("run", "")
+    )
+    setup_r_index = next(
+        index
+        for index, step in enumerate(steps)
+        if step.get("uses", "").startswith("r-lib/actions/setup-r@")
+    )
+
+    assert install_index < import_index < setup_r_index
