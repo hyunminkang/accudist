@@ -2625,23 +2625,13 @@ module_free(void *module)
     accudist_free_locks();
 }
 
-#if PY_VERSION_HEX >= 0x030D0000
-static PyModuleDef_Slot module_slots[] = {
-    {Py_mod_gil, Py_MOD_GIL_NOT_USED},
-    {0, NULL}
-};
-#define ACCUDIST_MODULE_SLOTS module_slots
-#else
-#define ACCUDIST_MODULE_SLOTS NULL
-#endif
-
 static struct PyModuleDef module_def = {
     PyModuleDef_HEAD_INIT,
     "_ufuncs",
     "Generated NumPy ufuncs backed by R nmath.",
     -1,
     module_methods,
-    ACCUDIST_MODULE_SLOTS,
+    NULL,
     NULL,
     NULL,
     module_free
@@ -2662,6 +2652,12 @@ PyInit__ufuncs(void)
         accudist_free_locks();
         return NULL;
     }
+#ifdef Py_GIL_DISABLED
+    if (PyUnstable_Module_SetGIL(module, Py_MOD_GIL_NOT_USED) < 0) {
+        Py_DECREF(module);
+        return NULL;
+    }
+#endif
     {
         PyObject *ufunc = PyUFunc_FromFuncAndData(
             dnorm_funcs, dnorm_data, dnorm_types,

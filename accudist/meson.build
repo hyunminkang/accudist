@@ -10,6 +10,16 @@ shim_inc = include_directories('../src')
 nmath_inc = include_directories('../vendor/nmath/include', '../vendor/nmath/src')
 
 c_args = ['-DMATHLIB_STANDALONE', '-DHAVE_CONFIG_H']
+py_gil_disabled = run_command(
+  py,
+  '-c',
+  'import sysconfig; print(int(bool(sysconfig.get_config_var("Py_GIL_DISABLED"))))',
+  check : true,
+).stdout().strip()
+if py_gil_disabled == '1'
+  # CPython's Windows headers do not define this for free-threaded builds.
+  c_args += ['-DPy_GIL_DISABLED=1']
+endif
 if cc.get_id() == 'msvc'
   c_args += ['/fp:precise']
 else

@@ -3,4 +3,9 @@ site_description: Probability distributions with R-grade numerical precision
 docs_dir: docs
 strict: true
 nav:
+  - Home: index.md
   - User guide: user-guide.md
+  - API reference: api-reference.md
+  - Numerical errors: errors.md
+  - Random numbers: rng.md
+  - SciPy compatibility: scipy-compat.md
