@@ -1,0 +1,10 @@
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.hypothesis/
+__pycache__/
+*.py[cod]
+*.so
+*.dylib
+

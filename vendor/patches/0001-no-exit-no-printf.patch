@@ -1,0 +1,27 @@
+--- a/src/nmath.h
++++ b/src/nmath.h
+@@ -94,15 +94,15 @@
+ #else
+ /* Mathlib standalone */
+ 
+-#include <stdio.h>
+-#include <stdlib.h> /* for exit */
+-#define MATHLIB_ERROR(fmt,x)	{ printf(fmt,x); exit(1); }
+-#define MATHLIB_WARNING(fmt,x)		printf(fmt,x)
+-#define MATHLIB_WARNING2(fmt,x,x2)	printf(fmt,x,x2)
+-#define MATHLIB_WARNING3(fmt,x,x2,x3)	printf(fmt,x,x2,x3)
+-#define MATHLIB_WARNING4(fmt,x,x2,x3,x4) printf(fmt,x,x2,x3,x4)
+-#define MATHLIB_WARNING5(fmt,x,x2,x3,x4,x5) printf(fmt,x,x2,x3,x4,x5)
+-#define MATHLIB_WARNING6(fmt,x,x2,x3,x4,x5,x6) printf(fmt,x,x2,x3,x4,x5,x6)
++#include "accudist_shim.h"
++#include <stdlib.h>
++#define MATHLIB_ERROR(fmt,x)		do { accudist_fatal(fmt,x); } while (0);
++#define MATHLIB_WARNING(fmt,x)		do { accudist_warn(fmt,x); } while (0)
++#define MATHLIB_WARNING2(fmt,x,x2)	do { accudist_warn(fmt,x,x2); } while (0)
++#define MATHLIB_WARNING3(fmt,x,x2,x3)	do { accudist_warn(fmt,x,x2,x3); } while (0)
++#define MATHLIB_WARNING4(fmt,x,x2,x3,x4) do { accudist_warn(fmt,x,x2,x3,x4); } while (0)
++#define MATHLIB_WARNING5(fmt,x,x2,x3,x4,x5) do { accudist_warn(fmt,x,x2,x3,x4,x5); } while (0)
++#define MATHLIB_WARNING6(fmt,x,x2,x3,x4,x5,x6) do { accudist_warn(fmt,x,x2,x3,x4,x5,x6); } while (0)
+ 
+ #define ISNAN(x) (isnan(x)!=0)
+ // Arith.h defines it
