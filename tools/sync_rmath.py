@@ -94,6 +94,11 @@ def _extract(archive_path: Path, destination: Path, version: str) -> None:
 #define HAVE_LONG_DOUBLE 1
 #define HAVE_NEARBYINT 1
 #define HAVE_WORKING_ISFINITE 1
+#if defined(__APPLE__)
+# define HAVE___COSPI 1
+# define HAVE___SINPI 1
+# define HAVE___TANPI 1
+#endif
 #endif
 """
     _safe_write(destination / "include" / "config.h", config.encode())

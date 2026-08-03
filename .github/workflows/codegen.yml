@@ -1,0 +1,13 @@
+name: codegen
+on: [push, pull_request]
+jobs:
+  generated:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python tools/regen.py --check
+      - run: python tools/check_inventory.py
+

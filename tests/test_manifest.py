@@ -3,7 +3,7 @@ import pytest
 import accudist as ad
 
 
-@pytest.mark.parametrize("name", ['ppois'])
+@pytest.mark.parametrize("name", ['dnorm', 'pnorm', 'qnorm', 'rnorm', 'dunif', 'punif', 'qunif', 'runif', 'dgamma', 'pgamma', 'qgamma', 'rgamma', 'dbeta', 'pbeta', 'qbeta', 'rbeta', 'dlnorm', 'plnorm', 'qlnorm', 'rlnorm', 'dchisq', 'pchisq', 'qchisq', 'rchisq', 'df', 'pf', 'qf', 'rf', 'dt', 'pt', 'qt', 'rt', 'dbinom', 'pbinom', 'qbinom', 'rbinom', 'dcauchy', 'pcauchy', 'qcauchy', 'rcauchy', 'dexp', 'pexp', 'qexp', 'rexp', 'dgeom', 'pgeom', 'qgeom', 'rgeom', 'dhyper', 'phyper', 'qhyper', 'rhyper', 'dnbinom', 'pnbinom', 'qnbinom', 'rnbinom', 'dpois', 'ppois', 'qpois', 'rpois', 'dweibull', 'pweibull', 'qweibull', 'rweibull', 'dlogis', 'plogis', 'qlogis', 'rlogis', 'dwilcox', 'pwilcox', 'qwilcox', 'rwilcox', 'dsignrank', 'psignrank', 'qsignrank', 'rsignrank', 'ptukey', 'qtukey', 'gammafn', 'lgammafn', 'digamma', 'trigamma', 'tetragamma', 'pentagamma', 'psigamma', 'beta', 'lbeta', 'choose', 'lchoose', 'bessel_j', 'bessel_y', 'bessel_i', 'bessel_k', 'log1pmx', 'log1pexp', 'lgamma1p', 'logspace_add', 'logspace_sub', 'cospi', 'sinpi', 'tanpi', 'fprec', 'fround', 'fsign', 'ftrunc', 'sign'])
 def test_manifest_function_is_public(name):
     assert callable(getattr(ad, name))
     assert name in ad.__all__

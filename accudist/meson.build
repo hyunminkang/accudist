@@ -9,11 +9,17 @@ gen = custom_target(
 shim_inc = include_directories('../src')
 nmath_inc = include_directories('../vendor/nmath/include', '../vendor/nmath/src')
 
-c_args = ['-DMATHLIB_STANDALONE']
+c_args = ['-DMATHLIB_STANDALONE', '-DHAVE_CONFIG_H']
 if cc.get_id() == 'msvc'
   c_args += ['/fp:precise']
 else
-  c_args += ['-O2', '-ffp-contract=off']
+  # Match the official R 4.5.2 binary used as the bit-level oracle. CRAN's
+  # macOS arm64 build permits contraction; disabling it changes ppois bits.
+  if host_machine.system() == 'darwin' and host_machine.cpu_family() == 'aarch64'
+    c_args += ['-O2', '-ffp-contract=on']
+  else
+    c_args += ['-O2', '-ffp-contract=off']
+  endif
 endif
 
 py.extension_module(
@@ -29,7 +35,12 @@ py.extension_module(
 py.install_sources(
   [
     '__init__.py', '_errstate.py', '_dispatch.py', '_rng.py', '_bespoke.py',
-    '_api.py', '_generated.pyi', 'rmath.py', 'py.typed',
+    '_api.py', '_generated.pyi', '_ufuncs.pyi', 'rmath.py', 'py.typed',
   ],
   subdir : 'accudist',
+)
+
+py.install_sources(
+  ['compat/__init__.py', 'compat/_base.py', 'compat/_discrete.py', 'compat/_continuous.py'],
+  subdir : 'accudist/compat',
 )

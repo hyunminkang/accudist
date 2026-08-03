@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import difflib
-import tempfile
 import tomllib
 from pathlib import Path
 
@@ -22,62 +21,119 @@ GENERATED = {
 
 
 def enabled_functions(data: dict) -> list[dict]:
-    """M1 deliberately enables exactly one complete vertical slice."""
+    """M2 enables the whole central table after the M1 gate is green."""
 
-    return [function for function in data["func"] if function["name"] == "ppois"]
+    return [function for function in data["func"] if function["milestone"] in {"M2", "M3"}]
+
+
+def call_entries(function: dict):
+    for key in ("call", "call_ncp", "call_mu"):
+        call = function.get(key)
+        if call and "c_symbol" in call:
+            yield key, call
+
+
+def call_inputs(function: dict, call: dict) -> list[str]:
+    if function["kind"] in {"d", "p", "q"}:
+        values = [function["params"][0]["py"], *call["c_args"]]
+    else:
+        values = list(call["c_args"])
+    return [*values, *function["flags"]]
+
+
+def ufunc_specs(functions: list[dict]) -> dict[str, dict]:
+    specs: dict[str, dict] = {}
+    for function in functions:
+        for _, call in call_entries(function):
+            symbol = call["c_symbol"]
+            inputs = call_inputs(function, call)
+            flags = set(function["flags"])
+            spec = {
+                "symbol": symbol,
+                "inputs": inputs,
+                "flags": flags,
+                "cache": function.get("cache"),
+            }
+            previous = specs.get(symbol)
+            if previous and (
+                previous["inputs"] != inputs
+                or previous["flags"] != flags
+                or previous["cache"] != spec["cache"]
+            ):
+                raise ValueError(f"inconsistent signatures for C symbol {symbol}")
+            specs[symbol] = spec
+    return specs
+
+
+def c_identifier(name: str) -> str:
+    result = name.removesuffix("_")
+    if result in {"log", "sign"}:
+        result += "_arg"
+    return result
 
 
 def render_c(functions: list[dict]) -> str:
     loops: list[str] = []
     registrations: list[str] = []
-    for function in functions:
-        name = function["name"]
-        params = [param["py"] for param in function["params"]]
-        flags = function["flags"]
-        inputs = params + flags
+    for symbol, spec in ufunc_specs(functions).items():
+        inputs = spec["inputs"]
+        flags = spec["flags"]
         declarations: list[str] = []
         call_args: list[str] = []
         for index, item in enumerate(inputs):
-            c_name = item.removesuffix("_")
+            name = c_identifier(item)
             if item in flags:
                 declarations.append(
-                    f"        long {c_name} = *(long *)(args[{index}] + i * steps[{index}]);"
+                    f"        long {name} = *(long *)(args[{index}] + i * steps[{index}]);"
                 )
-                call_args.append(f"(int){c_name}")
+                call_args.append(f"(int){name}")
             else:
                 declarations.append(
-                    f"        double {c_name} = *(double *)(args[{index}] + i * steps[{index}]);"
+                    f"        double {name} = *(double *)(args[{index}] + i * steps[{index}]);"
                 )
-                call_args.append(c_name)
+                call_args.append(name)
         output_index = len(inputs)
+        lock_before = ""
+        lock_after = ""
+        if spec["cache"]:
+            lock_before = "    PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);\n"
+            lock_after = "    PyThread_release_lock(accudist_cache_lock);\n"
         type_codes = ["NPY_LONG" if item in flags else "NPY_DOUBLE" for item in inputs]
         type_codes.append("NPY_DOUBLE")
+        call = f"{symbol}({', '.join(call_args)})"
         loops.append(
             f"""static void
-{name}_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{symbol}_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {{
     npy_intp n = dims[0];
     (void)data;
+{lock_before}    
     for (npy_intp i = 0; i < n; i++) {{
 {chr(10).join(declarations)}
-        *(double *)(args[{output_index}] + i * steps[{output_index}]) =
-            {function['call']['c_symbol']}({', '.join(call_args)});
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {{
+            *(double *)(args[{output_index}] + i * steps[{output_index}]) = {call};
+        }} else {{
+            *(double *)(args[{output_index}] + i * steps[{output_index}]) = NPY_NAN;
+        }}
+        accudist_jump_target = NULL;
     }}
-}}
+{lock_after}}}
 
-static PyUFuncGenericFunction {name}_funcs[1] = {{{name}_loop}};
-static void *{name}_data[1] = {{NULL}};
-static char {name}_types[] = {{{', '.join(type_codes)}}};
+static PyUFuncGenericFunction {symbol}_funcs[1] = {{{symbol}_loop}};
+static void *{symbol}_data[1] = {{NULL}};
+static char {symbol}_types[] = {{{', '.join(type_codes)}}};
 """
         )
         registrations.append(
             f"""    {{
         PyObject *ufunc = PyUFunc_FromFuncAndData(
-            {name}_funcs, {name}_data, {name}_types,
+            {symbol}_funcs, {symbol}_data, {symbol}_types,
             1, {len(inputs)}, 1, PyUFunc_None,
-            "{name}", "Raw R nmath {name} ufunc.", 0
+            "{symbol}", "Raw R nmath {symbol} ufunc.", 0
         );
-        if (ufunc == NULL || PyModule_AddObject(module, "{name}", ufunc) < 0) {{
+        if (ufunc == NULL || PyModule_AddObject(module, "{symbol}", ufunc) < 0) {{
             Py_XDECREF(ufunc);
             Py_DECREF(module);
             return NULL;
@@ -127,6 +183,26 @@ py_force_allocation_failure(PyObject *self, PyObject *ignored)
 }}
 
 static PyObject *
+py_set_seed(PyObject *self, PyObject *args)
+{{
+    unsigned int i1, i2;
+    (void)self;
+    if (!PyArg_ParseTuple(args, "II:set_seed", &i1, &i2)) return NULL;
+    set_seed(i1, i2);
+    Py_RETURN_NONE;
+}}
+
+static PyObject *
+py_get_seed(PyObject *self, PyObject *ignored)
+{{
+    unsigned int i1, i2;
+    (void)self;
+    (void)ignored;
+    get_seed(&i1, &i2);
+    return Py_BuildValue("(II)", i1, i2);
+}}
+
+static PyObject *
 py_free_caches(PyObject *self, PyObject *ignored)
 {{
     (void)self;
@@ -142,6 +218,8 @@ static PyMethodDef module_methods[] = {{
     {{"_clear_error", py_clear_error, METH_NOARGS, NULL}},
     {{"_take_error", py_take_error, METH_NOARGS, NULL}},
     {{"_force_allocation_failure", py_force_allocation_failure, METH_NOARGS, NULL}},
+    {{"_set_seed", py_set_seed, METH_VARARGS, NULL}},
+    {{"_get_seed", py_get_seed, METH_NOARGS, NULL}},
     {{"_free_caches", py_free_caches, METH_NOARGS, NULL}},
     {{NULL, NULL, 0, NULL}}
 }};
@@ -192,38 +270,116 @@ PyInit__ufuncs(void)
 """
 
 
+def parameter_list(function: dict, *, typed: bool = False) -> list[str]:
+    params: list[str] = []
+    special_optional = {"prob", "mu", "scale"}
+    for param in function["params"]:
+        name = param["py"]
+        if function.get("alias") == "rate_scale" and name == "rate":
+            default = "None"
+        elif name in special_optional:
+            default = "None"
+        elif "default" in param:
+            default = repr(param["default"])
+        else:
+            default = None
+        annotation = ": Any" if typed else ""
+        suffix = f" = {default}" if typed and default is not None else (
+            f"={default}" if default is not None else ""
+        )
+        params.append(f"{name}{annotation}{suffix}")
+    if function.get("dispatch") == "ncp":
+        params.append("ncp: Any = None" if typed else "ncp=None")
+    for flag in function["flags"]:
+        default = "True" if flag == "lower_tail" else "False"
+        params.append(f"{flag}: bool = {default}" if typed else f"{flag}={default}")
+    if function["kind"] != "r":
+        params.append("out: Any = None" if typed else "out=None")
+    return params
+
+
+def python_call_args(function: dict, call: dict) -> list[str]:
+    if function["kind"] in {"d", "p", "q"}:
+        args = [function["params"][0]["py"], *call["c_args"]]
+    else:
+        args = list(call["c_args"])
+    args.extend(f"int({flag})" for flag in function["flags"])
+    return args
+
+
+def raw_expression(function: dict, call: dict, *, indent: str) -> str:
+    symbol = call["c_symbol"]
+    args = python_call_args(function, call)
+    if function["kind"] == "r":
+        count = function["params"][0]["py"]
+        return f"{indent}result = _rng.draw(_ufuncs.{symbol}, {count}, {', '.join(call['c_args'])})"
+    return f"{indent}result = _ufuncs.{symbol}({', '.join(args)}, out=out)"
+
+
+def render_wrapper(function: dict) -> str:
+    name = function["name"]
+    lines = [
+        f"def {name}({', '.join(parameter_list(function))}):",
+    ]
+    summary = function.get("summary", name + " backed by R 4.5.2 nmath")
+    if function["kind"] == "r":
+        summary += "; does not reproduce R's set.seed() stream"
+    lines.append(f'    """{summary}."""')
+    if function.get("alias") == "rate_scale":
+        lines.append("    scale = _dispatch.resolve_rate_scale(rate, scale)")
+    for target, expression in function.get("c_transform", {}).items():
+        if expression == "1.0 / rate":
+            lines.append(f"    {target} = _dispatch.reciprocal({target})")
+        elif expression == "2.0 if expon_scaled else 1.0":
+            lines.append(f"    {target} = 2.0 if {target} else 1.0")
+        else:
+            raise ValueError(f"unsupported transform for {name}: {expression}")
+
+    if function["kind"] == "r" and function.get("dispatch") == "ncp" and "composed" in function.get("call_ncp", {}):
+        central = function["call"]
+        lines.append("    if ncp is not None:")
+        lines.append("        with _rng.locked():")
+        if name == "rbeta":
+            lines.extend([
+                "            x = rchisq(n, 2 * shape1, ncp=ncp)",
+                "            return x / (x + rchisq(n, 2 * shape2))",
+            ])
+        elif name == "rf":
+            lines.append("            return (rchisq(n, df1, ncp=ncp) / df1) / (rchisq(n, df2) / df2)")
+        elif name == "rt":
+            lines.append("            return rnorm(n, ncp) / _dispatch.sqrt(rchisq(n, df) / df)")
+        else:
+            raise ValueError(f"unsupported composed RNG {name}")
+        lines.append(f"    with _errstate.capture(\"{name}\") as _capture:")
+        lines.append(raw_expression(function, central, indent="        "))
+    else:
+        lines.append(f"    with _errstate.capture(\"{name}\") as _capture:")
+        dispatch = function.get("dispatch")
+        if dispatch == "ncp":
+            lines.append("        if ncp is None:")
+            lines.append(raw_expression(function, function["call"], indent="            "))
+            lines.append("        else:")
+            lines.append(raw_expression(function, function["call_ncp"], indent="            "))
+        elif dispatch == "prob_or_mu":
+            lines.append("        parameterization = _dispatch.resolve_prob_mu(prob, mu)")
+            lines.append("        if parameterization == 'prob':")
+            lines.append(raw_expression(function, function["call"], indent="            "))
+            lines.append("        else:")
+            lines.append(raw_expression(function, function["call_mu"], indent="            "))
+        else:
+            lines.append(raw_expression(function, function["call"], indent="        "))
+    lines.extend(["    _capture.check()", "    return result", ""])
+    return "\n".join(lines)
+
+
 def render_api(functions: list[dict]) -> str:
     pieces = [
         "# GENERATED by tools/regen.py -- do not edit.\n",
         "from __future__ import annotations\n\n",
-        "from . import _errstate, _ufuncs\n\n",
+        "from . import _dispatch, _errstate, _rng, _ufuncs\n\n",
     ]
-    names: list[str] = []
-    for function in functions:
-        name = function["name"]
-        names.append(name)
-        params: list[str] = []
-        arguments: list[str] = []
-        for param in function["params"]:
-            py_name = param["py"]
-            if "default" in param:
-                params.append(f"{py_name}={param['default']!r}")
-            else:
-                params.append(py_name)
-            arguments.append(py_name)
-        for flag in function["flags"]:
-            default = "True" if flag == "lower_tail" else "False"
-            params.append(f"{flag}={default}")
-            arguments.append(f"int({flag})")
-        params.append("out=None")
-        pieces.append(
-            f"def {name}({', '.join(params)}):\n"
-            f"    \"\"\"Poisson distribution function. R: ppois(q, lambda, lower.tail, log.p).\"\"\"\n"
-            f"    with _errstate.capture(\"{name}\") as _capture:\n"
-            f"        result = _ufuncs.{name}({', '.join(arguments)}, out=out)\n"
-            f"    _capture.check()\n"
-            f"    return result\n\n"
-        )
+    pieces.extend(render_wrapper(function) + "\n" for function in functions)
+    names = [function["name"] for function in functions]
     pieces.append(f"__all__ = {names!r}\n")
     return "".join(pieces)
 
@@ -235,20 +391,15 @@ def render_stub(functions: list[dict]) -> str:
         "import numpy as np\n\n",
     ]
     for function in functions:
-        params: list[str] = []
-        for param in function["params"]:
-            default = f" = {param['default']!r}" if "default" in param else ""
-            params.append(f"{param['py']}: Any{default}")
-        for flag in function["flags"]:
-            default = "True" if flag == "lower_tail" else "False"
-            params.append(f"{flag}: bool = {default}")
-        params.append("out: Any = None")
-        lines.append(f"def {function['name']}({', '.join(params)}) -> np.float64 | np.ndarray[Any, Any]: ...\n")
+        return_type = "np.ndarray[Any, Any]" if function["kind"] == "r" else "np.float64 | np.ndarray[Any, Any]"
+        lines.append(
+            f"def {function['name']}({', '.join(parameter_list(function, typed=True))}) -> {return_type}: ...\n"
+        )
     return "".join(lines)
 
 
 def render_rmath(functions: list[dict]) -> str:
-    names = [function["name"] for function in functions]
+    names = list(ufunc_specs(functions))
     lines = [
         "# GENERATED by tools/regen.py -- do not edit.\n",
         '"""Raw, positional, one-to-one mappings to Rmath.h."""\n',

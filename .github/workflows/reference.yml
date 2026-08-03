@@ -1,0 +1,11 @@
+name: reference-vectors
+on: workflow_dispatch
+jobs:
+  reference:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - run: brew install --cask r
+      - run: Rscript tools/gen_reference.R
+      - run: git diff --exit-code
+

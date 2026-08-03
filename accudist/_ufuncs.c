@@ -13,23 +13,3146 @@ extern PyThread_type_lock accudist_cache_lock;
 extern PyThread_type_lock accudist_rng_lock;
 
 static void
+dnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double mean = *(double *)(args[1] + i * steps[1]);
+        double sd = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = dnorm(x, mean, sd, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dnorm_funcs[1] = {dnorm_loop};
+static void *dnorm_data[1] = {NULL};
+static char dnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+pnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double mean = *(double *)(args[1] + i * steps[1]);
+        double sd = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = pnorm(q, mean, sd, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pnorm_funcs[1] = {pnorm_loop};
+static void *pnorm_data[1] = {NULL};
+static char pnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double mean = *(double *)(args[1] + i * steps[1]);
+        double sd = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qnorm(p, mean, sd, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qnorm_funcs[1] = {qnorm_loop};
+static void *qnorm_data[1] = {NULL};
+static char qnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double mean = *(double *)(args[0] + i * steps[0]);
+        double sd = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = rnorm(mean, sd);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rnorm_funcs[1] = {rnorm_loop};
+static void *rnorm_data[1] = {NULL};
+static char rnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dunif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double min = *(double *)(args[1] + i * steps[1]);
+        double max = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = dunif(x, min, max, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dunif_funcs[1] = {dunif_loop};
+static void *dunif_data[1] = {NULL};
+static char dunif_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+punif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double min = *(double *)(args[1] + i * steps[1]);
+        double max = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = punif(q, min, max, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction punif_funcs[1] = {punif_loop};
+static void *punif_data[1] = {NULL};
+static char punif_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qunif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double min = *(double *)(args[1] + i * steps[1]);
+        double max = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qunif(p, min, max, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qunif_funcs[1] = {qunif_loop};
+static void *qunif_data[1] = {NULL};
+static char qunif_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+runif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double min = *(double *)(args[0] + i * steps[0]);
+        double max = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = runif(min, max);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction runif_funcs[1] = {runif_loop};
+static void *runif_data[1] = {NULL};
+static char runif_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double shape = *(double *)(args[1] + i * steps[1]);
+        double scale = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = dgamma(x, shape, scale, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dgamma_funcs[1] = {dgamma_loop};
+static void *dgamma_data[1] = {NULL};
+static char dgamma_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+pgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double shape = *(double *)(args[1] + i * steps[1]);
+        double scale = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = pgamma(q, shape, scale, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pgamma_funcs[1] = {pgamma_loop};
+static void *pgamma_data[1] = {NULL};
+static char pgamma_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double shape = *(double *)(args[1] + i * steps[1]);
+        double scale = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qgamma(p, shape, scale, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qgamma_funcs[1] = {qgamma_loop};
+static void *qgamma_data[1] = {NULL};
+static char qgamma_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double shape = *(double *)(args[0] + i * steps[0]);
+        double scale = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = rgamma(shape, scale);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rgamma_funcs[1] = {rgamma_loop};
+static void *rgamma_data[1] = {NULL};
+static char rgamma_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double shape1 = *(double *)(args[1] + i * steps[1]);
+        double shape2 = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = dbeta(x, shape1, shape2, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dbeta_funcs[1] = {dbeta_loop};
+static void *dbeta_data[1] = {NULL};
+static char dbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+dnbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double shape1 = *(double *)(args[1] + i * steps[1]);
+        double shape2 = *(double *)(args[2] + i * steps[2]);
+        double ncp = *(double *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = dnbeta(x, shape1, shape2, ncp, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dnbeta_funcs[1] = {dnbeta_loop};
+static void *dnbeta_data[1] = {NULL};
+static char dnbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+pbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double shape1 = *(double *)(args[1] + i * steps[1]);
+        double shape2 = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = pbeta(q, shape1, shape2, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pbeta_funcs[1] = {pbeta_loop};
+static void *pbeta_data[1] = {NULL};
+static char pbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+pnbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double shape1 = *(double *)(args[1] + i * steps[1]);
+        double shape2 = *(double *)(args[2] + i * steps[2]);
+        double ncp = *(double *)(args[3] + i * steps[3]);
+        long lower_tail = *(long *)(args[4] + i * steps[4]);
+        long log_arg = *(long *)(args[5] + i * steps[5]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[6] + i * steps[6]) = pnbeta(q, shape1, shape2, ncp, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pnbeta_funcs[1] = {pnbeta_loop};
+static void *pnbeta_data[1] = {NULL};
+static char pnbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double shape1 = *(double *)(args[1] + i * steps[1]);
+        double shape2 = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qbeta(p, shape1, shape2, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qbeta_funcs[1] = {qbeta_loop};
+static void *qbeta_data[1] = {NULL};
+static char qbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qnbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double shape1 = *(double *)(args[1] + i * steps[1]);
+        double shape2 = *(double *)(args[2] + i * steps[2]);
+        double ncp = *(double *)(args[3] + i * steps[3]);
+        long lower_tail = *(long *)(args[4] + i * steps[4]);
+        long log_arg = *(long *)(args[5] + i * steps[5]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[6] + i * steps[6]) = qnbeta(p, shape1, shape2, ncp, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qnbeta_funcs[1] = {qnbeta_loop};
+static void *qnbeta_data[1] = {NULL};
+static char qnbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double shape1 = *(double *)(args[0] + i * steps[0]);
+        double shape2 = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = rbeta(shape1, shape2);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rbeta_funcs[1] = {rbeta_loop};
+static void *rbeta_data[1] = {NULL};
+static char rbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dlnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double meanlog = *(double *)(args[1] + i * steps[1]);
+        double sdlog = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = dlnorm(x, meanlog, sdlog, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dlnorm_funcs[1] = {dlnorm_loop};
+static void *dlnorm_data[1] = {NULL};
+static char dlnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+plnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double meanlog = *(double *)(args[1] + i * steps[1]);
+        double sdlog = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = plnorm(q, meanlog, sdlog, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction plnorm_funcs[1] = {plnorm_loop};
+static void *plnorm_data[1] = {NULL};
+static char plnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qlnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double meanlog = *(double *)(args[1] + i * steps[1]);
+        double sdlog = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qlnorm(p, meanlog, sdlog, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qlnorm_funcs[1] = {qlnorm_loop};
+static void *qlnorm_data[1] = {NULL};
+static char qlnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rlnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double meanlog = *(double *)(args[0] + i * steps[0]);
+        double sdlog = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = rlnorm(meanlog, sdlog);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rlnorm_funcs[1] = {rlnorm_loop};
+static void *rlnorm_data[1] = {NULL};
+static char rlnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double df = *(double *)(args[1] + i * steps[1]);
+        long log_arg = *(long *)(args[2] + i * steps[2]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[3] + i * steps[3]) = dchisq(x, df, (int)log_arg);
+        } else {
+            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dchisq_funcs[1] = {dchisq_loop};
+static void *dchisq_data[1] = {NULL};
+static char dchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+dnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double df = *(double *)(args[1] + i * steps[1]);
+        double ncp = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = dnchisq(x, df, ncp, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dnchisq_funcs[1] = {dnchisq_loop};
+static void *dnchisq_data[1] = {NULL};
+static char dnchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+pchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double df = *(double *)(args[1] + i * steps[1]);
+        long lower_tail = *(long *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = pchisq(q, df, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pchisq_funcs[1] = {pchisq_loop};
+static void *pchisq_data[1] = {NULL};
+static char pchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+pnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double df = *(double *)(args[1] + i * steps[1]);
+        double ncp = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = pnchisq(q, df, ncp, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pnchisq_funcs[1] = {pnchisq_loop};
+static void *pnchisq_data[1] = {NULL};
+static char pnchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double df = *(double *)(args[1] + i * steps[1]);
+        long lower_tail = *(long *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = qchisq(p, df, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qchisq_funcs[1] = {qchisq_loop};
+static void *qchisq_data[1] = {NULL};
+static char qchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double df = *(double *)(args[1] + i * steps[1]);
+        double ncp = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qnchisq(p, df, ncp, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qnchisq_funcs[1] = {qnchisq_loop};
+static void *qnchisq_data[1] = {NULL};
+static char qnchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double df = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = rchisq(df);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rchisq_funcs[1] = {rchisq_loop};
+static void *rchisq_data[1] = {NULL};
+static char rchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+rnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double df = *(double *)(args[0] + i * steps[0]);
+        double ncp = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = rnchisq(df, ncp);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rnchisq_funcs[1] = {rnchisq_loop};
+static void *rnchisq_data[1] = {NULL};
+static char rnchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+df_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double df1 = *(double *)(args[1] + i * steps[1]);
+        double df2 = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = df(x, df1, df2, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction df_funcs[1] = {df_loop};
+static void *df_data[1] = {NULL};
+static char df_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+dnf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double df1 = *(double *)(args[1] + i * steps[1]);
+        double df2 = *(double *)(args[2] + i * steps[2]);
+        double ncp = *(double *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = dnf(x, df1, df2, ncp, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dnf_funcs[1] = {dnf_loop};
+static void *dnf_data[1] = {NULL};
+static char dnf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+pf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double df1 = *(double *)(args[1] + i * steps[1]);
+        double df2 = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = pf(q, df1, df2, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pf_funcs[1] = {pf_loop};
+static void *pf_data[1] = {NULL};
+static char pf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+pnf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double df1 = *(double *)(args[1] + i * steps[1]);
+        double df2 = *(double *)(args[2] + i * steps[2]);
+        double ncp = *(double *)(args[3] + i * steps[3]);
+        long lower_tail = *(long *)(args[4] + i * steps[4]);
+        long log_arg = *(long *)(args[5] + i * steps[5]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[6] + i * steps[6]) = pnf(q, df1, df2, ncp, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pnf_funcs[1] = {pnf_loop};
+static void *pnf_data[1] = {NULL};
+static char pnf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double df1 = *(double *)(args[1] + i * steps[1]);
+        double df2 = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qf(p, df1, df2, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qf_funcs[1] = {qf_loop};
+static void *qf_data[1] = {NULL};
+static char qf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qnf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double df1 = *(double *)(args[1] + i * steps[1]);
+        double df2 = *(double *)(args[2] + i * steps[2]);
+        double ncp = *(double *)(args[3] + i * steps[3]);
+        long lower_tail = *(long *)(args[4] + i * steps[4]);
+        long log_arg = *(long *)(args[5] + i * steps[5]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[6] + i * steps[6]) = qnf(p, df1, df2, ncp, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qnf_funcs[1] = {qnf_loop};
+static void *qnf_data[1] = {NULL};
+static char qnf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double df1 = *(double *)(args[0] + i * steps[0]);
+        double df2 = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = rf(df1, df2);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rf_funcs[1] = {rf_loop};
+static void *rf_data[1] = {NULL};
+static char rf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double df = *(double *)(args[1] + i * steps[1]);
+        long log_arg = *(long *)(args[2] + i * steps[2]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[3] + i * steps[3]) = dt(x, df, (int)log_arg);
+        } else {
+            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dt_funcs[1] = {dt_loop};
+static void *dt_data[1] = {NULL};
+static char dt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+dnt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double df = *(double *)(args[1] + i * steps[1]);
+        double ncp = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = dnt(x, df, ncp, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dnt_funcs[1] = {dnt_loop};
+static void *dnt_data[1] = {NULL};
+static char dnt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+pt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double df = *(double *)(args[1] + i * steps[1]);
+        long lower_tail = *(long *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = pt(q, df, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pt_funcs[1] = {pt_loop};
+static void *pt_data[1] = {NULL};
+static char pt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+pnt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double df = *(double *)(args[1] + i * steps[1]);
+        double ncp = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = pnt(q, df, ncp, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pnt_funcs[1] = {pnt_loop};
+static void *pnt_data[1] = {NULL};
+static char pnt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double df = *(double *)(args[1] + i * steps[1]);
+        long lower_tail = *(long *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = qt(p, df, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qt_funcs[1] = {qt_loop};
+static void *qt_data[1] = {NULL};
+static char qt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qnt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double df = *(double *)(args[1] + i * steps[1]);
+        double ncp = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qnt(p, df, ncp, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qnt_funcs[1] = {qnt_loop};
+static void *qnt_data[1] = {NULL};
+static char qnt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double df = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = rt(df);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rt_funcs[1] = {rt_loop};
+static void *rt_data[1] = {NULL};
+static char rt_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double size = *(double *)(args[1] + i * steps[1]);
+        double prob = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = dbinom(x, size, prob, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dbinom_funcs[1] = {dbinom_loop};
+static void *dbinom_data[1] = {NULL};
+static char dbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+pbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double size = *(double *)(args[1] + i * steps[1]);
+        double prob = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = pbinom(q, size, prob, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pbinom_funcs[1] = {pbinom_loop};
+static void *pbinom_data[1] = {NULL};
+static char pbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double size = *(double *)(args[1] + i * steps[1]);
+        double prob = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qbinom(p, size, prob, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qbinom_funcs[1] = {qbinom_loop};
+static void *qbinom_data[1] = {NULL};
+static char qbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double size = *(double *)(args[0] + i * steps[0]);
+        double prob = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = rbinom(size, prob);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rbinom_funcs[1] = {rbinom_loop};
+static void *rbinom_data[1] = {NULL};
+static char rbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double location = *(double *)(args[1] + i * steps[1]);
+        double scale = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = dcauchy(x, location, scale, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dcauchy_funcs[1] = {dcauchy_loop};
+static void *dcauchy_data[1] = {NULL};
+static char dcauchy_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+pcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double location = *(double *)(args[1] + i * steps[1]);
+        double scale = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = pcauchy(q, location, scale, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pcauchy_funcs[1] = {pcauchy_loop};
+static void *pcauchy_data[1] = {NULL};
+static char pcauchy_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double location = *(double *)(args[1] + i * steps[1]);
+        double scale = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qcauchy(p, location, scale, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qcauchy_funcs[1] = {qcauchy_loop};
+static void *qcauchy_data[1] = {NULL};
+static char qcauchy_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double location = *(double *)(args[0] + i * steps[0]);
+        double scale = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = rcauchy(location, scale);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rcauchy_funcs[1] = {rcauchy_loop};
+static void *rcauchy_data[1] = {NULL};
+static char rcauchy_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double rate = *(double *)(args[1] + i * steps[1]);
+        long log_arg = *(long *)(args[2] + i * steps[2]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[3] + i * steps[3]) = dexp(x, rate, (int)log_arg);
+        } else {
+            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dexp_funcs[1] = {dexp_loop};
+static void *dexp_data[1] = {NULL};
+static char dexp_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+pexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double rate = *(double *)(args[1] + i * steps[1]);
+        long lower_tail = *(long *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = pexp(q, rate, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pexp_funcs[1] = {pexp_loop};
+static void *pexp_data[1] = {NULL};
+static char pexp_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double rate = *(double *)(args[1] + i * steps[1]);
+        long lower_tail = *(long *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = qexp(p, rate, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qexp_funcs[1] = {qexp_loop};
+static void *qexp_data[1] = {NULL};
+static char qexp_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double rate = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = rexp(rate);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rexp_funcs[1] = {rexp_loop};
+static void *rexp_data[1] = {NULL};
+static char rexp_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double prob = *(double *)(args[1] + i * steps[1]);
+        long log_arg = *(long *)(args[2] + i * steps[2]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[3] + i * steps[3]) = dgeom(x, prob, (int)log_arg);
+        } else {
+            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dgeom_funcs[1] = {dgeom_loop};
+static void *dgeom_data[1] = {NULL};
+static char dgeom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+pgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double prob = *(double *)(args[1] + i * steps[1]);
+        long lower_tail = *(long *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = pgeom(q, prob, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pgeom_funcs[1] = {pgeom_loop};
+static void *pgeom_data[1] = {NULL};
+static char pgeom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double prob = *(double *)(args[1] + i * steps[1]);
+        long lower_tail = *(long *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = qgeom(p, prob, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qgeom_funcs[1] = {qgeom_loop};
+static void *qgeom_data[1] = {NULL};
+static char qgeom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double prob = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = rgeom(prob);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rgeom_funcs[1] = {rgeom_loop};
+static void *rgeom_data[1] = {NULL};
+static char rgeom_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dhyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double m = *(double *)(args[1] + i * steps[1]);
+        double n = *(double *)(args[2] + i * steps[2]);
+        double k = *(double *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = dhyper(x, m, n, k, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dhyper_funcs[1] = {dhyper_loop};
+static void *dhyper_data[1] = {NULL};
+static char dhyper_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+phyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double m = *(double *)(args[1] + i * steps[1]);
+        double n = *(double *)(args[2] + i * steps[2]);
+        double k = *(double *)(args[3] + i * steps[3]);
+        long lower_tail = *(long *)(args[4] + i * steps[4]);
+        long log_arg = *(long *)(args[5] + i * steps[5]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[6] + i * steps[6]) = phyper(q, m, n, k, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction phyper_funcs[1] = {phyper_loop};
+static void *phyper_data[1] = {NULL};
+static char phyper_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qhyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double m = *(double *)(args[1] + i * steps[1]);
+        double n = *(double *)(args[2] + i * steps[2]);
+        double k = *(double *)(args[3] + i * steps[3]);
+        long lower_tail = *(long *)(args[4] + i * steps[4]);
+        long log_arg = *(long *)(args[5] + i * steps[5]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[6] + i * steps[6]) = qhyper(p, m, n, k, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qhyper_funcs[1] = {qhyper_loop};
+static void *qhyper_data[1] = {NULL};
+static char qhyper_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rhyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double m = *(double *)(args[0] + i * steps[0]);
+        double n = *(double *)(args[1] + i * steps[1]);
+        double k = *(double *)(args[2] + i * steps[2]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[3] + i * steps[3]) = rhyper(m, n, k);
+        } else {
+            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rhyper_funcs[1] = {rhyper_loop};
+static void *rhyper_data[1] = {NULL};
+static char rhyper_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double size = *(double *)(args[1] + i * steps[1]);
+        double prob = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = dnbinom(x, size, prob, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dnbinom_funcs[1] = {dnbinom_loop};
+static void *dnbinom_data[1] = {NULL};
+static char dnbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+dnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double size = *(double *)(args[1] + i * steps[1]);
+        double mu = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = dnbinom_mu(x, size, mu, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dnbinom_mu_funcs[1] = {dnbinom_mu_loop};
+static void *dnbinom_mu_data[1] = {NULL};
+static char dnbinom_mu_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+pnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double size = *(double *)(args[1] + i * steps[1]);
+        double prob = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = pnbinom(q, size, prob, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pnbinom_funcs[1] = {pnbinom_loop};
+static void *pnbinom_data[1] = {NULL};
+static char pnbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+pnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double size = *(double *)(args[1] + i * steps[1]);
+        double mu = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = pnbinom_mu(q, size, mu, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pnbinom_mu_funcs[1] = {pnbinom_mu_loop};
+static void *pnbinom_mu_data[1] = {NULL};
+static char pnbinom_mu_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double size = *(double *)(args[1] + i * steps[1]);
+        double prob = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qnbinom(p, size, prob, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qnbinom_funcs[1] = {qnbinom_loop};
+static void *qnbinom_data[1] = {NULL};
+static char qnbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double size = *(double *)(args[1] + i * steps[1]);
+        double mu = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qnbinom_mu(p, size, mu, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qnbinom_mu_funcs[1] = {qnbinom_mu_loop};
+static void *qnbinom_mu_data[1] = {NULL};
+static char qnbinom_mu_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double size = *(double *)(args[0] + i * steps[0]);
+        double prob = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = rnbinom(size, prob);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rnbinom_funcs[1] = {rnbinom_loop};
+static void *rnbinom_data[1] = {NULL};
+static char rnbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+rnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double size = *(double *)(args[0] + i * steps[0]);
+        double mu = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = rnbinom_mu(size, mu);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rnbinom_mu_funcs[1] = {rnbinom_mu_loop};
+static void *rnbinom_mu_data[1] = {NULL};
+static char rnbinom_mu_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dpois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double lambda = *(double *)(args[1] + i * steps[1]);
+        long log_arg = *(long *)(args[2] + i * steps[2]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[3] + i * steps[3]) = dpois(x, lambda, (int)log_arg);
+        } else {
+            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dpois_funcs[1] = {dpois_loop};
+static void *dpois_data[1] = {NULL};
+static char dpois_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
 ppois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
+    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double lambda = *(double *)(args[1] + i * steps[1]);
         long lower_tail = *(long *)(args[2] + i * steps[2]);
-        long log = *(long *)(args[3] + i * steps[3]);
-        *(double *)(args[4] + i * steps[4]) =
-            ppois(q, lambda, (int)lower_tail, (int)log);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = ppois(q, lambda, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
     }
 }
 
 static PyUFuncGenericFunction ppois_funcs[1] = {ppois_loop};
 static void *ppois_data[1] = {NULL};
 static char ppois_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qpois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double lambda = *(double *)(args[1] + i * steps[1]);
+        long lower_tail = *(long *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = qpois(p, lambda, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qpois_funcs[1] = {qpois_loop};
+static void *qpois_data[1] = {NULL};
+static char qpois_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rpois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double lambda = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = rpois(lambda);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rpois_funcs[1] = {rpois_loop};
+static void *rpois_data[1] = {NULL};
+static char rpois_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double shape = *(double *)(args[1] + i * steps[1]);
+        double scale = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = dweibull(x, shape, scale, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dweibull_funcs[1] = {dweibull_loop};
+static void *dweibull_data[1] = {NULL};
+static char dweibull_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+pweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double shape = *(double *)(args[1] + i * steps[1]);
+        double scale = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = pweibull(q, shape, scale, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pweibull_funcs[1] = {pweibull_loop};
+static void *pweibull_data[1] = {NULL};
+static char pweibull_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double shape = *(double *)(args[1] + i * steps[1]);
+        double scale = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qweibull(p, shape, scale, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qweibull_funcs[1] = {qweibull_loop};
+static void *qweibull_data[1] = {NULL};
+static char qweibull_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double shape = *(double *)(args[0] + i * steps[0]);
+        double scale = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = rweibull(shape, scale);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rweibull_funcs[1] = {rweibull_loop};
+static void *rweibull_data[1] = {NULL};
+static char rweibull_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dlogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double location = *(double *)(args[1] + i * steps[1]);
+        double scale = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = dlogis(x, location, scale, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction dlogis_funcs[1] = {dlogis_loop};
+static void *dlogis_data[1] = {NULL};
+static char dlogis_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+plogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double location = *(double *)(args[1] + i * steps[1]);
+        double scale = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = plogis(q, location, scale, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction plogis_funcs[1] = {plogis_loop};
+static void *plogis_data[1] = {NULL};
+static char plogis_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qlogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double location = *(double *)(args[1] + i * steps[1]);
+        double scale = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qlogis(p, location, scale, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qlogis_funcs[1] = {qlogis_loop};
+static void *qlogis_data[1] = {NULL};
+static char qlogis_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rlogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double location = *(double *)(args[0] + i * steps[0]);
+        double scale = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = rlogis(location, scale);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction rlogis_funcs[1] = {rlogis_loop};
+static void *rlogis_data[1] = {NULL};
+static char rlogis_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double m = *(double *)(args[1] + i * steps[1]);
+        double n = *(double *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = dwilcox(x, m, n, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+    PyThread_release_lock(accudist_cache_lock);
+}
+
+static PyUFuncGenericFunction dwilcox_funcs[1] = {dwilcox_loop};
+static void *dwilcox_data[1] = {NULL};
+static char dwilcox_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+pwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double m = *(double *)(args[1] + i * steps[1]);
+        double n = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = pwilcox(q, m, n, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+    PyThread_release_lock(accudist_cache_lock);
+}
+
+static PyUFuncGenericFunction pwilcox_funcs[1] = {pwilcox_loop};
+static void *pwilcox_data[1] = {NULL};
+static char pwilcox_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double m = *(double *)(args[1] + i * steps[1]);
+        double n = *(double *)(args[2] + i * steps[2]);
+        long lower_tail = *(long *)(args[3] + i * steps[3]);
+        long log_arg = *(long *)(args[4] + i * steps[4]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[5] + i * steps[5]) = qwilcox(p, m, n, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+    PyThread_release_lock(accudist_cache_lock);
+}
+
+static PyUFuncGenericFunction qwilcox_funcs[1] = {qwilcox_loop};
+static void *qwilcox_data[1] = {NULL};
+static char qwilcox_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double m = *(double *)(args[0] + i * steps[0]);
+        double n = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = rwilcox(m, n);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+    PyThread_release_lock(accudist_cache_lock);
+}
+
+static PyUFuncGenericFunction rwilcox_funcs[1] = {rwilcox_loop};
+static void *rwilcox_data[1] = {NULL};
+static char rwilcox_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dsignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double n = *(double *)(args[1] + i * steps[1]);
+        long log_arg = *(long *)(args[2] + i * steps[2]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[3] + i * steps[3]) = dsignrank(x, n, (int)log_arg);
+        } else {
+            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+    PyThread_release_lock(accudist_cache_lock);
+}
+
+static PyUFuncGenericFunction dsignrank_funcs[1] = {dsignrank_loop};
+static void *dsignrank_data[1] = {NULL};
+static char dsignrank_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+psignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double n = *(double *)(args[1] + i * steps[1]);
+        long lower_tail = *(long *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = psignrank(q, n, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+    PyThread_release_lock(accudist_cache_lock);
+}
+
+static PyUFuncGenericFunction psignrank_funcs[1] = {psignrank_loop};
+static void *psignrank_data[1] = {NULL};
+static char psignrank_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qsignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double n = *(double *)(args[1] + i * steps[1]);
+        long lower_tail = *(long *)(args[2] + i * steps[2]);
+        long log_arg = *(long *)(args[3] + i * steps[3]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[4] + i * steps[4]) = qsignrank(p, n, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+    PyThread_release_lock(accudist_cache_lock);
+}
+
+static PyUFuncGenericFunction qsignrank_funcs[1] = {qsignrank_loop};
+static void *qsignrank_data[1] = {NULL};
+static char qsignrank_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+rsignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double n = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = rsignrank(n);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+    PyThread_release_lock(accudist_cache_lock);
+}
+
+static PyUFuncGenericFunction rsignrank_funcs[1] = {rsignrank_loop};
+static void *rsignrank_data[1] = {NULL};
+static char rsignrank_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+ptukey_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double q = *(double *)(args[0] + i * steps[0]);
+        double nranges = *(double *)(args[1] + i * steps[1]);
+        double nmeans = *(double *)(args[2] + i * steps[2]);
+        double df = *(double *)(args[3] + i * steps[3]);
+        long lower_tail = *(long *)(args[4] + i * steps[4]);
+        long log_arg = *(long *)(args[5] + i * steps[5]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[6] + i * steps[6]) = ptukey(q, nranges, nmeans, df, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction ptukey_funcs[1] = {ptukey_loop};
+static void *ptukey_data[1] = {NULL};
+static char ptukey_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+qtukey_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double p = *(double *)(args[0] + i * steps[0]);
+        double nranges = *(double *)(args[1] + i * steps[1]);
+        double nmeans = *(double *)(args[2] + i * steps[2]);
+        double df = *(double *)(args[3] + i * steps[3]);
+        long lower_tail = *(long *)(args[4] + i * steps[4]);
+        long log_arg = *(long *)(args[5] + i * steps[5]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[6] + i * steps[6]) = qtukey(p, nranges, nmeans, df, (int)lower_tail, (int)log_arg);
+        } else {
+            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction qtukey_funcs[1] = {qtukey_loop};
+static void *qtukey_data[1] = {NULL};
+static char qtukey_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+
+static void
+gammafn_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = gammafn(x);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction gammafn_funcs[1] = {gammafn_loop};
+static void *gammafn_data[1] = {NULL};
+static char gammafn_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+lgammafn_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = lgammafn(x);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction lgammafn_funcs[1] = {lgammafn_loop};
+static void *lgammafn_data[1] = {NULL};
+static char lgammafn_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+digamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = digamma(x);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction digamma_funcs[1] = {digamma_loop};
+static void *digamma_data[1] = {NULL};
+static char digamma_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+trigamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = trigamma(x);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction trigamma_funcs[1] = {trigamma_loop};
+static void *trigamma_data[1] = {NULL};
+static char trigamma_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+tetragamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = tetragamma(x);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction tetragamma_funcs[1] = {tetragamma_loop};
+static void *tetragamma_data[1] = {NULL};
+static char tetragamma_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+pentagamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = pentagamma(x);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction pentagamma_funcs[1] = {pentagamma_loop};
+static void *pentagamma_data[1] = {NULL};
+static char pentagamma_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+psigamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double deriv = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = psigamma(x, deriv);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction psigamma_funcs[1] = {psigamma_loop};
+static void *psigamma_data[1] = {NULL};
+static char psigamma_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+beta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double a = *(double *)(args[0] + i * steps[0]);
+        double b = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = beta(a, b);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction beta_funcs[1] = {beta_loop};
+static void *beta_data[1] = {NULL};
+static char beta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+lbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double a = *(double *)(args[0] + i * steps[0]);
+        double b = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = lbeta(a, b);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction lbeta_funcs[1] = {lbeta_loop};
+static void *lbeta_data[1] = {NULL};
+static char lbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+choose_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double n = *(double *)(args[0] + i * steps[0]);
+        double k = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = choose(n, k);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction choose_funcs[1] = {choose_loop};
+static void *choose_data[1] = {NULL};
+static char choose_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+lchoose_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double n = *(double *)(args[0] + i * steps[0]);
+        double k = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = lchoose(n, k);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction lchoose_funcs[1] = {lchoose_loop};
+static void *lchoose_data[1] = {NULL};
+static char lchoose_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+bessel_j_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double nu = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = bessel_j(x, nu);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction bessel_j_funcs[1] = {bessel_j_loop};
+static void *bessel_j_data[1] = {NULL};
+static char bessel_j_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+bessel_y_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double nu = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = bessel_y(x, nu);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction bessel_y_funcs[1] = {bessel_y_loop};
+static void *bessel_y_data[1] = {NULL};
+static char bessel_y_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+bessel_i_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double nu = *(double *)(args[1] + i * steps[1]);
+        double expon_scaled = *(double *)(args[2] + i * steps[2]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[3] + i * steps[3]) = bessel_i(x, nu, expon_scaled);
+        } else {
+            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction bessel_i_funcs[1] = {bessel_i_loop};
+static void *bessel_i_data[1] = {NULL};
+static char bessel_i_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+bessel_k_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double nu = *(double *)(args[1] + i * steps[1]);
+        double expon_scaled = *(double *)(args[2] + i * steps[2]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[3] + i * steps[3]) = bessel_k(x, nu, expon_scaled);
+        } else {
+            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction bessel_k_funcs[1] = {bessel_k_loop};
+static void *bessel_k_data[1] = {NULL};
+static char bessel_k_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+log1pmx_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = log1pmx(x);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction log1pmx_funcs[1] = {log1pmx_loop};
+static void *log1pmx_data[1] = {NULL};
+static char log1pmx_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+log1pexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = log1pexp(x);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction log1pexp_funcs[1] = {log1pexp_loop};
+static void *log1pexp_data[1] = {NULL};
+static char log1pexp_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+lgamma1p_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = lgamma1p(x);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction lgamma1p_funcs[1] = {lgamma1p_loop};
+static void *lgamma1p_data[1] = {NULL};
+static char lgamma1p_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+logspace_add_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double logx = *(double *)(args[0] + i * steps[0]);
+        double logy = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = logspace_add(logx, logy);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction logspace_add_funcs[1] = {logspace_add_loop};
+static void *logspace_add_data[1] = {NULL};
+static char logspace_add_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+logspace_sub_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double logx = *(double *)(args[0] + i * steps[0]);
+        double logy = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = logspace_sub(logx, logy);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction logspace_sub_funcs[1] = {logspace_sub_loop};
+static void *logspace_sub_data[1] = {NULL};
+static char logspace_sub_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+cospi_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = cospi(x);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction cospi_funcs[1] = {cospi_loop};
+static void *cospi_data[1] = {NULL};
+static char cospi_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+sinpi_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = sinpi(x);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction sinpi_funcs[1] = {sinpi_loop};
+static void *sinpi_data[1] = {NULL};
+static char sinpi_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+tanpi_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = tanpi(x);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction tanpi_funcs[1] = {tanpi_loop};
+static void *tanpi_data[1] = {NULL};
+static char tanpi_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+fprec_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double digits = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = fprec(x, digits);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction fprec_funcs[1] = {fprec_loop};
+static void *fprec_data[1] = {NULL};
+static char fprec_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+fround_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double digits = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = fround(x, digits);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction fround_funcs[1] = {fround_loop};
+static void *fround_data[1] = {NULL};
+static char fround_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+fsign_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double y = *(double *)(args[1] + i * steps[1]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[2] + i * steps[2]) = fsign(x, y);
+        } else {
+            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction fsign_funcs[1] = {fsign_loop};
+static void *fsign_data[1] = {NULL};
+static char fsign_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+ftrunc_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = ftrunc(x);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction ftrunc_funcs[1] = {ftrunc_loop};
+static void *ftrunc_data[1] = {NULL};
+static char ftrunc_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+sign_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        jmp_buf jump;
+        accudist_jump_target = &jump;
+        if (setjmp(jump) == 0) {
+            *(double *)(args[1] + i * steps[1]) = sign(x);
+        } else {
+            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
+        }
+        accudist_jump_target = NULL;
+    }
+}
+
+static PyUFuncGenericFunction sign_funcs[1] = {sign_loop};
+static void *sign_data[1] = {NULL};
+static char sign_types[] = {NPY_DOUBLE, NPY_DOUBLE};
 
 static PyObject *
 py_clear_error(PyObject *self, PyObject *ignored)
@@ -58,6 +3181,26 @@ py_force_allocation_failure(PyObject *self, PyObject *ignored)
 }
 
 static PyObject *
+py_set_seed(PyObject *self, PyObject *args)
+{
+    unsigned int i1, i2;
+    (void)self;
+    if (!PyArg_ParseTuple(args, "II:set_seed", &i1, &i2)) return NULL;
+    set_seed(i1, i2);
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+py_get_seed(PyObject *self, PyObject *ignored)
+{
+    unsigned int i1, i2;
+    (void)self;
+    (void)ignored;
+    get_seed(&i1, &i2);
+    return Py_BuildValue("(II)", i1, i2);
+}
+
+static PyObject *
 py_free_caches(PyObject *self, PyObject *ignored)
 {
     (void)self;
@@ -73,6 +3216,8 @@ static PyMethodDef module_methods[] = {
     {"_clear_error", py_clear_error, METH_NOARGS, NULL},
     {"_take_error", py_take_error, METH_NOARGS, NULL},
     {"_force_allocation_failure", py_force_allocation_failure, METH_NOARGS, NULL},
+    {"_set_seed", py_set_seed, METH_VARARGS, NULL},
+    {"_get_seed", py_get_seed, METH_NOARGS, NULL},
     {"_free_caches", py_free_caches, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
@@ -119,11 +3264,1475 @@ PyInit__ufuncs(void)
     }
     {
         PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dnorm_funcs, dnorm_data, dnorm_types,
+            1, 4, 1, PyUFunc_None,
+            "dnorm", "Raw R nmath dnorm ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dnorm", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pnorm_funcs, pnorm_data, pnorm_types,
+            1, 5, 1, PyUFunc_None,
+            "pnorm", "Raw R nmath pnorm ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pnorm", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qnorm_funcs, qnorm_data, qnorm_types,
+            1, 5, 1, PyUFunc_None,
+            "qnorm", "Raw R nmath qnorm ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qnorm", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rnorm_funcs, rnorm_data, rnorm_types,
+            1, 2, 1, PyUFunc_None,
+            "rnorm", "Raw R nmath rnorm ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rnorm", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dunif_funcs, dunif_data, dunif_types,
+            1, 4, 1, PyUFunc_None,
+            "dunif", "Raw R nmath dunif ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dunif", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            punif_funcs, punif_data, punif_types,
+            1, 5, 1, PyUFunc_None,
+            "punif", "Raw R nmath punif ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "punif", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qunif_funcs, qunif_data, qunif_types,
+            1, 5, 1, PyUFunc_None,
+            "qunif", "Raw R nmath qunif ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qunif", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            runif_funcs, runif_data, runif_types,
+            1, 2, 1, PyUFunc_None,
+            "runif", "Raw R nmath runif ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "runif", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dgamma_funcs, dgamma_data, dgamma_types,
+            1, 4, 1, PyUFunc_None,
+            "dgamma", "Raw R nmath dgamma ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dgamma", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pgamma_funcs, pgamma_data, pgamma_types,
+            1, 5, 1, PyUFunc_None,
+            "pgamma", "Raw R nmath pgamma ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pgamma", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qgamma_funcs, qgamma_data, qgamma_types,
+            1, 5, 1, PyUFunc_None,
+            "qgamma", "Raw R nmath qgamma ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qgamma", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rgamma_funcs, rgamma_data, rgamma_types,
+            1, 2, 1, PyUFunc_None,
+            "rgamma", "Raw R nmath rgamma ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rgamma", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dbeta_funcs, dbeta_data, dbeta_types,
+            1, 4, 1, PyUFunc_None,
+            "dbeta", "Raw R nmath dbeta ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dbeta", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dnbeta_funcs, dnbeta_data, dnbeta_types,
+            1, 5, 1, PyUFunc_None,
+            "dnbeta", "Raw R nmath dnbeta ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dnbeta", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pbeta_funcs, pbeta_data, pbeta_types,
+            1, 5, 1, PyUFunc_None,
+            "pbeta", "Raw R nmath pbeta ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pbeta", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pnbeta_funcs, pnbeta_data, pnbeta_types,
+            1, 6, 1, PyUFunc_None,
+            "pnbeta", "Raw R nmath pnbeta ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pnbeta", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qbeta_funcs, qbeta_data, qbeta_types,
+            1, 5, 1, PyUFunc_None,
+            "qbeta", "Raw R nmath qbeta ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qbeta", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qnbeta_funcs, qnbeta_data, qnbeta_types,
+            1, 6, 1, PyUFunc_None,
+            "qnbeta", "Raw R nmath qnbeta ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qnbeta", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rbeta_funcs, rbeta_data, rbeta_types,
+            1, 2, 1, PyUFunc_None,
+            "rbeta", "Raw R nmath rbeta ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rbeta", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dlnorm_funcs, dlnorm_data, dlnorm_types,
+            1, 4, 1, PyUFunc_None,
+            "dlnorm", "Raw R nmath dlnorm ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dlnorm", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            plnorm_funcs, plnorm_data, plnorm_types,
+            1, 5, 1, PyUFunc_None,
+            "plnorm", "Raw R nmath plnorm ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "plnorm", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qlnorm_funcs, qlnorm_data, qlnorm_types,
+            1, 5, 1, PyUFunc_None,
+            "qlnorm", "Raw R nmath qlnorm ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qlnorm", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rlnorm_funcs, rlnorm_data, rlnorm_types,
+            1, 2, 1, PyUFunc_None,
+            "rlnorm", "Raw R nmath rlnorm ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rlnorm", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dchisq_funcs, dchisq_data, dchisq_types,
+            1, 3, 1, PyUFunc_None,
+            "dchisq", "Raw R nmath dchisq ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dchisq", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dnchisq_funcs, dnchisq_data, dnchisq_types,
+            1, 4, 1, PyUFunc_None,
+            "dnchisq", "Raw R nmath dnchisq ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dnchisq", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pchisq_funcs, pchisq_data, pchisq_types,
+            1, 4, 1, PyUFunc_None,
+            "pchisq", "Raw R nmath pchisq ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pchisq", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pnchisq_funcs, pnchisq_data, pnchisq_types,
+            1, 5, 1, PyUFunc_None,
+            "pnchisq", "Raw R nmath pnchisq ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pnchisq", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qchisq_funcs, qchisq_data, qchisq_types,
+            1, 4, 1, PyUFunc_None,
+            "qchisq", "Raw R nmath qchisq ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qchisq", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qnchisq_funcs, qnchisq_data, qnchisq_types,
+            1, 5, 1, PyUFunc_None,
+            "qnchisq", "Raw R nmath qnchisq ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qnchisq", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rchisq_funcs, rchisq_data, rchisq_types,
+            1, 1, 1, PyUFunc_None,
+            "rchisq", "Raw R nmath rchisq ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rchisq", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rnchisq_funcs, rnchisq_data, rnchisq_types,
+            1, 2, 1, PyUFunc_None,
+            "rnchisq", "Raw R nmath rnchisq ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rnchisq", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            df_funcs, df_data, df_types,
+            1, 4, 1, PyUFunc_None,
+            "df", "Raw R nmath df ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "df", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dnf_funcs, dnf_data, dnf_types,
+            1, 5, 1, PyUFunc_None,
+            "dnf", "Raw R nmath dnf ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dnf", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pf_funcs, pf_data, pf_types,
+            1, 5, 1, PyUFunc_None,
+            "pf", "Raw R nmath pf ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pf", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pnf_funcs, pnf_data, pnf_types,
+            1, 6, 1, PyUFunc_None,
+            "pnf", "Raw R nmath pnf ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pnf", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qf_funcs, qf_data, qf_types,
+            1, 5, 1, PyUFunc_None,
+            "qf", "Raw R nmath qf ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qf", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qnf_funcs, qnf_data, qnf_types,
+            1, 6, 1, PyUFunc_None,
+            "qnf", "Raw R nmath qnf ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qnf", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rf_funcs, rf_data, rf_types,
+            1, 2, 1, PyUFunc_None,
+            "rf", "Raw R nmath rf ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rf", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dt_funcs, dt_data, dt_types,
+            1, 3, 1, PyUFunc_None,
+            "dt", "Raw R nmath dt ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dt", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dnt_funcs, dnt_data, dnt_types,
+            1, 4, 1, PyUFunc_None,
+            "dnt", "Raw R nmath dnt ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dnt", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pt_funcs, pt_data, pt_types,
+            1, 4, 1, PyUFunc_None,
+            "pt", "Raw R nmath pt ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pt", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pnt_funcs, pnt_data, pnt_types,
+            1, 5, 1, PyUFunc_None,
+            "pnt", "Raw R nmath pnt ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pnt", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qt_funcs, qt_data, qt_types,
+            1, 4, 1, PyUFunc_None,
+            "qt", "Raw R nmath qt ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qt", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qnt_funcs, qnt_data, qnt_types,
+            1, 5, 1, PyUFunc_None,
+            "qnt", "Raw R nmath qnt ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qnt", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rt_funcs, rt_data, rt_types,
+            1, 1, 1, PyUFunc_None,
+            "rt", "Raw R nmath rt ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rt", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dbinom_funcs, dbinom_data, dbinom_types,
+            1, 4, 1, PyUFunc_None,
+            "dbinom", "Raw R nmath dbinom ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dbinom", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pbinom_funcs, pbinom_data, pbinom_types,
+            1, 5, 1, PyUFunc_None,
+            "pbinom", "Raw R nmath pbinom ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pbinom", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qbinom_funcs, qbinom_data, qbinom_types,
+            1, 5, 1, PyUFunc_None,
+            "qbinom", "Raw R nmath qbinom ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qbinom", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rbinom_funcs, rbinom_data, rbinom_types,
+            1, 2, 1, PyUFunc_None,
+            "rbinom", "Raw R nmath rbinom ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rbinom", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dcauchy_funcs, dcauchy_data, dcauchy_types,
+            1, 4, 1, PyUFunc_None,
+            "dcauchy", "Raw R nmath dcauchy ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dcauchy", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pcauchy_funcs, pcauchy_data, pcauchy_types,
+            1, 5, 1, PyUFunc_None,
+            "pcauchy", "Raw R nmath pcauchy ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pcauchy", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qcauchy_funcs, qcauchy_data, qcauchy_types,
+            1, 5, 1, PyUFunc_None,
+            "qcauchy", "Raw R nmath qcauchy ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qcauchy", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rcauchy_funcs, rcauchy_data, rcauchy_types,
+            1, 2, 1, PyUFunc_None,
+            "rcauchy", "Raw R nmath rcauchy ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rcauchy", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dexp_funcs, dexp_data, dexp_types,
+            1, 3, 1, PyUFunc_None,
+            "dexp", "Raw R nmath dexp ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dexp", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pexp_funcs, pexp_data, pexp_types,
+            1, 4, 1, PyUFunc_None,
+            "pexp", "Raw R nmath pexp ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pexp", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qexp_funcs, qexp_data, qexp_types,
+            1, 4, 1, PyUFunc_None,
+            "qexp", "Raw R nmath qexp ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qexp", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rexp_funcs, rexp_data, rexp_types,
+            1, 1, 1, PyUFunc_None,
+            "rexp", "Raw R nmath rexp ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rexp", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dgeom_funcs, dgeom_data, dgeom_types,
+            1, 3, 1, PyUFunc_None,
+            "dgeom", "Raw R nmath dgeom ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dgeom", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pgeom_funcs, pgeom_data, pgeom_types,
+            1, 4, 1, PyUFunc_None,
+            "pgeom", "Raw R nmath pgeom ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pgeom", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qgeom_funcs, qgeom_data, qgeom_types,
+            1, 4, 1, PyUFunc_None,
+            "qgeom", "Raw R nmath qgeom ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qgeom", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rgeom_funcs, rgeom_data, rgeom_types,
+            1, 1, 1, PyUFunc_None,
+            "rgeom", "Raw R nmath rgeom ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rgeom", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dhyper_funcs, dhyper_data, dhyper_types,
+            1, 5, 1, PyUFunc_None,
+            "dhyper", "Raw R nmath dhyper ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dhyper", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            phyper_funcs, phyper_data, phyper_types,
+            1, 6, 1, PyUFunc_None,
+            "phyper", "Raw R nmath phyper ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "phyper", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qhyper_funcs, qhyper_data, qhyper_types,
+            1, 6, 1, PyUFunc_None,
+            "qhyper", "Raw R nmath qhyper ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qhyper", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rhyper_funcs, rhyper_data, rhyper_types,
+            1, 3, 1, PyUFunc_None,
+            "rhyper", "Raw R nmath rhyper ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rhyper", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dnbinom_funcs, dnbinom_data, dnbinom_types,
+            1, 4, 1, PyUFunc_None,
+            "dnbinom", "Raw R nmath dnbinom ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dnbinom", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dnbinom_mu_funcs, dnbinom_mu_data, dnbinom_mu_types,
+            1, 4, 1, PyUFunc_None,
+            "dnbinom_mu", "Raw R nmath dnbinom_mu ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dnbinom_mu", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pnbinom_funcs, pnbinom_data, pnbinom_types,
+            1, 5, 1, PyUFunc_None,
+            "pnbinom", "Raw R nmath pnbinom ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pnbinom", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pnbinom_mu_funcs, pnbinom_mu_data, pnbinom_mu_types,
+            1, 5, 1, PyUFunc_None,
+            "pnbinom_mu", "Raw R nmath pnbinom_mu ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pnbinom_mu", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qnbinom_funcs, qnbinom_data, qnbinom_types,
+            1, 5, 1, PyUFunc_None,
+            "qnbinom", "Raw R nmath qnbinom ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qnbinom", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qnbinom_mu_funcs, qnbinom_mu_data, qnbinom_mu_types,
+            1, 5, 1, PyUFunc_None,
+            "qnbinom_mu", "Raw R nmath qnbinom_mu ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qnbinom_mu", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rnbinom_funcs, rnbinom_data, rnbinom_types,
+            1, 2, 1, PyUFunc_None,
+            "rnbinom", "Raw R nmath rnbinom ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rnbinom", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rnbinom_mu_funcs, rnbinom_mu_data, rnbinom_mu_types,
+            1, 2, 1, PyUFunc_None,
+            "rnbinom_mu", "Raw R nmath rnbinom_mu ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rnbinom_mu", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dpois_funcs, dpois_data, dpois_types,
+            1, 3, 1, PyUFunc_None,
+            "dpois", "Raw R nmath dpois ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dpois", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
             ppois_funcs, ppois_data, ppois_types,
             1, 4, 1, PyUFunc_None,
             "ppois", "Raw R nmath ppois ufunc.", 0
         );
         if (ufunc == NULL || PyModule_AddObject(module, "ppois", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qpois_funcs, qpois_data, qpois_types,
+            1, 4, 1, PyUFunc_None,
+            "qpois", "Raw R nmath qpois ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qpois", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rpois_funcs, rpois_data, rpois_types,
+            1, 1, 1, PyUFunc_None,
+            "rpois", "Raw R nmath rpois ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rpois", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dweibull_funcs, dweibull_data, dweibull_types,
+            1, 4, 1, PyUFunc_None,
+            "dweibull", "Raw R nmath dweibull ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dweibull", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pweibull_funcs, pweibull_data, pweibull_types,
+            1, 5, 1, PyUFunc_None,
+            "pweibull", "Raw R nmath pweibull ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pweibull", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qweibull_funcs, qweibull_data, qweibull_types,
+            1, 5, 1, PyUFunc_None,
+            "qweibull", "Raw R nmath qweibull ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qweibull", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rweibull_funcs, rweibull_data, rweibull_types,
+            1, 2, 1, PyUFunc_None,
+            "rweibull", "Raw R nmath rweibull ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rweibull", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dlogis_funcs, dlogis_data, dlogis_types,
+            1, 4, 1, PyUFunc_None,
+            "dlogis", "Raw R nmath dlogis ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dlogis", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            plogis_funcs, plogis_data, plogis_types,
+            1, 5, 1, PyUFunc_None,
+            "plogis", "Raw R nmath plogis ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "plogis", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qlogis_funcs, qlogis_data, qlogis_types,
+            1, 5, 1, PyUFunc_None,
+            "qlogis", "Raw R nmath qlogis ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qlogis", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rlogis_funcs, rlogis_data, rlogis_types,
+            1, 2, 1, PyUFunc_None,
+            "rlogis", "Raw R nmath rlogis ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rlogis", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dwilcox_funcs, dwilcox_data, dwilcox_types,
+            1, 4, 1, PyUFunc_None,
+            "dwilcox", "Raw R nmath dwilcox ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dwilcox", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pwilcox_funcs, pwilcox_data, pwilcox_types,
+            1, 5, 1, PyUFunc_None,
+            "pwilcox", "Raw R nmath pwilcox ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pwilcox", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qwilcox_funcs, qwilcox_data, qwilcox_types,
+            1, 5, 1, PyUFunc_None,
+            "qwilcox", "Raw R nmath qwilcox ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qwilcox", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rwilcox_funcs, rwilcox_data, rwilcox_types,
+            1, 2, 1, PyUFunc_None,
+            "rwilcox", "Raw R nmath rwilcox ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rwilcox", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dsignrank_funcs, dsignrank_data, dsignrank_types,
+            1, 3, 1, PyUFunc_None,
+            "dsignrank", "Raw R nmath dsignrank ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dsignrank", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            psignrank_funcs, psignrank_data, psignrank_types,
+            1, 4, 1, PyUFunc_None,
+            "psignrank", "Raw R nmath psignrank ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "psignrank", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qsignrank_funcs, qsignrank_data, qsignrank_types,
+            1, 4, 1, PyUFunc_None,
+            "qsignrank", "Raw R nmath qsignrank ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qsignrank", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            rsignrank_funcs, rsignrank_data, rsignrank_types,
+            1, 1, 1, PyUFunc_None,
+            "rsignrank", "Raw R nmath rsignrank ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "rsignrank", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            ptukey_funcs, ptukey_data, ptukey_types,
+            1, 6, 1, PyUFunc_None,
+            "ptukey", "Raw R nmath ptukey ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "ptukey", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            qtukey_funcs, qtukey_data, qtukey_types,
+            1, 6, 1, PyUFunc_None,
+            "qtukey", "Raw R nmath qtukey ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "qtukey", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            gammafn_funcs, gammafn_data, gammafn_types,
+            1, 1, 1, PyUFunc_None,
+            "gammafn", "Raw R nmath gammafn ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "gammafn", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            lgammafn_funcs, lgammafn_data, lgammafn_types,
+            1, 1, 1, PyUFunc_None,
+            "lgammafn", "Raw R nmath lgammafn ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "lgammafn", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            digamma_funcs, digamma_data, digamma_types,
+            1, 1, 1, PyUFunc_None,
+            "digamma", "Raw R nmath digamma ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "digamma", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            trigamma_funcs, trigamma_data, trigamma_types,
+            1, 1, 1, PyUFunc_None,
+            "trigamma", "Raw R nmath trigamma ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "trigamma", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            tetragamma_funcs, tetragamma_data, tetragamma_types,
+            1, 1, 1, PyUFunc_None,
+            "tetragamma", "Raw R nmath tetragamma ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "tetragamma", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            pentagamma_funcs, pentagamma_data, pentagamma_types,
+            1, 1, 1, PyUFunc_None,
+            "pentagamma", "Raw R nmath pentagamma ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "pentagamma", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            psigamma_funcs, psigamma_data, psigamma_types,
+            1, 2, 1, PyUFunc_None,
+            "psigamma", "Raw R nmath psigamma ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "psigamma", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            beta_funcs, beta_data, beta_types,
+            1, 2, 1, PyUFunc_None,
+            "beta", "Raw R nmath beta ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "beta", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            lbeta_funcs, lbeta_data, lbeta_types,
+            1, 2, 1, PyUFunc_None,
+            "lbeta", "Raw R nmath lbeta ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "lbeta", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            choose_funcs, choose_data, choose_types,
+            1, 2, 1, PyUFunc_None,
+            "choose", "Raw R nmath choose ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "choose", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            lchoose_funcs, lchoose_data, lchoose_types,
+            1, 2, 1, PyUFunc_None,
+            "lchoose", "Raw R nmath lchoose ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "lchoose", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            bessel_j_funcs, bessel_j_data, bessel_j_types,
+            1, 2, 1, PyUFunc_None,
+            "bessel_j", "Raw R nmath bessel_j ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "bessel_j", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            bessel_y_funcs, bessel_y_data, bessel_y_types,
+            1, 2, 1, PyUFunc_None,
+            "bessel_y", "Raw R nmath bessel_y ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "bessel_y", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            bessel_i_funcs, bessel_i_data, bessel_i_types,
+            1, 3, 1, PyUFunc_None,
+            "bessel_i", "Raw R nmath bessel_i ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "bessel_i", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            bessel_k_funcs, bessel_k_data, bessel_k_types,
+            1, 3, 1, PyUFunc_None,
+            "bessel_k", "Raw R nmath bessel_k ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "bessel_k", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            log1pmx_funcs, log1pmx_data, log1pmx_types,
+            1, 1, 1, PyUFunc_None,
+            "log1pmx", "Raw R nmath log1pmx ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "log1pmx", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            log1pexp_funcs, log1pexp_data, log1pexp_types,
+            1, 1, 1, PyUFunc_None,
+            "log1pexp", "Raw R nmath log1pexp ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "log1pexp", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            lgamma1p_funcs, lgamma1p_data, lgamma1p_types,
+            1, 1, 1, PyUFunc_None,
+            "lgamma1p", "Raw R nmath lgamma1p ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "lgamma1p", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            logspace_add_funcs, logspace_add_data, logspace_add_types,
+            1, 2, 1, PyUFunc_None,
+            "logspace_add", "Raw R nmath logspace_add ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "logspace_add", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            logspace_sub_funcs, logspace_sub_data, logspace_sub_types,
+            1, 2, 1, PyUFunc_None,
+            "logspace_sub", "Raw R nmath logspace_sub ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "logspace_sub", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            cospi_funcs, cospi_data, cospi_types,
+            1, 1, 1, PyUFunc_None,
+            "cospi", "Raw R nmath cospi ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "cospi", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            sinpi_funcs, sinpi_data, sinpi_types,
+            1, 1, 1, PyUFunc_None,
+            "sinpi", "Raw R nmath sinpi ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "sinpi", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            tanpi_funcs, tanpi_data, tanpi_types,
+            1, 1, 1, PyUFunc_None,
+            "tanpi", "Raw R nmath tanpi ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "tanpi", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            fprec_funcs, fprec_data, fprec_types,
+            1, 2, 1, PyUFunc_None,
+            "fprec", "Raw R nmath fprec ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "fprec", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            fround_funcs, fround_data, fround_types,
+            1, 2, 1, PyUFunc_None,
+            "fround", "Raw R nmath fround ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "fround", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            fsign_funcs, fsign_data, fsign_types,
+            1, 2, 1, PyUFunc_None,
+            "fsign", "Raw R nmath fsign ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "fsign", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            ftrunc_funcs, ftrunc_data, ftrunc_types,
+            1, 1, 1, PyUFunc_None,
+            "ftrunc", "Raw R nmath ftrunc ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "ftrunc", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            sign_funcs, sign_data, sign_types,
+            1, 1, 1, PyUFunc_None,
+            "sign", "Raw R nmath sign ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "sign", ufunc) < 0) {
             Py_XDECREF(ufunc);
             Py_DECREF(module);
             return NULL;
