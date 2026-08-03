@@ -7,6 +7,13 @@ import warnings
 import numpy as np
 
 
+class _DefaultRate(float):
+    """Identity sentinel that still renders as the documented default, 1.0."""
+
+
+DEFAULT_RATE = _DefaultRate(1.0)
+
+
 def resolve_prob_mu(prob, mu) -> str:
     if (prob is None) == (mu is None):
         raise TypeError("exactly one of 'prob' or 'mu' must be specified")
@@ -14,14 +21,13 @@ def resolve_prob_mu(prob, mu) -> str:
 
 
 def resolve_rate_scale(rate, scale):
+    if rate is DEFAULT_RATE and scale is None:
+        return 1.0
+    if rate is DEFAULT_RATE:
+        return scale
     if rate is None and scale is None:
         return 1.0
     if rate is None:
-        return scale
-    # ``rate=1`` is the public R default.  When scale is supplied it replaces
-    # that default; Python cannot otherwise distinguish an omitted defaulted
-    # argument from an explicitly passed value.
-    if scale is not None and np.ndim(rate) == 0 and float(rate) == 1.0:
         return scale
     inverse = reciprocal(rate)
     if scale is None:
@@ -33,7 +39,8 @@ def resolve_rate_scale(rate, scale):
 
 
 def reciprocal(value):
-    return np.reciprocal(np.asarray(value, dtype=np.float64))
+    with np.errstate(all="ignore"):
+        return np.reciprocal(np.asarray(value, dtype=np.float64))
 
 
 def sqrt(value):

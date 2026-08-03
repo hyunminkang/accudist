@@ -27,5 +27,7 @@ unsigned accudist_take_error(void);
 void accudist_clear_error(void);
 int accudist_init_locks(void);
 void accudist_free_locks(void);
+void accudist_rng_acquire(void);
+void accudist_rng_release(void);
 
 #endif

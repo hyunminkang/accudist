@@ -30,5 +30,5 @@ endforeach
 subdir('accudist')
 
 install_data('LICENSE', install_dir : get_option('datadir') / 'licenses' / 'accudist')
+install_data('NOTICE', install_dir : get_option('datadir') / 'licenses' / 'accudist')
 install_data('vendor/nmath/COPYING', install_dir : get_option('datadir') / 'licenses' / 'accudist')
-

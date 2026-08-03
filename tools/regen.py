@@ -53,12 +53,14 @@ def ufunc_specs(functions: list[dict]) -> dict[str, dict]:
                 "inputs": inputs,
                 "flags": flags,
                 "cache": function.get("cache"),
+                "rng": function["kind"] == "r",
             }
             previous = specs.get(symbol)
             if previous and (
                 previous["inputs"] != inputs
                 or previous["flags"] != flags
                 or previous["cache"] != spec["cache"]
+                or previous["rng"] != spec["rng"]
             ):
                 raise ValueError(f"inconsistent signatures for C symbol {symbol}")
             specs[symbol] = spec
@@ -70,12 +72,14 @@ def ufunc_specs(functions: list[dict]) -> dict[str, dict]:
         "inputs": ["x", "n", "p", "q", "give_log"],
         "flags": {"give_log"},
         "cache": None,
+        "rng": False,
     }
     specs["dpois_raw"] = {
         "symbol": "dpois_raw",
         "inputs": ["x", "lambda_", "give_log"],
         "flags": {"give_log"},
         "cache": None,
+        "rng": False,
     }
     return specs
 
@@ -110,9 +114,12 @@ def render_c(functions: list[dict]) -> str:
         output_index = len(inputs)
         lock_before = ""
         lock_after = ""
+        if spec["rng"]:
+            lock_before += "    accudist_rng_acquire();\n"
+            lock_after = "    accudist_rng_release();\n" + lock_after
         if spec["cache"]:
-            lock_before = "    PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);\n"
-            lock_after = "    PyThread_release_lock(accudist_cache_lock);\n"
+            lock_before += "    PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);\n"
+            lock_after = "    PyThread_release_lock(accudist_cache_lock);\n" + lock_after
         type_codes = ["NPY_LONG" if item in flags else "NPY_DOUBLE" for item in inputs]
         type_codes.append("NPY_DOUBLE")
         call = f"{symbol}({', '.join(call_args)})"
@@ -214,6 +221,69 @@ py_lgammafn_sign_scalar(PyObject *self, PyObject *args)
 }}
 
 static PyObject *
+py_pnorm_both_array(PyObject *self, PyObject *args)
+{{
+    PyObject *argument, *result;
+    PyArrayObject *input, *lower, *upper;
+    int log_p;
+    npy_intp length;
+    (void)self;
+    if (!PyArg_ParseTuple(args, "Oi:_pnorm_both_array", &argument, &log_p)) return NULL;
+    input = (PyArrayObject *)PyArray_FROM_OTF(argument, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY);
+    if (input == NULL) return NULL;
+    lower = (PyArrayObject *)PyArray_SimpleNew(PyArray_NDIM(input), PyArray_DIMS(input), NPY_DOUBLE);
+    upper = (PyArrayObject *)PyArray_SimpleNew(PyArray_NDIM(input), PyArray_DIMS(input), NPY_DOUBLE);
+    if (lower == NULL || upper == NULL) {{
+        Py_XDECREF(lower);
+        Py_XDECREF(upper);
+        Py_DECREF(input);
+        return PyErr_NoMemory();
+    }}
+    length = PyArray_SIZE(input);
+    for (npy_intp i = 0; i < length; i++) {{
+        pnorm_both(((double *)PyArray_DATA(input))[i],
+                   &((double *)PyArray_DATA(lower))[i],
+                   &((double *)PyArray_DATA(upper))[i], 2, log_p);
+    }}
+    result = PyTuple_Pack(2, (PyObject *)lower, (PyObject *)upper);
+    Py_DECREF(input);
+    Py_DECREF(lower);
+    Py_DECREF(upper);
+    return result;
+}}
+
+static PyObject *
+py_lgammafn_sign_array(PyObject *self, PyObject *argument)
+{{
+    PyObject *result;
+    PyArrayObject *input, *values, *signs;
+    npy_intp length;
+    (void)self;
+    input = (PyArrayObject *)PyArray_FROM_OTF(argument, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY);
+    if (input == NULL) return NULL;
+    values = (PyArrayObject *)PyArray_SimpleNew(PyArray_NDIM(input), PyArray_DIMS(input), NPY_DOUBLE);
+    signs = (PyArrayObject *)PyArray_SimpleNew(PyArray_NDIM(input), PyArray_DIMS(input), NPY_INT);
+    if (values == NULL || signs == NULL) {{
+        Py_XDECREF(values);
+        Py_XDECREF(signs);
+        Py_DECREF(input);
+        return PyErr_NoMemory();
+    }}
+    length = PyArray_SIZE(input);
+    for (npy_intp i = 0; i < length; i++) {{
+        int sign = 1;
+        ((double *)PyArray_DATA(values))[i] =
+            lgammafn_sign(((double *)PyArray_DATA(input))[i], &sign);
+        ((int *)PyArray_DATA(signs))[i] = sign;
+    }}
+    result = PyTuple_Pack(2, (PyObject *)values, (PyObject *)signs);
+    Py_DECREF(input);
+    Py_DECREF(values);
+    Py_DECREF(signs);
+    return result;
+}}
+
+static PyObject *
 py_logspace_sum_1d(PyObject *self, PyObject *argument)
 {{
     PyObject *sequence;
@@ -245,6 +315,39 @@ py_logspace_sum_1d(PyObject *self, PyObject *argument)
     PyMem_Free(values);
     Py_DECREF(sequence);
     return PyFloat_FromDouble(result);
+}}
+
+static PyObject *
+py_logspace_sum_last(PyObject *self, PyObject *argument)
+{{
+    PyArrayObject *input, *output;
+    int ndim;
+    npy_intp row_length, rows;
+    (void)self;
+    input = (PyArrayObject *)PyArray_FROM_OTF(argument, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY);
+    if (input == NULL) return NULL;
+    ndim = PyArray_NDIM(input);
+    if (ndim == 0) {{
+        Py_DECREF(input);
+        return PyErr_Format(PyExc_ValueError, "logspace_sum input must have at least one dimension");
+    }}
+    row_length = PyArray_DIMS(input)[ndim - 1];
+    if (row_length > INT_MAX) {{
+        Py_DECREF(input);
+        return PyErr_Format(PyExc_OverflowError, "too many values for Rmath logspace_sum");
+    }}
+    output = (PyArrayObject *)PyArray_SimpleNew(ndim - 1, PyArray_DIMS(input), NPY_DOUBLE);
+    if (output == NULL) {{
+        Py_DECREF(input);
+        return NULL;
+    }}
+    rows = PyArray_SIZE(output);
+    for (npy_intp row = 0; row < rows; row++) {{
+        const double *values = ((const double *)PyArray_DATA(input)) + row * row_length;
+        ((double *)PyArray_DATA(output))[row] = logspace_sum(values, (int)row_length);
+    }}
+    Py_DECREF(input);
+    return (PyObject *)output;
 }}
 
 static PyObject *
@@ -285,7 +388,9 @@ py_rmultinom_one(PyObject *self, PyObject *args)
         }}
         total += (long double)probabilities[i];
     }}
+    accudist_rng_acquire();
     rmultinom(size, probabilities, (int)length, draws);
+    accudist_rng_release();
     if (fabsl(total - 1.0L) > 1e-7L) {{
         accudist_errword &= ~(unsigned)ACCUDIST_ALLOC;
         PyMem_Free(probabilities);
@@ -314,12 +419,56 @@ py_rmultinom_one(PyObject *self, PyObject *args)
 }}
 
 static PyObject *
+py_rmultinom_rows(PyObject *self, PyObject *args)
+{{
+    Py_ssize_t count;
+    int size;
+    PyObject *argument;
+    PyArrayObject *probabilities, *result;
+    npy_intp dims[2], categories;
+    long double total = 0.0L;
+    (void)self;
+    if (!PyArg_ParseTuple(args, "niO:_rmultinom_rows", &count, &size, &argument)) return NULL;
+    if (count < 0) return PyErr_Format(PyExc_ValueError, "n must be non-negative");
+    probabilities = (PyArrayObject *)PyArray_FROM_OTF(argument, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY);
+    if (probabilities == NULL) return NULL;
+    if (PyArray_NDIM(probabilities) != 1 || PyArray_SIZE(probabilities) < 1 ||
+        PyArray_SIZE(probabilities) > INT_MAX) {{
+        Py_DECREF(probabilities);
+        return PyErr_Format(PyExc_ValueError, "prob must be a non-empty one-dimensional array");
+    }}
+    categories = PyArray_SIZE(probabilities);
+    for (npy_intp i = 0; i < categories; i++)
+        total += (long double)((double *)PyArray_DATA(probabilities))[i];
+    if (fabsl(total - 1.0L) > 1e-7L) {{
+        Py_DECREF(probabilities);
+        return PyErr_Format(PyExc_ValueError, "probabilities must sum to 1 (rbinom probability sum should be 1)");
+    }}
+    dims[0] = (npy_intp)count;
+    dims[1] = categories;
+    result = (PyArrayObject *)PyArray_SimpleNew(2, dims, NPY_INT);
+    if (result == NULL) {{
+        Py_DECREF(probabilities);
+        return NULL;
+    }}
+    accudist_rng_acquire();
+    for (Py_ssize_t row = 0; row < count; row++)
+        rmultinom(size, (double *)PyArray_DATA(probabilities), (int)categories,
+                  ((int *)PyArray_DATA(result)) + row * categories);
+    accudist_rng_release();
+    Py_DECREF(probabilities);
+    return (PyObject *)result;
+}}
+
+static PyObject *
 py_set_seed(PyObject *self, PyObject *args)
 {{
     unsigned int i1, i2;
     (void)self;
     if (!PyArg_ParseTuple(args, "II:set_seed", &i1, &i2)) return NULL;
+    accudist_rng_acquire();
     set_seed(i1, i2);
+    accudist_rng_release();
     Py_RETURN_NONE;
 }}
 
@@ -329,8 +478,28 @@ py_get_seed(PyObject *self, PyObject *ignored)
     unsigned int i1, i2;
     (void)self;
     (void)ignored;
+    accudist_rng_acquire();
     get_seed(&i1, &i2);
+    accudist_rng_release();
     return Py_BuildValue("(II)", i1, i2);
+}}
+
+static PyObject *
+py_acquire_rng_lock(PyObject *self, PyObject *ignored)
+{{
+    (void)self;
+    (void)ignored;
+    accudist_rng_acquire();
+    Py_RETURN_NONE;
+}}
+
+static PyObject *
+py_release_rng_lock(PyObject *self, PyObject *ignored)
+{{
+    (void)self;
+    (void)ignored;
+    accudist_rng_release();
+    Py_RETURN_NONE;
 }}
 
 static PyObject *
@@ -351,10 +520,16 @@ static PyMethodDef module_methods[] = {{
     {{"_force_allocation_failure", py_force_allocation_failure, METH_NOARGS, NULL}},
     {{"_pnorm_both_scalar", py_pnorm_both_scalar, METH_VARARGS, NULL}},
     {{"_lgammafn_sign_scalar", py_lgammafn_sign_scalar, METH_VARARGS, NULL}},
+    {{"_pnorm_both_array", py_pnorm_both_array, METH_VARARGS, NULL}},
+    {{"_lgammafn_sign_array", py_lgammafn_sign_array, METH_O, NULL}},
     {{"_logspace_sum_1d", py_logspace_sum_1d, METH_O, NULL}},
+    {{"_logspace_sum_last", py_logspace_sum_last, METH_O, NULL}},
     {{"_rmultinom_one", py_rmultinom_one, METH_VARARGS, NULL}},
+    {{"_rmultinom_rows", py_rmultinom_rows, METH_VARARGS, NULL}},
     {{"_set_seed", py_set_seed, METH_VARARGS, NULL}},
     {{"_get_seed", py_get_seed, METH_NOARGS, NULL}},
+    {{"_acquire_rng_lock", py_acquire_rng_lock, METH_NOARGS, NULL}},
+    {{"_release_rng_lock", py_release_rng_lock, METH_NOARGS, NULL}},
     {{"_free_caches", py_free_caches, METH_NOARGS, NULL}},
     {{NULL, NULL, 0, NULL}}
 }};
@@ -419,8 +594,13 @@ def parameter_list(function: dict, *, typed: bool = False) -> list[str]:
     params: list[str] = []
     for param in function["params"]:
         name = param["py"]
-        if function.get("alias") == "rate_scale" and name == "scale":
-            default = "None"
+        if function.get("alias") == "rate_scale":
+            if name == "rate":
+                default = repr(param["default"]) if typed else "_dispatch.DEFAULT_RATE"
+            elif name == "scale":
+                default = "None"
+            else:
+                default = repr(param["default"]) if "default" in param else None
         elif function.get("dispatch") == "prob_or_mu" and name in {"prob", "mu"}:
             default = "None"
         elif "default" in param:
@@ -484,7 +664,7 @@ def render_wrapper(function: dict) -> str:
     if function["kind"] == "r" and function.get("dispatch") == "ncp" and "composed" in function.get("call_ncp", {}):
         central = function["call"]
         lines.append("    if ncp is not None:")
-        lines.append("        with _rng.locked():")
+        lines.append("        with np.errstate(all=\"ignore\"), _rng.locked():")
         if name == "rbeta":
             lines.extend([
                 "            x = rchisq(n, 2 * shape1, ncp=ncp)",
@@ -496,10 +676,10 @@ def render_wrapper(function: dict) -> str:
             lines.append("            return rnorm(n, ncp) / _dispatch.sqrt(rchisq(n, df) / df)")
         else:
             raise ValueError(f"unsupported composed RNG {name}")
-        lines.append(f"    with _errstate.capture(\"{name}\") as _capture:")
+        lines.append(f"    with np.errstate(all=\"ignore\"), _errstate.capture(\"{name}\") as _capture:")
         lines.append(raw_expression(function, central, indent="        "))
     else:
-        lines.append(f"    with _errstate.capture(\"{name}\") as _capture:")
+        lines.append(f"    with np.errstate(all=\"ignore\"), _errstate.capture(\"{name}\") as _capture:")
         dispatch = function.get("dispatch")
         if dispatch == "ncp":
             lines.append("        if ncp is None:")
@@ -522,6 +702,7 @@ def render_api(functions: list[dict]) -> str:
     pieces = [
         "# GENERATED by tools/regen.py -- do not edit.\n",
         "from __future__ import annotations\n\n",
+        "import numpy as np\n\n",
         "from . import _dispatch, _errstate, _rng, _ufuncs\n\n",
     ]
     pieces.extend(render_wrapper(function) + "\n" for function in functions)

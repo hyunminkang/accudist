@@ -39,6 +39,11 @@ def test_gamma_rate_and_scale_resolve_to_the_same_c_parameter():
         ) == expected
     with pytest.raises(TypeError, match="inconsistent 'rate' and 'scale'"):
         ad.pgamma(3, 2, rate=2, scale=9)
+    assert ad.pgamma(3, 2, scale=2) == ad.pgamma(3, 2, rate=0.5)
+    with pytest.warns(UserWarning, match="both 'rate' and 'scale'"):
+        assert ad.pgamma(3, 2, rate=1, scale=1) == ad.pgamma(3, 2)
+    with pytest.raises(TypeError, match="inconsistent 'rate' and 'scale'"):
+        ad.pgamma(3, 2, rate=1, scale=2)
 
 
 def test_negative_binomial_requires_exactly_one_parameterization():

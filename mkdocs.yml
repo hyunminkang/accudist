@@ -1,0 +1,6 @@
+site_name: accudist
+site_description: Probability distributions with R-grade numerical precision
+docs_dir: docs
+strict: true
+nav:
+  - User guide: user-guide.md

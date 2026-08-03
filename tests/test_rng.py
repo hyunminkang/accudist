@@ -7,6 +7,8 @@ import pytest
 from scipy import stats
 
 import accudist as ad
+import accudist.rmath as rmath
+from accudist import _ufuncs
 
 
 def test_rng_objects_with_same_seed_reproduce_exactly():
@@ -59,6 +61,17 @@ def test_independent_rngs_are_thread_safe():
         actual = list(pool.map(lambda seed: ad.RNG(*seed).rgamma(1000, 2.5), seeds))
     for got, want in zip(actual, expected, strict=True):
         np.testing.assert_array_equal(got, want)
+
+
+def test_raw_rng_ufuncs_serialize_the_entire_vector_loop():
+    means = np.zeros(20_000)
+    scales = np.ones(20_000)
+    _ufuncs._set_seed(301, 907)
+    expected = [rmath.rnorm(means, scales) for _ in range(4)]
+    _ufuncs._set_seed(301, 907)
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        actual = list(pool.map(lambda _: rmath.rnorm(means, scales), range(4)))
+    assert sorted(item.tobytes() for item in actual) == sorted(item.tobytes() for item in expected)
 
 
 def test_fixed_seed_samplers_pass_goodness_of_fit_at_one_in_a_million():

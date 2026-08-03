@@ -55,7 +55,7 @@ class RNG:
             return self._i1, self._i2
 
     def _execute(self, operation):
-        with _lock:
+        with locked():
             _ufuncs._set_seed(self._i1, self._i2)
             try:
                 return operation()
@@ -110,7 +110,11 @@ def default_rng() -> RNG:
 @contextmanager
 def locked():
     with _lock:
-        yield
+        _ufuncs._acquire_rng_lock()
+        try:
+            yield
+        finally:
+            _ufuncs._release_rng_lock()
 
 
 def draw(ufunc, n, *parameters) -> np.ndarray:

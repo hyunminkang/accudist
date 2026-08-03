@@ -37,18 +37,37 @@ SPECIAL_R = {
 }
 
 
-def value(param: str, index: int, name: str):
+PRIMES = [37, 43, 47, 53, 59, 61, 67, 71]
+
+
+def value(param: str, index: int, name: str, position: int):
+    if name.endswith("signrank") and param == "n":
+        choices = [-1.0, 0.0, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0, 100.0, math.nan]
+        return choices[(index * PRIMES[position]) % len(choices)]
+    if name.endswith("wilcox") and param in {"m", "n"}:
+        choices = [-1.0, 0.0, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, math.nan]
+        return choices[(index * PRIMES[position]) % len(choices)]
     if param == "p":
         probabilities = REFERENCE_VALUES["p"]
-        return probabilities[index % len(probabilities)]
+        return probabilities[(index * PRIMES[position]) % len(probabilities)]
     if param == "n" and name in {"choose", "lchoose"}:
-        return [1.0, 5.0, 10.0, 50.0][index % 4]
-    return REFERENCE_VALUES.get(param, [0.5, 1.0, 2.0, 5.0])[index % len(REFERENCE_VALUES.get(param, [0.5, 1.0, 2.0, 5.0]))]
+        choices = [-10.5, -3.0, -1.0, 0.0, 1e-10, 0.5, 1.0, 2.0, 3.0,
+                   5.0, 8.0, 10.0, 20.0, 50.0, 100.0, 1e3, 1e5, 1e10, math.inf]
+        return choices[(index * PRIMES[position]) % len(choices)]
+    if param == "k" and name in {"choose", "lchoose"}:
+        choices = [-1e10, -100.0, -20.0, -5.0, -1.0, -1e-10, 0.0, 1e-10,
+                   0.5, 1.0, 2.0, 3.0, 5.0, 10.0, 20.0, 50.0, 100.0,
+                   1e3, 1e5, 1e10, math.inf, -math.inf, math.nan]
+        return choices[(index * PRIMES[position]) % len(choices)]
+    choices = REFERENCE_VALUES.get(param, [0.5, 1.0, 2.0, 5.0])
+    return choices[(index * PRIMES[position]) % len(choices)]
 
 
 def r_number(item) -> str:
     if isinstance(item, bool):
         return "TRUE" if item else "FALSE"
+    if math.isnan(float(item)):
+        return "NaN"
     if math.isinf(float(item)):
         return "-Inf" if float(item) < 0 else "Inf"
     # Hexadecimal literals round-trip identically through Python's and R's
@@ -58,34 +77,39 @@ def r_number(item) -> str:
 
 def make_case(function: dict, index: int):
     name = function["name"]
-    flags = {"lower_tail": index % 2 == 0, "log": (index // 2) % 2 == 1}
+    flags = {flag: bool((index // (2 ** position)) % 2) for position, flag in enumerate(function["flags"])}
+    cursor = index // (2 ** len(function["flags"]))
+    branch = None
+    if function.get("dispatch") in {"ncp", "prob_or_mu"} or function.get("alias") == "rate_scale":
+        branch = cursor % 2
+        cursor //= 2
     args = []
     kwargs = {}
     r_args = []
-    for param in function["params"]:
+    for position, param in enumerate(function["params"]):
         py = param["py"]
         if function.get("dispatch") == "prob_or_mu" and py in {"prob", "mu"}:
             continue
         if function.get("alias") == "rate_scale" and py in {"rate", "scale"}:
             continue
-        item = value(py, index, name)
-        if py == "p" and flags["log"]:
-            item = math.log(item)
+        item = value(py, cursor, name, position)
+        if py == "p" and flags.get("log", False):
+            item = -math.inf if item == 0.0 else (math.nan if item < 0.0 else math.log(item))
         args.append(item)
         r_args.append(r_number(item))
 
     if function.get("dispatch") == "prob_or_mu":
-        key = "prob" if index % 2 == 0 else "mu"
-        item = value(key, index, name)
+        key = "prob" if branch == 0 else "mu"
+        item = value(key, cursor, name, 2)
         kwargs[key] = item
         r_args.append(f"{key}={r_number(item)}")
     if function.get("alias") == "rate_scale":
-        key = "rate" if index % 2 == 0 else "scale"
-        item = value(key, index, name)
+        key = "rate" if branch == 0 else "scale"
+        item = value(key, cursor, name, 2)
         kwargs[key] = item
         r_args.append(f"{key}={r_number(item)}")
-    if function.get("dispatch") == "ncp" and index % 2:
-        item = value("ncp", index, name)
+    if function.get("dispatch") == "ncp" and branch == 1:
+        item = value("ncp", cursor, name, len(function["params"]))
         kwargs["ncp"] = item
         r_args.append(f"ncp={r_number(item)}")
     for flag in function["flags"]:
@@ -121,10 +145,16 @@ def main() -> None:
         raise SystemExit(f"unknown or non-deterministic function: {options.only}")
     for function in functions:
         count = 400 if function["name"] == "ppois" else 200
+        seen = set()
         for index in range(count):
             args, kwargs, expression = make_case(function, index)
-            print(function["name"], json.dumps(args, separators=(",", ":"), allow_nan=False),
-                  json.dumps(kwargs, separators=(",", ":"), allow_nan=False), expression, sep="\t")
+            encoded_args = json.dumps(args, separators=(",", ":"), allow_nan=True)
+            encoded_kwargs = json.dumps(kwargs, separators=(",", ":"), allow_nan=True)
+            identity = (encoded_args, encoded_kwargs)
+            if identity in seen:
+                raise SystemExit(f"duplicate reference case for {function['name']}: {identity}")
+            seen.add(identity)
+            print(function["name"], encoded_args, encoded_kwargs, expression, sep="\t")
 
 
 if __name__ == "__main__":

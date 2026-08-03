@@ -2,8 +2,19 @@ import pytest
 import subprocess
 import sys
 import textwrap
+import warnings
+
+import accudist as ad
 
 from accudist import _errstate, _ufuncs
+
+
+def test_ignore_suppresses_accudist_and_numpy_runtime_warnings():
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        with ad.errstate(all="ignore"):
+            ad.pgamma(1.0, 2.0, rate=0.0)
+    assert caught == []
 
 
 def test_forced_allocation_failure_becomes_memory_error():

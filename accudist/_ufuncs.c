@@ -75,11 +75,13 @@ rnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double mean = *(double *)(args[0] + i * steps[0]);
         double sd = *(double *)(args[1] + i * steps[1]);
         *(double *)(args[2] + i * steps[2]) = rnorm(mean, sd);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rnorm_funcs[1] = {rnorm_loop};
@@ -147,11 +149,13 @@ runif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double min = *(double *)(args[0] + i * steps[0]);
         double max = *(double *)(args[1] + i * steps[1]);
         *(double *)(args[2] + i * steps[2]) = runif(min, max);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction runif_funcs[1] = {runif_loop};
@@ -219,11 +223,13 @@ rgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double shape = *(double *)(args[0] + i * steps[0]);
         double scale = *(double *)(args[1] + i * steps[1]);
         *(double *)(args[2] + i * steps[2]) = rgamma(shape, scale);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rgamma_funcs[1] = {rgamma_loop};
@@ -350,11 +356,13 @@ rbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double shape1 = *(double *)(args[0] + i * steps[0]);
         double shape2 = *(double *)(args[1] + i * steps[1]);
         *(double *)(args[2] + i * steps[2]) = rbeta(shape1, shape2);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rbeta_funcs[1] = {rbeta_loop};
@@ -422,11 +430,13 @@ rlnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double meanlog = *(double *)(args[0] + i * steps[0]);
         double sdlog = *(double *)(args[1] + i * steps[1]);
         *(double *)(args[2] + i * steps[2]) = rlnorm(meanlog, sdlog);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rlnorm_funcs[1] = {rlnorm_loop};
@@ -547,10 +557,12 @@ rchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double df = *(double *)(args[0] + i * steps[0]);
         *(double *)(args[1] + i * steps[1]) = rchisq(df);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rchisq_funcs[1] = {rchisq_loop};
@@ -562,11 +574,13 @@ rnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double df = *(double *)(args[0] + i * steps[0]);
         double ncp = *(double *)(args[1] + i * steps[1]);
         *(double *)(args[2] + i * steps[2]) = rnchisq(df, ncp);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rnchisq_funcs[1] = {rnchisq_loop};
@@ -693,11 +707,13 @@ rf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double df1 = *(double *)(args[0] + i * steps[0]);
         double df2 = *(double *)(args[1] + i * steps[1]);
         *(double *)(args[2] + i * steps[2]) = rf(df1, df2);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rf_funcs[1] = {rf_loop};
@@ -818,10 +834,12 @@ rt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double df = *(double *)(args[0] + i * steps[0]);
         *(double *)(args[1] + i * steps[1]) = rt(df);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rt_funcs[1] = {rt_loop};
@@ -889,11 +907,13 @@ rbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double size = *(double *)(args[0] + i * steps[0]);
         double prob = *(double *)(args[1] + i * steps[1]);
         *(double *)(args[2] + i * steps[2]) = rbinom(size, prob);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rbinom_funcs[1] = {rbinom_loop};
@@ -961,11 +981,13 @@ rcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double location = *(double *)(args[0] + i * steps[0]);
         double scale = *(double *)(args[1] + i * steps[1]);
         *(double *)(args[2] + i * steps[2]) = rcauchy(location, scale);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rcauchy_funcs[1] = {rcauchy_loop};
@@ -1030,10 +1052,12 @@ rexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double rate = *(double *)(args[0] + i * steps[0]);
         *(double *)(args[1] + i * steps[1]) = rexp(rate);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rexp_funcs[1] = {rexp_loop};
@@ -1098,10 +1122,12 @@ rgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double prob = *(double *)(args[0] + i * steps[0]);
         *(double *)(args[1] + i * steps[1]) = rgeom(prob);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rgeom_funcs[1] = {rgeom_loop};
@@ -1172,12 +1198,14 @@ rhyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double m = *(double *)(args[0] + i * steps[0]);
         double n = *(double *)(args[1] + i * steps[1]);
         double k = *(double *)(args[2] + i * steps[2]);
         *(double *)(args[3] + i * steps[3]) = rhyper(m, n, k);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rhyper_funcs[1] = {rhyper_loop};
@@ -1301,11 +1329,13 @@ rnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double size = *(double *)(args[0] + i * steps[0]);
         double prob = *(double *)(args[1] + i * steps[1]);
         *(double *)(args[2] + i * steps[2]) = rnbinom(size, prob);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rnbinom_funcs[1] = {rnbinom_loop};
@@ -1317,11 +1347,13 @@ rnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double size = *(double *)(args[0] + i * steps[0]);
         double mu = *(double *)(args[1] + i * steps[1]);
         *(double *)(args[2] + i * steps[2]) = rnbinom_mu(size, mu);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rnbinom_mu_funcs[1] = {rnbinom_mu_loop};
@@ -1386,10 +1418,12 @@ rpois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double lambda = *(double *)(args[0] + i * steps[0]);
         *(double *)(args[1] + i * steps[1]) = rpois(lambda);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rpois_funcs[1] = {rpois_loop};
@@ -1457,11 +1491,13 @@ rweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double shape = *(double *)(args[0] + i * steps[0]);
         double scale = *(double *)(args[1] + i * steps[1]);
         *(double *)(args[2] + i * steps[2]) = rweibull(shape, scale);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rweibull_funcs[1] = {rweibull_loop};
@@ -1529,11 +1565,13 @@ rlogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     for (npy_intp i = 0; i < n; i++) {
         double location = *(double *)(args[0] + i * steps[0]);
         double scale = *(double *)(args[1] + i * steps[1]);
         *(double *)(args[2] + i * steps[2]) = rlogis(location, scale);
     }
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rlogis_funcs[1] = {rlogis_loop};
@@ -1607,6 +1645,7 @@ rwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
     for (npy_intp i = 0; i < n; i++) {
         double m = *(double *)(args[0] + i * steps[0]);
@@ -1614,6 +1653,7 @@ rwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
         *(double *)(args[2] + i * steps[2]) = rwilcox(m, n);
     }
     PyThread_release_lock(accudist_cache_lock);
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rwilcox_funcs[1] = {rwilcox_loop};
@@ -1684,12 +1724,14 @@ rsignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *d
 {
     npy_intp n = dims[0];
     (void)data;
+    accudist_rng_acquire();
     PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
     for (npy_intp i = 0; i < n; i++) {
         double n = *(double *)(args[0] + i * steps[0]);
         *(double *)(args[1] + i * steps[1]) = rsignrank(n);
     }
     PyThread_release_lock(accudist_cache_lock);
+    accudist_rng_release();
 }
 
 static PyUFuncGenericFunction rsignrank_funcs[1] = {rsignrank_loop};
@@ -2257,6 +2299,69 @@ py_lgammafn_sign_scalar(PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_pnorm_both_array(PyObject *self, PyObject *args)
+{
+    PyObject *argument, *result;
+    PyArrayObject *input, *lower, *upper;
+    int log_p;
+    npy_intp length;
+    (void)self;
+    if (!PyArg_ParseTuple(args, "Oi:_pnorm_both_array", &argument, &log_p)) return NULL;
+    input = (PyArrayObject *)PyArray_FROM_OTF(argument, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY);
+    if (input == NULL) return NULL;
+    lower = (PyArrayObject *)PyArray_SimpleNew(PyArray_NDIM(input), PyArray_DIMS(input), NPY_DOUBLE);
+    upper = (PyArrayObject *)PyArray_SimpleNew(PyArray_NDIM(input), PyArray_DIMS(input), NPY_DOUBLE);
+    if (lower == NULL || upper == NULL) {
+        Py_XDECREF(lower);
+        Py_XDECREF(upper);
+        Py_DECREF(input);
+        return PyErr_NoMemory();
+    }
+    length = PyArray_SIZE(input);
+    for (npy_intp i = 0; i < length; i++) {
+        pnorm_both(((double *)PyArray_DATA(input))[i],
+                   &((double *)PyArray_DATA(lower))[i],
+                   &((double *)PyArray_DATA(upper))[i], 2, log_p);
+    }
+    result = PyTuple_Pack(2, (PyObject *)lower, (PyObject *)upper);
+    Py_DECREF(input);
+    Py_DECREF(lower);
+    Py_DECREF(upper);
+    return result;
+}
+
+static PyObject *
+py_lgammafn_sign_array(PyObject *self, PyObject *argument)
+{
+    PyObject *result;
+    PyArrayObject *input, *values, *signs;
+    npy_intp length;
+    (void)self;
+    input = (PyArrayObject *)PyArray_FROM_OTF(argument, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY);
+    if (input == NULL) return NULL;
+    values = (PyArrayObject *)PyArray_SimpleNew(PyArray_NDIM(input), PyArray_DIMS(input), NPY_DOUBLE);
+    signs = (PyArrayObject *)PyArray_SimpleNew(PyArray_NDIM(input), PyArray_DIMS(input), NPY_INT);
+    if (values == NULL || signs == NULL) {
+        Py_XDECREF(values);
+        Py_XDECREF(signs);
+        Py_DECREF(input);
+        return PyErr_NoMemory();
+    }
+    length = PyArray_SIZE(input);
+    for (npy_intp i = 0; i < length; i++) {
+        int sign = 1;
+        ((double *)PyArray_DATA(values))[i] =
+            lgammafn_sign(((double *)PyArray_DATA(input))[i], &sign);
+        ((int *)PyArray_DATA(signs))[i] = sign;
+    }
+    result = PyTuple_Pack(2, (PyObject *)values, (PyObject *)signs);
+    Py_DECREF(input);
+    Py_DECREF(values);
+    Py_DECREF(signs);
+    return result;
+}
+
+static PyObject *
 py_logspace_sum_1d(PyObject *self, PyObject *argument)
 {
     PyObject *sequence;
@@ -2288,6 +2393,39 @@ py_logspace_sum_1d(PyObject *self, PyObject *argument)
     PyMem_Free(values);
     Py_DECREF(sequence);
     return PyFloat_FromDouble(result);
+}
+
+static PyObject *
+py_logspace_sum_last(PyObject *self, PyObject *argument)
+{
+    PyArrayObject *input, *output;
+    int ndim;
+    npy_intp row_length, rows;
+    (void)self;
+    input = (PyArrayObject *)PyArray_FROM_OTF(argument, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY);
+    if (input == NULL) return NULL;
+    ndim = PyArray_NDIM(input);
+    if (ndim == 0) {
+        Py_DECREF(input);
+        return PyErr_Format(PyExc_ValueError, "logspace_sum input must have at least one dimension");
+    }
+    row_length = PyArray_DIMS(input)[ndim - 1];
+    if (row_length > INT_MAX) {
+        Py_DECREF(input);
+        return PyErr_Format(PyExc_OverflowError, "too many values for Rmath logspace_sum");
+    }
+    output = (PyArrayObject *)PyArray_SimpleNew(ndim - 1, PyArray_DIMS(input), NPY_DOUBLE);
+    if (output == NULL) {
+        Py_DECREF(input);
+        return NULL;
+    }
+    rows = PyArray_SIZE(output);
+    for (npy_intp row = 0; row < rows; row++) {
+        const double *values = ((const double *)PyArray_DATA(input)) + row * row_length;
+        ((double *)PyArray_DATA(output))[row] = logspace_sum(values, (int)row_length);
+    }
+    Py_DECREF(input);
+    return (PyObject *)output;
 }
 
 static PyObject *
@@ -2328,7 +2466,9 @@ py_rmultinom_one(PyObject *self, PyObject *args)
         }
         total += (long double)probabilities[i];
     }
+    accudist_rng_acquire();
     rmultinom(size, probabilities, (int)length, draws);
+    accudist_rng_release();
     if (fabsl(total - 1.0L) > 1e-7L) {
         accudist_errword &= ~(unsigned)ACCUDIST_ALLOC;
         PyMem_Free(probabilities);
@@ -2357,12 +2497,56 @@ py_rmultinom_one(PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_rmultinom_rows(PyObject *self, PyObject *args)
+{
+    Py_ssize_t count;
+    int size;
+    PyObject *argument;
+    PyArrayObject *probabilities, *result;
+    npy_intp dims[2], categories;
+    long double total = 0.0L;
+    (void)self;
+    if (!PyArg_ParseTuple(args, "niO:_rmultinom_rows", &count, &size, &argument)) return NULL;
+    if (count < 0) return PyErr_Format(PyExc_ValueError, "n must be non-negative");
+    probabilities = (PyArrayObject *)PyArray_FROM_OTF(argument, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY);
+    if (probabilities == NULL) return NULL;
+    if (PyArray_NDIM(probabilities) != 1 || PyArray_SIZE(probabilities) < 1 ||
+        PyArray_SIZE(probabilities) > INT_MAX) {
+        Py_DECREF(probabilities);
+        return PyErr_Format(PyExc_ValueError, "prob must be a non-empty one-dimensional array");
+    }
+    categories = PyArray_SIZE(probabilities);
+    for (npy_intp i = 0; i < categories; i++)
+        total += (long double)((double *)PyArray_DATA(probabilities))[i];
+    if (fabsl(total - 1.0L) > 1e-7L) {
+        Py_DECREF(probabilities);
+        return PyErr_Format(PyExc_ValueError, "probabilities must sum to 1 (rbinom probability sum should be 1)");
+    }
+    dims[0] = (npy_intp)count;
+    dims[1] = categories;
+    result = (PyArrayObject *)PyArray_SimpleNew(2, dims, NPY_INT);
+    if (result == NULL) {
+        Py_DECREF(probabilities);
+        return NULL;
+    }
+    accudist_rng_acquire();
+    for (Py_ssize_t row = 0; row < count; row++)
+        rmultinom(size, (double *)PyArray_DATA(probabilities), (int)categories,
+                  ((int *)PyArray_DATA(result)) + row * categories);
+    accudist_rng_release();
+    Py_DECREF(probabilities);
+    return (PyObject *)result;
+}
+
+static PyObject *
 py_set_seed(PyObject *self, PyObject *args)
 {
     unsigned int i1, i2;
     (void)self;
     if (!PyArg_ParseTuple(args, "II:set_seed", &i1, &i2)) return NULL;
+    accudist_rng_acquire();
     set_seed(i1, i2);
+    accudist_rng_release();
     Py_RETURN_NONE;
 }
 
@@ -2372,8 +2556,28 @@ py_get_seed(PyObject *self, PyObject *ignored)
     unsigned int i1, i2;
     (void)self;
     (void)ignored;
+    accudist_rng_acquire();
     get_seed(&i1, &i2);
+    accudist_rng_release();
     return Py_BuildValue("(II)", i1, i2);
+}
+
+static PyObject *
+py_acquire_rng_lock(PyObject *self, PyObject *ignored)
+{
+    (void)self;
+    (void)ignored;
+    accudist_rng_acquire();
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+py_release_rng_lock(PyObject *self, PyObject *ignored)
+{
+    (void)self;
+    (void)ignored;
+    accudist_rng_release();
+    Py_RETURN_NONE;
 }
 
 static PyObject *
@@ -2394,10 +2598,16 @@ static PyMethodDef module_methods[] = {
     {"_force_allocation_failure", py_force_allocation_failure, METH_NOARGS, NULL},
     {"_pnorm_both_scalar", py_pnorm_both_scalar, METH_VARARGS, NULL},
     {"_lgammafn_sign_scalar", py_lgammafn_sign_scalar, METH_VARARGS, NULL},
+    {"_pnorm_both_array", py_pnorm_both_array, METH_VARARGS, NULL},
+    {"_lgammafn_sign_array", py_lgammafn_sign_array, METH_O, NULL},
     {"_logspace_sum_1d", py_logspace_sum_1d, METH_O, NULL},
+    {"_logspace_sum_last", py_logspace_sum_last, METH_O, NULL},
     {"_rmultinom_one", py_rmultinom_one, METH_VARARGS, NULL},
+    {"_rmultinom_rows", py_rmultinom_rows, METH_VARARGS, NULL},
     {"_set_seed", py_set_seed, METH_VARARGS, NULL},
     {"_get_seed", py_get_seed, METH_NOARGS, NULL},
+    {"_acquire_rng_lock", py_acquire_rng_lock, METH_NOARGS, NULL},
+    {"_release_rng_lock", py_release_rng_lock, METH_NOARGS, NULL},
     {"_free_caches", py_free_caches, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}
 };

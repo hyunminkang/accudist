@@ -13,6 +13,11 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install build
       - run: python -m build --sdist
+      - uses: astral-sh/setup-uv@v6
+      - run: uv venv
+      - run: uv pip install meson-python numpy
+      - run: uv pip install --offline --no-build-isolation --no-binary :all: dist/*.tar.gz
+      - run: uv run python -c "import accudist; print(accudist.__version__)"
       - uses: actions/upload-artifact@v4
         with:
           name: sdist

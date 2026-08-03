@@ -541,12 +541,11 @@ double trigamma(double x)
 
 double tetragamma(double x)
 {
-    double ans;
-    int nz, ierr;
-    if(ISNAN(x)) return x;
-    dpsifn(x, 2, 1, 1, &ans, &nz, &ierr);
-    ML_TREAT_psigam(ierr);
-    return -2.0 * ans;
+    double (*volatile implementation)(double, double) = psigamma;
+    /* Keep the deprecated helper bit-identical to its documented R-level
+       equivalent, psigamma(x, 2), including NaN sign and last-bit behavior.
+       The volatile call prevents clang from folding it back into dpsifn. */
+    return implementation(x, 2.0);
 }
 
 double pentagamma(double x)

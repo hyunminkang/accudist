@@ -1,2 +1,17 @@
-# Floating-point environment waivers. There are currently none.
+[[waiver]]
+func = "fround"
+max_ulp = 1
+reason = "Official macOS arm64 R and the standalone clang build round one large negative scaled value one ulp apart"
+platforms = ["macos-arm64"]
 
+[[waiver]]
+func = "psigamma"
+max_ulp = 1
+reason = "Official macOS arm64 R and standalone clang differ by one ulp for deriv=2 at x=1e-100"
+platforms = ["macos-arm64"]
+
+[[waiver]]
+func = "tetragamma"
+max_ulp = 1
+reason = "The documented psigamma(x, 2) equivalent inherits its one-ulp macOS arm64 compiler difference at x=1e-100"
+platforms = ["macos-arm64"]

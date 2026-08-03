@@ -61,6 +61,7 @@ double pnt(double t, double df, double ncp, int lower_tail, int log_p)
     const int itrmax = 1000;
     const static double errmax = 1.e-12;
 
+    if (ISNAN(ncp)) return ncp;
     if (df <= 0.0) ML_WARN_return_NAN;
     if(ncp == 0.0) return pt(t, df, lower_tail, log_p);
 

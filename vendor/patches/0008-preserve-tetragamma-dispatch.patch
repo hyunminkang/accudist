@@ -1,0 +1,16 @@
+--- a/src/polygamma.c
++++ b/src/polygamma.c
+@@ -541,9 +541,11 @@
+ 
+ double tetragamma(double x)
+ {
++    double (*volatile implementation)(double, double) = psigamma;
+     /* Keep the deprecated helper bit-identical to its documented R-level
+-       equivalent, psigamma(x, 2), including NaN sign and last-bit behavior. */
+-    return psigamma(x, 2.0);
++       equivalent, psigamma(x, 2), including NaN sign and last-bit behavior.
++       The volatile call prevents clang from folding it back into dpsifn. */
++    return implementation(x, 2.0);
+ }
+ 
+ double pentagamma(double x)

@@ -1,0 +1,18 @@
+--- a/src/polygamma.c
++++ b/src/polygamma.c
+@@ -541,12 +541,9 @@
+ 
+ double tetragamma(double x)
+ {
+-    double ans;
+-    int nz, ierr;
+-    if(ISNAN(x)) return x;
+-    dpsifn(x, 2, 1, 1, &ans, &nz, &ierr);
+-    ML_TREAT_psigam(ierr);
+-    return -2.0 * ans;
++    /* Keep the deprecated helper bit-identical to its documented R-level
++       equivalent, psigamma(x, 2), including NaN sign and last-bit behavior. */
++    return psigamma(x, 2.0);
+ }
+ 
+ double pentagamma(double x)
