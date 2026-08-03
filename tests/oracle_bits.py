@@ -1,5 +1,10 @@
 """Comparison policy for raw IEEE-754 oracle values."""
 
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10
+    import tomli as tomllib
+
 _EXPONENT_MASK = 0x7FF0000000000000
 _FRACTION_MASK = 0x000FFFFFFFFFFFFF
 _MAGNITUDE_MASK = 0x7FFFFFFFFFFFFFFF
@@ -39,3 +44,33 @@ def can_apply_ulp_waiver(actual: bytes, expected: bytes) -> bool:
         and bits & _MAGNITUDE_MASK != 0
         for bits in (actual_bits, expected_bits)
     )
+
+
+def _ordered_bits(raw: bytes) -> int:
+    bits = _bits(raw)
+    return (~bits & ((1 << 64) - 1)) if bits >> 63 else bits | (1 << 63)
+
+
+def matches_oracle_value(
+    actual: bytes, expected: bytes, *, max_ulp: int | None = None
+) -> bool:
+    """Apply exact oracle semantics plus an optional reviewed ULP budget."""
+
+    if same_oracle_value(actual, expected):
+        return True
+    if max_ulp is None or not can_apply_ulp_waiver(actual, expected):
+        return False
+    return abs(_ordered_bits(actual) - _ordered_bits(expected)) <= max_ulp
+
+
+def load_ulp_waivers(path, platform: str) -> dict[str, int]:
+    """Load the reviewed per-function budgets active on one platform."""
+
+    document = tomllib.loads(path.read_text())
+    result = {}
+    for waiver in document.get("waiver", []):
+        assert 0 < waiver["max_ulp"] <= 4
+        assert waiver["reason"]
+        if platform in waiver["platforms"]:
+            result[waiver["func"]] = waiver["max_ulp"]
+    return result

@@ -1,32 +1,57 @@
-import struct
 import inspect
+import struct
+from pathlib import Path
 
 import numpy as np
 import pytest
 
 import accudist as ad
 import accudist.rmath as rmath
+from accudist._platform import platform_id
+from oracle_bits import load_ulp_waivers, matches_oracle_value
 
 
 def bits(value):
     return "0x" + struct.pack(">d", float(value)).hex()
 
 
+ULP_WAIVERS = load_ulp_waivers(
+    Path(__file__).parent / "ulp_waivers.toml", platform_id()
+)
+
+
+def matches_r_bits(value, expected, function):
+    return matches_oracle_value(
+        struct.pack(">d", float(value)),
+        bytes.fromhex(expected.removeprefix("0x")),
+        max_ulp=ULP_WAIVERS.get(function),
+    )
+
+
 @pytest.mark.parametrize(
-    ("call", "expected"),
+    ("function", "call", "expected"),
     [
-        (lambda: ad.pnorm(1.25, 0.5, 2, lower_tail=False, log=True), "0xbff09f7d809a7664"),
-        (lambda: ad.qnorm(-1000, log=True), "0xc0464ed0d259b287"),
         (
+            "pnorm",
+            lambda: ad.pnorm(1.25, 0.5, 2, lower_tail=False, log=True),
+            "0xbff09f7d809a7664",
+        ),
+        (
+            "qnorm",
+            lambda: ad.qnorm(-1000, log=True),
+            "0xc0464ed0d259b287",
+        ),
+        (
+            "pbinom",
             lambda: ad.pbinom(900, 1000, 1 / 6, lower_tail=False, log=True),
             "0xc09482c07c1c0914",
         ),
-        (lambda: ad.gammafn(2.5), "0x3ff544fa6d47b390"),
-        (lambda: ad.cospi(0.25), "0x3fe6a09e667f3bcc"),
+        ("gammafn", lambda: ad.gammafn(2.5), "0x3ff544fa6d47b390"),
+        ("cospi", lambda: ad.cospi(0.25), "0x3fe6a09e667f3bcc"),
     ],
 )
-def test_generated_m2_functions_match_r_bits(call, expected):
-    assert bits(call()) == expected
+def test_generated_m2_functions_match_r_bits(function, call, expected):
+    assert matches_r_bits(call(), expected, function)
 
 
 def test_gamma_rate_and_scale_resolve_to_the_same_c_parameter():

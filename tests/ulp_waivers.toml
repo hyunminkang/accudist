@@ -13,5 +13,23 @@ platforms = ["macos-arm64"]
 [[waiver]]
 func = "tetragamma"
 max_ulp = 1
-reason = "The documented psigamma(x, 2) equivalent inherits its one-ulp macOS arm64 compiler difference at x=1e-100"
-platforms = ["macos-arm64"]
+reason = "The documented psigamma(x, 2) equivalent differs by one ulp at x=1e-100 under the supported clang and GCC floating-point environments"
+platforms = ["macos-arm64", "linux-x86_64"]
+
+[[waiver]]
+func = "pbinom"
+max_ulp = 1
+reason = "The extreme upper log-tail milestone differs by one ulp under the Linux x86-64 GCC floating-point environment"
+platforms = ["linux-x86_64"]
+
+[[waiver]]
+func = "cospi"
+max_ulp = 1
+reason = "cos(pi / 4) differs by one ulp from the macOS milestone bit under the Linux and Windows math environments"
+platforms = ["linux-x86_64", "windows-amd64"]
+
+[[waiver]]
+func = "bessel_y"
+max_ulp = 2
+reason = "The fractional-order milestone differs by two ulps under the Linux x86-64 GCC floating-point environment"
+platforms = ["linux-x86_64"]

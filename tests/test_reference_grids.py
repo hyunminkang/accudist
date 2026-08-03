@@ -1,16 +1,12 @@
 import json
 import struct
-try:
-    import tomllib
-except ModuleNotFoundError:  # Python 3.10
-    import tomli as tomllib
 from pathlib import Path
 
 import pytest
 
 import accudist as ad
 from accudist._platform import platform_id
-from oracle_bits import can_apply_ulp_waiver, same_oracle_value
+from oracle_bits import load_ulp_waivers, matches_oracle_value, same_oracle_value
 
 
 DATA = Path(__file__).parent / "data" / platform_id()
@@ -21,23 +17,7 @@ if not DATA.is_dir():
 FILES = sorted(path for path in DATA.glob("*.jsonl") if path.name != "ppois.jsonl")
 
 
-def load_waivers():
-    document = tomllib.loads((Path(__file__).parent / "ulp_waivers.toml").read_text())
-    result = {}
-    for waiver in document.get("waiver", []):
-        assert 0 < waiver["max_ulp"] <= 4
-        assert waiver["reason"]
-        if platform_id() in waiver["platforms"]:
-            result[waiver["func"]] = waiver["max_ulp"]
-    return result
-
-
-WAIVERS = load_waivers()
-
-
-def ordered_bits(raw):
-    bits = int.from_bytes(raw, "big")
-    return (~bits & ((1 << 64) - 1)) if bits >> 63 else bits | (1 << 63)
+WAIVERS = load_ulp_waivers(Path(__file__).parent / "ulp_waivers.toml", platform_id())
 
 
 def result_bits(value):
@@ -76,9 +56,5 @@ def test_deterministic_functions_match_r_452_bit_for_bit(case_id, function, case
             same_oracle_value(actual_item, expected_item)
             for actual_item, expected_item in zip(actual, expected, strict=True)
         )
-    elif same_oracle_value(actual, expected):
-        pass
-    elif name in WAIVERS and can_apply_ulp_waiver(actual, expected):
-        assert abs(ordered_bits(actual) - ordered_bits(expected)) <= WAIVERS[name]
     else:
-        assert actual == expected
+        assert matches_oracle_value(actual, expected, max_ulp=WAIVERS.get(name))

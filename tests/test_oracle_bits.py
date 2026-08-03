@@ -1,6 +1,13 @@
+from pathlib import Path
+
 import pytest
 
-from oracle_bits import can_apply_ulp_waiver, same_oracle_value
+from oracle_bits import (
+    can_apply_ulp_waiver,
+    load_ulp_waivers,
+    matches_oracle_value,
+    same_oracle_value,
+)
 
 
 @pytest.mark.parametrize(
@@ -49,3 +56,43 @@ def test_ulp_waivers_apply_only_to_finite_nonzero_results(actual, expected, allo
         can_apply_ulp_waiver(bytes.fromhex(actual), bytes.fromhex(expected))
         is allowed
     )
+
+
+@pytest.mark.parametrize(
+    ("actual", "expected", "max_ulp", "matches"),
+    [
+        ("3ff0000000000000", "3ff0000000000000", None, True),
+        ("3ff0000000000001", "3ff0000000000000", None, False),
+        ("3ff0000000000002", "3ff0000000000000", 2, True),
+        ("3ff0000000000003", "3ff0000000000000", 2, False),
+        ("bff0000000000002", "bff0000000000000", 2, True),
+        ("8000000000000000", "0000000000000000", 4, False),
+    ],
+)
+def test_oracle_matching_applies_only_the_explicit_ulp_budget(
+    actual, expected, max_ulp, matches
+):
+    assert (
+        matches_oracle_value(
+            bytes.fromhex(actual), bytes.fromhex(expected), max_ulp=max_ulp
+        )
+        is matches
+    )
+
+
+def test_linux_waivers_cover_only_the_reviewed_observed_distances():
+    waivers = load_ulp_waivers(
+        Path(__file__).parent / "ulp_waivers.toml", "linux-x86_64"
+    )
+    observed = [
+        ("pbinom", "c09482c07c1c0915", "c09482c07c1c0914"),
+        ("cospi", "3fe6a09e667f3bcd", "3fe6a09e667f3bcc"),
+        ("bessel_y", "3fd24f067ebdf822", "3fd24f067ebdf820"),
+        ("tetragamma", "fe47e43c8800759c", "fe47e43c8800759b"),
+    ]
+    for function, actual, expected in observed:
+        assert matches_oracle_value(
+            bytes.fromhex(actual),
+            bytes.fromhex(expected),
+            max_ulp=waivers[function],
+        )

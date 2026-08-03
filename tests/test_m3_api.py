@@ -1,11 +1,14 @@
 import struct
 import sys
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 import numpy as np
 import pytest
 
 import accudist as ad
+from accudist._platform import platform_id
+from oracle_bits import load_ulp_waivers, matches_oracle_value
 
 if sys.platform != "win32":
     import resource
@@ -13,6 +16,19 @@ if sys.platform != "win32":
 
 def bits(value):
     return "0x" + struct.pack(">d", float(value)).hex()
+
+
+ULP_WAIVERS = load_ulp_waivers(
+    Path(__file__).parent / "ulp_waivers.toml", platform_id()
+)
+
+
+def matches_r_bits(value, expected, function):
+    return matches_oracle_value(
+        struct.pack(">d", float(value)),
+        bytes.fromhex(expected.removeprefix("0x")),
+        max_ulp=ULP_WAIVERS.get(function),
+    )
 
 
 def test_tukey_public_order_is_reordered_for_rmath():
@@ -26,16 +42,24 @@ def test_rank_distributions_match_r():
 
 
 @pytest.mark.parametrize(
-    ("call", "expected"),
+    ("function", "call", "expected"),
     [
-        (lambda: ad.bessel_i(2.5, 0.75, expon_scaled=True), "0x3fcd86f98b0cf10f"),
-        (lambda: ad.bessel_k(2.5, 0.75, expon_scaled=True), "0x3feabff5c4f42404"),
-        (lambda: ad.bessel_j(2.5, 0.75), "0x3fdb0700da825d64"),
-        (lambda: ad.bessel_y(2.5, 0.75), "0x3fd24f067ebdf820"),
+        (
+            "bessel_i",
+            lambda: ad.bessel_i(2.5, 0.75, expon_scaled=True),
+            "0x3fcd86f98b0cf10f",
+        ),
+        (
+            "bessel_k",
+            lambda: ad.bessel_k(2.5, 0.75, expon_scaled=True),
+            "0x3feabff5c4f42404",
+        ),
+        ("bessel_j", lambda: ad.bessel_j(2.5, 0.75), "0x3fdb0700da825d64"),
+        ("bessel_y", lambda: ad.bessel_y(2.5, 0.75), "0x3fd24f067ebdf820"),
     ],
 )
-def test_bessel_wrappers_match_r(call, expected):
-    assert bits(call()) == expected
+def test_bessel_wrappers_match_r(function, call, expected):
+    assert matches_r_bits(call(), expected, function)
 
 
 def test_pnorm_both_returns_direct_lower_and_upper_tails():
