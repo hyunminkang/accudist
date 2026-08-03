@@ -1,10 +1,14 @@
 import struct
+import sys
 from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 import pytest
 
 import accudist as ad
+
+if sys.platform != "win32":
+    import resource
 
 
 def bits(value):
@@ -58,3 +62,15 @@ def test_wilcox_cache_is_safe_across_threads():
     with ThreadPoolExecutor(max_workers=8) as pool:
         actual = list(pool.map(lambda case: ad.pwilcox(*case), cases * 25))
     np.testing.assert_array_equal(actual, expected * 25)
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="resource usage is unavailable on Windows")
+def test_wilcox_cache_has_no_sustained_growth_across_varying_shapes():
+    before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    for index in range(10_000):
+        m = 2 + index % 13
+        n = 2 + (index * 7) % 13
+        ad.pwilcox((m * n) // 2, m, n)
+    after = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    units = 1 if sys.platform == "darwin" else 1024
+    assert (after - before) * units < 64 * 1024 * 1024

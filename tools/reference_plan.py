@@ -6,7 +6,10 @@ from __future__ import annotations
 import argparse
 import json
 import math
-import tomllib
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10
+    import tomli as tomllib
 from pathlib import Path
 
 from grids import REFERENCE_VALUES
@@ -41,6 +44,16 @@ PRIMES = [37, 43, 47, 53, 59, 61, 67, 71]
 
 
 def value(param: str, index: int, name: str, position: int):
+    if param in {"x", "q"}:
+        essentials = [math.nan, -math.inf, math.inf, 0.0, 1.0, -1.0, 0.5,
+                      -0.5, 1e-300, 1e-100, 1e10, -1e10]
+        if index < len(essentials):
+            return essentials[index]
+    if param == "p":
+        essentials = [math.nan, -math.inf, math.inf, -0.1, 0.0, 5e-324,
+                      1e-300, 0.5, 1.0 - 1e-15, 1.0, 1.1]
+        if index < len(essentials):
+            return essentials[index]
     if name.endswith("signrank") and param == "n":
         choices = [-1.0, 0.0, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0, 100.0, math.nan]
         return choices[(index * PRIMES[position]) % len(choices)]
@@ -60,6 +73,8 @@ def value(param: str, index: int, name: str, position: int):
                    1e3, 1e5, 1e10, math.inf, -math.inf, math.nan]
         return choices[(index * PRIMES[position]) % len(choices)]
     choices = REFERENCE_VALUES.get(param, [0.5, 1.0, 2.0, 5.0])
+    if index < len(choices):
+        return choices[(index + position) % len(choices)]
     return choices[(index * PRIMES[position]) % len(choices)]
 
 
@@ -131,6 +146,36 @@ def make_case(function: dict, index: int):
     return args, kwargs, expression
 
 
+def bespoke_cases(name: str, count: int = 200):
+    for index in range(count):
+        x = value("x", index, name, 0)
+        if name == "pnorm_both":
+            log = bool(index % 2)
+            args, kwargs = [x], {"log": log}
+            expression = (
+                f"c(pnorm({r_number(x)},lower.tail=TRUE,log.p={r_number(log)}),"
+                f"pnorm({r_number(x)},lower.tail=FALSE,log.p={r_number(log)}))"
+            )
+        elif name == "lgammafn_sign":
+            args, kwargs = [x], {}
+            expression = f'.Call("accudist_ref_lgammafn_sign",{r_number(x)})'
+        elif name == "logspace_sum":
+            values = [
+                value("logx", index, name, 0),
+                value("logy", index, name, 1),
+                value("x", index + 17, name, 2),
+            ]
+            args, kwargs = [values], {}
+            expression = (
+                '.Call("accudist_ref_logspace_sum",c('
+                + ",".join(r_number(item) for item in values)
+                + "))"
+            )
+        else:
+            raise ValueError(name)
+        yield args, kwargs, expression
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--only", default="")
@@ -141,20 +186,41 @@ def main() -> None:
         if item["kind"] != "r" and item["milestone"] in {"M2", "M3"}
         and (not options.only or item["name"] == options.only)
     ]
-    if options.only and not functions:
+    bespoke_names = {"pnorm_both", "lgammafn_sign", "logspace_sum"}
+    if options.only and not functions and options.only not in bespoke_names:
         raise SystemExit(f"unknown or non-deterministic function: {options.only}")
     for function in functions:
         count = 400 if function["name"] == "ppois" else 200
         seen = set()
-        for index in range(count):
+        index = 0
+        while len(seen) < count:
             args, kwargs, expression = make_case(function, index)
+            index += 1
             encoded_args = json.dumps(args, separators=(",", ":"), allow_nan=True)
             encoded_kwargs = json.dumps(kwargs, separators=(",", ":"), allow_nan=True)
             identity = (encoded_args, encoded_kwargs)
             if identity in seen:
-                raise SystemExit(f"duplicate reference case for {function['name']}: {identity}")
+                if index > count * 20:
+                    raise SystemExit(f"could not design {count} unique cases for {function['name']}")
+                continue
             seen.add(identity)
             print(function["name"], encoded_args, encoded_kwargs, expression, sep="\t")
+    for name in ("pnorm_both", "lgammafn_sign", "logspace_sum"):
+        if options.only and name != options.only:
+            continue
+        seen = set()
+        for args, kwargs, expression in bespoke_cases(name, count=1000):
+            encoded_args = json.dumps(args, separators=(",", ":"), allow_nan=True)
+            encoded_kwargs = json.dumps(kwargs, separators=(",", ":"), allow_nan=True)
+            identity = (encoded_args, encoded_kwargs)
+            if identity in seen:
+                continue
+            seen.add(identity)
+            print(name, encoded_args, encoded_kwargs, expression, sep="\t")
+            if len(seen) == 200:
+                break
+        if len(seen) != 200:
+            raise SystemExit(f"could not design 200 unique cases for {name}")
 
 
 if __name__ == "__main__":

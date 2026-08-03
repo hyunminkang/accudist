@@ -30,6 +30,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pypa/cibuildwheel@v3
+      - uses: astral-sh/setup-uv@v6
+      - run: python tools/test_wheel_with_uv.py wheelhouse
       - uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.os }}

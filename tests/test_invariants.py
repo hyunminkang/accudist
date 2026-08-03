@@ -69,13 +69,6 @@ def test_normal_density_and_quantile_invariants(x, sd):
         assert ad.qnorm(p, sd=sd) == pytest.approx(ad.qnorm(1 - p, sd=sd, lower_tail=False), rel=1e-9)
 
 
-def test_nan_propagates_through_every_function_kind():
-    assert np.isnan(ad.dnorm(np.nan))
-    assert np.isnan(ad.pnorm(np.nan))
-    assert np.isnan(ad.qnorm(np.nan))
-    assert np.isnan(ad.gammafn(np.nan))
-
-
 DENSITY_CASES = [
     (ad.dnorm, 0.3, (0.0, 1.0), {}),
     (ad.dunif, 0.3, (-2.0, 3.0), {}),
@@ -182,3 +175,67 @@ def test_every_quantile_has_consistent_tail_and_log_probability_forms(quantile, 
 )
 def test_every_finite_discrete_density_sums_to_one(density, support, parameters):
     assert sum(float(density(x, *parameters)) for x in support) == pytest.approx(1.0, rel=1e-14)
+
+
+@pytest.mark.parametrize(("density", "_x", "parameters", "kwargs"), DENSITY_CASES)
+def test_nan_propagates_through_every_density(density, _x, parameters, kwargs):
+    assert np.isnan(density(np.nan, *parameters, **kwargs))
+
+
+@pytest.mark.parametrize(("cdf", "parameters"), CDF_CASES[:-1])
+def test_nan_propagates_through_every_cdf(cdf, parameters):
+    with ad.errstate(all="ignore"):
+        assert np.isnan(cdf(np.nan, *parameters))
+
+
+def test_noncentral_t_nan_quirk_remains_bit_exact_with_r():
+    # R 4.5.2 pnt checks non-finiteness as a tail endpoint before checking NaN.
+    # Invariant #1 requires preserving that upstream result rather than inventing numerics.
+    assert ad.pt(np.nan, 7.0, ncp=1.5) == 1.0
+
+
+@pytest.mark.parametrize(("quantile", "parameters", "kwargs"), QUANTILE_CASES)
+def test_nan_propagates_through_every_quantile(quantile, parameters, kwargs):
+    with ad.errstate(all="ignore"):
+        assert np.isnan(quantile(np.nan, *parameters, **kwargs))
+
+
+SPECIAL_NAN_CALLS = [
+    lambda: ad.gammafn(np.nan), lambda: ad.lgammafn(np.nan),
+    lambda: ad.digamma(np.nan), lambda: ad.trigamma(np.nan),
+    lambda: ad.tetragamma(np.nan), lambda: ad.pentagamma(np.nan),
+    lambda: ad.psigamma(np.nan, 2), lambda: ad.beta(np.nan, 2),
+    lambda: ad.lbeta(np.nan, 2), lambda: ad.choose(np.nan, 2),
+    lambda: ad.lchoose(np.nan, 2), lambda: ad.bessel_j(np.nan, 1),
+    lambda: ad.bessel_y(np.nan, 1), lambda: ad.bessel_i(np.nan, 1),
+    lambda: ad.bessel_k(np.nan, 1), lambda: ad.log1pmx(np.nan),
+    lambda: ad.log1pexp(np.nan), lambda: ad.lgamma1p(np.nan),
+    lambda: ad.logspace_add(np.nan, 0), lambda: ad.logspace_sub(np.nan, 0),
+    lambda: ad.cospi(np.nan), lambda: ad.sinpi(np.nan), lambda: ad.tanpi(np.nan),
+    lambda: ad.fprec(np.nan, 2), lambda: ad.fround(np.nan, 2),
+    lambda: ad.fsign(np.nan, 1), lambda: ad.ftrunc(np.nan), lambda: ad.sign(np.nan),
+    lambda: ad.pnorm_both(np.nan)[0], lambda: ad.lgammafn_sign(np.nan)[0],
+    lambda: ad.logspace_sum([np.nan]),
+]
+
+
+@pytest.mark.parametrize("call", SPECIAL_NAN_CALLS)
+def test_nan_propagates_through_every_deterministic_special_and_bespoke_function(call):
+    assert np.isnan(call())
+
+
+@pytest.mark.parametrize(
+    ("cdf", "density", "q", "parameters"),
+    [
+        (ad.pbinom, ad.dbinom, 4, (20.0, 0.3)),
+        (ad.ppois, ad.dpois, 4, (4.0,)),
+        (ad.pgeom, ad.dgeom, 4, (0.3,)),
+        (ad.pnbinom, ad.dnbinom, 4, (5.0, 0.4)),
+        (ad.phyper, ad.dhyper, 3, (7.0, 13.0, 5.0)),
+        (ad.pwilcox, ad.dwilcox, 10, (5.0, 6.0)),
+        (ad.psignrank, ad.dsignrank, 10, (8.0,)),
+    ],
+)
+def test_discrete_cdf_equals_sum_of_density(cdf, density, q, parameters):
+    expected = sum(float(density(x, *parameters)) for x in range(q + 1))
+    assert cdf(q, *parameters) == pytest.approx(expected, rel=2e-14, abs=1e-15)

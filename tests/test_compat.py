@@ -41,3 +41,18 @@ def test_unimplemented_methods_name_both_alternatives():
     with pytest.raises(NotImplementedError, match="flat accudist API.*scipy"):
         compat.norm.mean()
 
+
+@pytest.mark.scipy_gap
+@pytest.mark.parametrize(
+    ("distribution", "args", "x"),
+    [
+        (compat.binom, (1000, 1 / 6), 900),
+        (compat.poisson, (0.1,), 200),
+        (compat.nbinom, (10, 0.5), 1e5),
+        (compat.gamma, (2,), 1e5),
+        (compat.chi2, (3,), 1e5),
+        (compat.f, (3, 7), 1e300),
+    ],
+)
+def test_compat_logsf_preserves_the_supported_scipy_gap_improvements(distribution, args, x):
+    assert np.isfinite(distribution.logsf(x, *args))

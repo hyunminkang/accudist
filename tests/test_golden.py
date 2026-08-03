@@ -5,15 +5,17 @@ from pathlib import Path
 import pytest
 
 import accudist as ad
+from accudist._platform import platform_id
 
 
-DATA = Path(__file__).parent / "data" / "ppois.jsonl"
+DATA = Path(__file__).parent / "data" / platform_id() / "ppois.jsonl"
 
 
 def load_vectors():
     lines = DATA.read_text().splitlines()
     header = json.loads(lines[0])["meta"]
     assert header["r_version"] == ad.__r_version__
+    assert header["platform"] == platform_id()
     return [json.loads(line) for line in lines[1:]]
 
 

@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import threading
 import warnings
-from contextlib import ContextDecorator
+from contextlib import ContextDecorator, contextmanager
 from dataclasses import dataclass
 from typing import Final
+
+import numpy as np
 
 from . import _ufuncs
 
@@ -156,3 +158,10 @@ def capture(function: str) -> _Capture:
 
     return _Capture(function)
 
+
+@contextmanager
+def suppress_numpy_warnings():
+    """Keep NumPy floating warnings behind accudist's error policy boundary."""
+
+    with np.errstate(all="ignore"):
+        yield

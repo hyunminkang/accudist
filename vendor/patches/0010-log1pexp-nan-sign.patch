@@ -1,0 +1,10 @@
+--- a/src/plogis.c
++++ b/src/plogis.c
+@@ -26,6 +26,7 @@
+    curve(x+exp(-x) - log1p(exp(x)), 15, 25,   n=2^11)
+ */
+ double log1pexp(double x) {
++    if (ISNAN(x)) return -fabs(x);
+     if(x <= 18.) return log1p(exp(x));
+     if(x > 33.3) return x;
+     // else: 18.0 < x <= 33.3 :

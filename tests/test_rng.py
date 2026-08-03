@@ -54,11 +54,27 @@ def test_noncentral_rbeta_preserves_r_draw_order():
     assert composed.get_seed() == manual.get_seed()
 
 
+def test_noncentral_rf_and_rt_preserve_r_draw_order():
+    composed_f = ad.RNG(77, 91)
+    manual_f = ad.RNG(77, 91)
+    actual_f = composed_f.rf(8, 4.0, 6.0, ncp=1.5)
+    expected_f = (manual_f.rchisq(8, 4.0, ncp=1.5) / 4.0) / (manual_f.rchisq(8, 6.0) / 6.0)
+    np.testing.assert_array_equal(actual_f, expected_f)
+    assert composed_f.get_seed() == manual_f.get_seed()
+
+    composed_t = ad.RNG(77, 91)
+    manual_t = ad.RNG(77, 91)
+    actual_t = composed_t.rt(8, 7.0, ncp=1.5)
+    expected_t = manual_t.rnorm(8, 1.5) / np.sqrt(manual_t.rchisq(8, 7.0) / 7.0)
+    np.testing.assert_array_equal(actual_t, expected_t)
+    assert composed_t.get_seed() == manual_t.get_seed()
+
+
 def test_independent_rngs_are_thread_safe():
     seeds = [(index + 1, index + 101) for index in range(8)]
-    expected = [ad.RNG(*seed).rgamma(1000, 2.5) for seed in seeds]
+    expected = [ad.RNG(*seed).rgamma(10_000, 2.5) for seed in seeds]
     with ThreadPoolExecutor(max_workers=8) as pool:
-        actual = list(pool.map(lambda seed: ad.RNG(*seed).rgamma(1000, 2.5), seeds))
+        actual = list(pool.map(lambda seed: ad.RNG(*seed).rgamma(10_000, 2.5), seeds))
     for got, want in zip(actual, expected, strict=True):
         np.testing.assert_array_equal(got, want)
 

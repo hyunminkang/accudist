@@ -34,7 +34,7 @@ py.extension_module(
 
 py.install_sources(
   [
-    '__init__.py', '_errstate.py', '_dispatch.py', '_rng.py', '_bespoke.py',
+    '__init__.py', '_errstate.py', '_dispatch.py', '_rng.py', '_bespoke.py', '_platform.py',
     '_api.py', '_generated.pyi', '_ufuncs.pyi', 'rmath.py', 'py.typed',
   ],
   subdir : 'accudist',
