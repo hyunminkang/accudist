@@ -46,6 +46,12 @@ def test_lgammafn_sign_returns_value_and_sign():
     assert sign.tolist() == [-1, 1]
 
 
+def test_lgammafn_sign_does_not_reconstruct_sign_from_underflowed_gamma():
+    value, sign = ad.lgammafn_sign(-200.5)
+    assert np.isfinite(value)
+    assert sign == -1
+
+
 def test_wilcox_cache_is_safe_across_threads():
     cases = [(5, 3, 4), (12, 5, 6), (20, 7, 8), (30, 8, 9)]
     expected = [ad.pwilcox(*case) for case in cases]

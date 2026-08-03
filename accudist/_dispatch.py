@@ -18,6 +18,11 @@ def resolve_rate_scale(rate, scale):
         return 1.0
     if rate is None:
         return scale
+    # ``rate=1`` is the public R default.  When scale is supplied it replaces
+    # that default; Python cannot otherwise distinguish an omitted defaulted
+    # argument from an explicitly passed value.
+    if scale is not None and np.ndim(rate) == 0 and float(rate) == 1.0:
+        return scale
     inverse = reciprocal(rate)
     if scale is None:
         return inverse
@@ -33,4 +38,3 @@ def reciprocal(value):
 
 def sqrt(value):
     return np.sqrt(value)
-

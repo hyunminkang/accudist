@@ -3,7 +3,6 @@
 #include "accudist_shim.h"
 
 ACCUDIST_THREAD_LOCAL unsigned accudist_errword = ACCUDIST_OK;
-ACCUDIST_THREAD_LOCAL jmp_buf *accudist_jump_target = NULL;
 PyThread_type_lock accudist_cache_lock = NULL;
 PyThread_type_lock accudist_rng_lock = NULL;
 
@@ -19,9 +18,6 @@ accudist_fatal(const char *format, ...)
 {
     (void)format;
     accudist_set_flag(ACCUDIST_ALLOC);
-    if (accudist_jump_target != NULL) {
-        longjmp(*accudist_jump_target, 1);
-    }
 }
 
 unsigned

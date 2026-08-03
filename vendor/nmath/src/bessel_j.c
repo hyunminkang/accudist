@@ -69,7 +69,7 @@ double bessel_j(double x, double alpha)
     alpha -= (double)(nb-1); // ==> alpha' in [0, 1)
 #ifdef MATHLIB_STANDALONE
     bj = (double *) calloc(nb, sizeof(double));
-    if (!bj) MATHLIB_ERROR("%s", _("bessel_j allocation error"));
+    if (!bj) { MATHLIB_ERROR("%s", _("bessel_j allocation error")); return ML_NAN; }
 #else
     vmax = vmaxget();
     bj = (double *) R_alloc((size_t) nb, sizeof(double));

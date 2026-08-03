@@ -21,10 +21,5 @@ def load_vectors():
 def test_ppois_matches_r_452_bit_for_bit(case):
     expected = bytes.fromhex(case["hex"].removeprefix("0x"))
     with ad.errstate(all="ignore"):
-        actual = ad.ppois(
-            *case["args"],
-            lower_tail=bool(case["lower_tail"]),
-            log=bool(case["log"]),
-        )
+        actual = ad.ppois(*case["args"], **case["kwargs"])
     assert struct.pack(">d", float(actual)) == expected
-

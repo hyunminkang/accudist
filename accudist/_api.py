@@ -59,7 +59,7 @@ def runif(n, min=0.0, max=1.0):
     _capture.check()
     return result
 
-def dgamma(x, shape, rate=None, scale=None, log=False, out=None):
+def dgamma(x, shape, rate=1.0, scale=None, log=False, out=None):
     """dgamma backed by R 4.5.2 nmath."""
     scale = _dispatch.resolve_rate_scale(rate, scale)
     with _errstate.capture("dgamma") as _capture:
@@ -67,7 +67,7 @@ def dgamma(x, shape, rate=None, scale=None, log=False, out=None):
     _capture.check()
     return result
 
-def pgamma(q, shape, rate=None, scale=None, lower_tail=True, log=False, out=None):
+def pgamma(q, shape, rate=1.0, scale=None, lower_tail=True, log=False, out=None):
     """pgamma backed by R 4.5.2 nmath."""
     scale = _dispatch.resolve_rate_scale(rate, scale)
     with _errstate.capture("pgamma") as _capture:
@@ -75,7 +75,7 @@ def pgamma(q, shape, rate=None, scale=None, lower_tail=True, log=False, out=None
     _capture.check()
     return result
 
-def qgamma(p, shape, rate=None, scale=None, lower_tail=True, log=False, out=None):
+def qgamma(p, shape, rate=1.0, scale=None, lower_tail=True, log=False, out=None):
     """qgamma backed by R 4.5.2 nmath."""
     scale = _dispatch.resolve_rate_scale(rate, scale)
     with _errstate.capture("qgamma") as _capture:
@@ -83,7 +83,7 @@ def qgamma(p, shape, rate=None, scale=None, lower_tail=True, log=False, out=None
     _capture.check()
     return result
 
-def rgamma(n, shape, rate=None, scale=None):
+def rgamma(n, shape, rate=1.0, scale=None):
     """rgamma backed by R 4.5.2 nmath; does not reproduce R's set.seed() stream."""
     scale = _dispatch.resolve_rate_scale(rate, scale)
     with _errstate.capture("rgamma") as _capture:
@@ -280,56 +280,56 @@ def rt(n, df, ncp=None):
     _capture.check()
     return result
 
-def dbinom(x, size, prob=None, log=False, out=None):
+def dbinom(x, size, prob, log=False, out=None):
     """dbinom backed by R 4.5.2 nmath."""
     with _errstate.capture("dbinom") as _capture:
         result = _ufuncs.dbinom(x, size, prob, int(log), out=out)
     _capture.check()
     return result
 
-def pbinom(q, size, prob=None, lower_tail=True, log=False, out=None):
+def pbinom(q, size, prob, lower_tail=True, log=False, out=None):
     """pbinom backed by R 4.5.2 nmath."""
     with _errstate.capture("pbinom") as _capture:
         result = _ufuncs.pbinom(q, size, prob, int(lower_tail), int(log), out=out)
     _capture.check()
     return result
 
-def qbinom(p, size, prob=None, lower_tail=True, log=False, out=None):
+def qbinom(p, size, prob, lower_tail=True, log=False, out=None):
     """qbinom backed by R 4.5.2 nmath."""
     with _errstate.capture("qbinom") as _capture:
         result = _ufuncs.qbinom(p, size, prob, int(lower_tail), int(log), out=out)
     _capture.check()
     return result
 
-def rbinom(n, size, prob=None):
+def rbinom(n, size, prob):
     """rbinom backed by R 4.5.2 nmath; does not reproduce R's set.seed() stream."""
     with _errstate.capture("rbinom") as _capture:
         result = _rng.draw(_ufuncs.rbinom, n, size, prob)
     _capture.check()
     return result
 
-def dcauchy(x, location=0.0, scale=None, log=False, out=None):
+def dcauchy(x, location=0.0, scale=1.0, log=False, out=None):
     """dcauchy backed by R 4.5.2 nmath."""
     with _errstate.capture("dcauchy") as _capture:
         result = _ufuncs.dcauchy(x, location, scale, int(log), out=out)
     _capture.check()
     return result
 
-def pcauchy(q, location=0.0, scale=None, lower_tail=True, log=False, out=None):
+def pcauchy(q, location=0.0, scale=1.0, lower_tail=True, log=False, out=None):
     """pcauchy backed by R 4.5.2 nmath."""
     with _errstate.capture("pcauchy") as _capture:
         result = _ufuncs.pcauchy(q, location, scale, int(lower_tail), int(log), out=out)
     _capture.check()
     return result
 
-def qcauchy(p, location=0.0, scale=None, lower_tail=True, log=False, out=None):
+def qcauchy(p, location=0.0, scale=1.0, lower_tail=True, log=False, out=None):
     """qcauchy backed by R 4.5.2 nmath."""
     with _errstate.capture("qcauchy") as _capture:
         result = _ufuncs.qcauchy(p, location, scale, int(lower_tail), int(log), out=out)
     _capture.check()
     return result
 
-def rcauchy(n, location=0.0, scale=None):
+def rcauchy(n, location=0.0, scale=1.0):
     """rcauchy backed by R 4.5.2 nmath; does not reproduce R's set.seed() stream."""
     with _errstate.capture("rcauchy") as _capture:
         result = _rng.draw(_ufuncs.rcauchy, n, location, scale)
@@ -368,28 +368,28 @@ def rexp(n, rate=1.0):
     _capture.check()
     return result
 
-def dgeom(x, prob=None, log=False, out=None):
+def dgeom(x, prob, log=False, out=None):
     """dgeom backed by R 4.5.2 nmath."""
     with _errstate.capture("dgeom") as _capture:
         result = _ufuncs.dgeom(x, prob, int(log), out=out)
     _capture.check()
     return result
 
-def pgeom(q, prob=None, lower_tail=True, log=False, out=None):
+def pgeom(q, prob, lower_tail=True, log=False, out=None):
     """pgeom backed by R 4.5.2 nmath."""
     with _errstate.capture("pgeom") as _capture:
         result = _ufuncs.pgeom(q, prob, int(lower_tail), int(log), out=out)
     _capture.check()
     return result
 
-def qgeom(p, prob=None, lower_tail=True, log=False, out=None):
+def qgeom(p, prob, lower_tail=True, log=False, out=None):
     """qgeom backed by R 4.5.2 nmath."""
     with _errstate.capture("qgeom") as _capture:
         result = _ufuncs.qgeom(p, prob, int(lower_tail), int(log), out=out)
     _capture.check()
     return result
 
-def rgeom(n, prob=None):
+def rgeom(n, prob):
     """rgeom backed by R 4.5.2 nmath; does not reproduce R's set.seed() stream."""
     with _errstate.capture("rgeom") as _capture:
         result = _rng.draw(_ufuncs.rgeom, n, prob)
@@ -496,56 +496,56 @@ def rpois(n, lambda_):
     _capture.check()
     return result
 
-def dweibull(x, shape, scale=None, log=False, out=None):
+def dweibull(x, shape, scale=1.0, log=False, out=None):
     """dweibull backed by R 4.5.2 nmath."""
     with _errstate.capture("dweibull") as _capture:
         result = _ufuncs.dweibull(x, shape, scale, int(log), out=out)
     _capture.check()
     return result
 
-def pweibull(q, shape, scale=None, lower_tail=True, log=False, out=None):
+def pweibull(q, shape, scale=1.0, lower_tail=True, log=False, out=None):
     """pweibull backed by R 4.5.2 nmath."""
     with _errstate.capture("pweibull") as _capture:
         result = _ufuncs.pweibull(q, shape, scale, int(lower_tail), int(log), out=out)
     _capture.check()
     return result
 
-def qweibull(p, shape, scale=None, lower_tail=True, log=False, out=None):
+def qweibull(p, shape, scale=1.0, lower_tail=True, log=False, out=None):
     """qweibull backed by R 4.5.2 nmath."""
     with _errstate.capture("qweibull") as _capture:
         result = _ufuncs.qweibull(p, shape, scale, int(lower_tail), int(log), out=out)
     _capture.check()
     return result
 
-def rweibull(n, shape, scale=None):
+def rweibull(n, shape, scale=1.0):
     """rweibull backed by R 4.5.2 nmath; does not reproduce R's set.seed() stream."""
     with _errstate.capture("rweibull") as _capture:
         result = _rng.draw(_ufuncs.rweibull, n, shape, scale)
     _capture.check()
     return result
 
-def dlogis(x, location=0.0, scale=None, log=False, out=None):
+def dlogis(x, location=0.0, scale=1.0, log=False, out=None):
     """dlogis backed by R 4.5.2 nmath."""
     with _errstate.capture("dlogis") as _capture:
         result = _ufuncs.dlogis(x, location, scale, int(log), out=out)
     _capture.check()
     return result
 
-def plogis(q, location=0.0, scale=None, lower_tail=True, log=False, out=None):
+def plogis(q, location=0.0, scale=1.0, lower_tail=True, log=False, out=None):
     """plogis backed by R 4.5.2 nmath."""
     with _errstate.capture("plogis") as _capture:
         result = _ufuncs.plogis(q, location, scale, int(lower_tail), int(log), out=out)
     _capture.check()
     return result
 
-def qlogis(p, location=0.0, scale=None, lower_tail=True, log=False, out=None):
+def qlogis(p, location=0.0, scale=1.0, lower_tail=True, log=False, out=None):
     """qlogis backed by R 4.5.2 nmath."""
     with _errstate.capture("qlogis") as _capture:
         result = _ufuncs.qlogis(p, location, scale, int(lower_tail), int(log), out=out)
     _capture.check()
     return result
 
-def rlogis(n, location=0.0, scale=None):
+def rlogis(n, location=0.0, scale=1.0):
     """rlogis backed by R 4.5.2 nmath; does not reproduce R's set.seed() stream."""
     with _errstate.capture("rlogis") as _capture:
         result = _rng.draw(_ufuncs.rlogis, n, location, scale)
@@ -623,98 +623,98 @@ def qtukey(p, nmeans, df, nranges=1.0, lower_tail=True, log=False, out=None):
     return result
 
 def gammafn(x, out=None):
-    """gammafn backed by R 4.5.2 nmath."""
+    """gammafn backed by R 4.5.2 nmath R: gamma(x)."""
     with _errstate.capture("gammafn") as _capture:
         result = _ufuncs.gammafn(x, out=out)
     _capture.check()
     return result
 
 def lgammafn(x, out=None):
-    """lgammafn backed by R 4.5.2 nmath."""
+    """lgammafn backed by R 4.5.2 nmath R: lgamma(x)."""
     with _errstate.capture("lgammafn") as _capture:
         result = _ufuncs.lgammafn(x, out=out)
     _capture.check()
     return result
 
 def digamma(x, out=None):
-    """digamma backed by R 4.5.2 nmath."""
+    """digamma backed by R 4.5.2 nmath R: digamma(x)."""
     with _errstate.capture("digamma") as _capture:
         result = _ufuncs.digamma(x, out=out)
     _capture.check()
     return result
 
 def trigamma(x, out=None):
-    """trigamma backed by R 4.5.2 nmath."""
+    """trigamma backed by R 4.5.2 nmath R: trigamma(x)."""
     with _errstate.capture("trigamma") as _capture:
         result = _ufuncs.trigamma(x, out=out)
     _capture.check()
     return result
 
 def tetragamma(x, out=None):
-    """tetragamma backed by R 4.5.2 nmath."""
+    """tetragamma backed by R 4.5.2 nmath R: psigamma(x, 2)."""
     with _errstate.capture("tetragamma") as _capture:
         result = _ufuncs.tetragamma(x, out=out)
     _capture.check()
     return result
 
 def pentagamma(x, out=None):
-    """pentagamma backed by R 4.5.2 nmath."""
+    """pentagamma backed by R 4.5.2 nmath R: psigamma(x, 3)."""
     with _errstate.capture("pentagamma") as _capture:
         result = _ufuncs.pentagamma(x, out=out)
     _capture.check()
     return result
 
 def psigamma(x, deriv=0.0, out=None):
-    """psigamma backed by R 4.5.2 nmath."""
+    """psigamma backed by R 4.5.2 nmath R: psigamma(x, deriv)."""
     with _errstate.capture("psigamma") as _capture:
         result = _ufuncs.psigamma(x, deriv, out=out)
     _capture.check()
     return result
 
 def beta(a, b, out=None):
-    """beta backed by R 4.5.2 nmath."""
+    """beta backed by R 4.5.2 nmath R: beta(a, b)."""
     with _errstate.capture("beta") as _capture:
         result = _ufuncs.beta(a, b, out=out)
     _capture.check()
     return result
 
 def lbeta(a, b, out=None):
-    """lbeta backed by R 4.5.2 nmath."""
+    """lbeta backed by R 4.5.2 nmath R: lbeta(a, b)."""
     with _errstate.capture("lbeta") as _capture:
         result = _ufuncs.lbeta(a, b, out=out)
     _capture.check()
     return result
 
 def choose(n, k, out=None):
-    """choose backed by R 4.5.2 nmath."""
+    """choose backed by R 4.5.2 nmath R: choose(n, k)."""
     with _errstate.capture("choose") as _capture:
         result = _ufuncs.choose(n, k, out=out)
     _capture.check()
     return result
 
 def lchoose(n, k, out=None):
-    """lchoose backed by R 4.5.2 nmath."""
+    """lchoose backed by R 4.5.2 nmath R: lchoose(n, k)."""
     with _errstate.capture("lchoose") as _capture:
         result = _ufuncs.lchoose(n, k, out=out)
     _capture.check()
     return result
 
 def bessel_j(x, nu, out=None):
-    """bessel_j backed by R 4.5.2 nmath."""
+    """bessel_j backed by R 4.5.2 nmath R: besselJ(x, nu)."""
     with _errstate.capture("bessel_j") as _capture:
         result = _ufuncs.bessel_j(x, nu, out=out)
     _capture.check()
     return result
 
 def bessel_y(x, nu, out=None):
-    """bessel_y backed by R 4.5.2 nmath."""
+    """bessel_y backed by R 4.5.2 nmath R: besselY(x, nu)."""
     with _errstate.capture("bessel_y") as _capture:
         result = _ufuncs.bessel_y(x, nu, out=out)
     _capture.check()
     return result
 
 def bessel_i(x, nu, expon_scaled=False, out=None):
-    """bessel_i backed by R 4.5.2 nmath."""
+    """bessel_i backed by R 4.5.2 nmath R: besselI(x, nu, expon.scaled)."""
     expon_scaled = 2.0 if expon_scaled else 1.0
     with _errstate.capture("bessel_i") as _capture:
         result = _ufuncs.bessel_i(x, nu, expon_scaled, out=out)
@@ -722,7 +722,7 @@ def bessel_i(x, nu, expon_scaled=False, out=None):
     return result
 
 def bessel_k(x, nu, expon_scaled=False, out=None):
-    """bessel_k backed by R 4.5.2 nmath."""
+    """bessel_k backed by R 4.5.2 nmath R: besselK(x, nu, expon.scaled)."""
     expon_scaled = 2.0 if expon_scaled else 1.0
     with _errstate.capture("bessel_k") as _capture:
         result = _ufuncs.bessel_k(x, nu, expon_scaled, out=out)

@@ -1,45 +1,57 @@
 #!/usr/bin/env Rscript
 
 args <- commandArgs(trailingOnly = TRUE)
-only <- "ppois"
+only <- ""
 if (length(args) >= 2 && args[[1]] == "--only") only <- args[[2]]
-if (only != "ppois") stop("M1 reference generator only supports ppois")
 
 script_arg <- commandArgs(trailingOnly = FALSE)
 script_path <- sub("^--file=", "", script_arg[grepl("^--file=", script_arg)])
 root <- normalizePath(file.path(dirname(script_path), ".."))
-output <- file.path(root, "tests", "data", "ppois.jsonl")
+python <- Sys.which("python3")
+if (!nzchar(python)) stop("python3 is required to read functions.toml")
 
-q_values <- c(
-  -1, 0, 1e-12, 0.499999999, 0.5, 0.500000001, 1, 2, 5, 10,
-  20, 50, 100, 200, 500, 900, 1000, 10000, 100000, 1000000
+plan <- tempfile(fileext = ".tsv")
+plan_args <- file.path(root, "tools", "reference_plan.py")
+if (nzchar(only)) plan_args <- c(plan_args, "--only", only)
+status <- system2(
+  python,
+  plan_args,
+  stdout = plan
 )
-lambda_values <- c(-1, 1e-10, 0.1, 10, 1e10)
+if (status != 0) stop("reference plan generation failed")
+
+bridge_dir <- tempfile(pattern = "accudist-reference-")
+dir.create(bridge_dir)
+bridge_source <- file.path(bridge_dir, "reference_bridge.c")
+file.copy(file.path(root, "tools", "reference_bridge.c"), bridge_source)
+bridge <- file.path(bridge_dir, paste0("reference_bridge", .Platform$dynlib.ext))
+compile <- system2(
+  file.path(R.home("bin"), "R"),
+  c("CMD", "SHLIB", "-o", bridge, bridge_source),
+  stdout = TRUE,
+  stderr = TRUE
+)
+if (!file.exists(bridge)) stop(paste(compile, collapse = "\n"))
+dyn.load(bridge)
+on.exit(dyn.unload(bridge), add = TRUE)
 
 hex_double <- function(value) {
   bytes <- writeBin(as.double(value), raw(), size = 8, endian = "big")
   paste0("0x", paste(sprintf("%02x", as.integer(bytes)), collapse = ""))
 }
 
-number <- function(value) sprintf("%.17g", value)
-lines <- c(sprintf('{"meta":{"r_version":"%s","function":"ppois"}}', getRversion()))
-for (q in q_values) {
-  for (lambda in lambda_values) {
-    for (lower_tail in c(FALSE, TRUE)) {
-      for (log_p in c(FALSE, TRUE)) {
-        value <- suppressWarnings(ppois(q, lambda, lower.tail = lower_tail, log.p = log_p))
-        lines <- c(
-          lines,
-          sprintf(
-            '{"args":[%s,%s],"lower_tail":%d,"log":%d,"hex":"%s"}',
-            number(q), number(lambda), as.integer(lower_tail), as.integer(log_p),
-            hex_double(value)
-          )
-        )
-      }
-    }
+rows <- readLines(plan, warn = FALSE)
+groups <- split(rows, vapply(strsplit(rows, "\t", fixed = TRUE), `[[`, "", 1))
+dir.create(file.path(root, "tests", "data"), recursive = TRUE, showWarnings = FALSE)
+for (name in names(groups)) {
+  output <- file.path(root, "tests", "data", paste0(name, ".jsonl"))
+  lines <- sprintf('{"meta":{"r_version":"%s","function":"%s"}}', getRversion(), name)
+  for (row in groups[[name]]) {
+    fields <- strsplit(row, "\t", fixed = TRUE)[[1]]
+    value <- suppressWarnings(eval(parse(text = fields[[4]]), envir = globalenv()))
+    lines <- c(lines, sprintf('{"args":%s,"kwargs":%s,"hex":"%s"}',
+                              fields[[2]], fields[[3]], hex_double(value)))
   }
+  writeLines(lines, output, useBytes = TRUE)
+  cat(sprintf("wrote %d %s vectors to %s\n", length(lines) - 1, name, output))
 }
-writeLines(lines, output, useBytes = TRUE)
-cat(sprintf("wrote %d ppois vectors to %s\n", length(lines) - 1, output))
-

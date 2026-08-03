@@ -1,8 +1,6 @@
 #ifndef ACCUDIST_SHIM_H
 #define ACCUDIST_SHIM_H
 
-#include <setjmp.h>
-
 #if defined(_MSC_VER)
 #  define ACCUDIST_THREAD_LOCAL __declspec(thread)
 #else
@@ -20,7 +18,6 @@ typedef enum {
 } accudist_flag;
 
 extern ACCUDIST_THREAD_LOCAL unsigned accudist_errword;
-extern ACCUDIST_THREAD_LOCAL jmp_buf *accudist_jump_target;
 #define accudist_set_flag(f) \
     (accudist_errword |= (unsigned)(f))
 

@@ -66,7 +66,7 @@ w_free(int m, int n)
     w = 0; allocated_m = allocated_n = 0;
 }
 
-static void
+static int
 w_init_maybe(int m, int n)
 {
     int i;
@@ -82,7 +82,7 @@ w_init_maybe(int m, int n)
 	n = imax2(n, WILCOX_MAX);
 	w = (double ***) calloc((size_t) m + 1, sizeof(double **));
 #ifdef MATHLIB_STANDALONE
-	if (!w) MATHLIB_ERROR(_("wilcox allocation error %d"), 1);
+	if (!w) { MATHLIB_ERROR(_("wilcox allocation error %d"), 1); return 0; }
 #endif
 	for (i = 0; i <= m; i++) {
 	    w[i] = (double **) calloc((size_t) n + 1, sizeof(double *));
@@ -93,11 +93,13 @@ w_init_maybe(int m, int n)
 		/* first free all earlier allocations */
 		w_free(i-1, n);
 		MATHLIB_ERROR(_("wilcox allocation error %d"), 2);
+		return 0;
 	    }
 #endif
 	}
 	allocated_m = m; allocated_n = n;
     }
+    return 1;
 }
 
 static void
@@ -150,7 +152,7 @@ cwilcox(int k, int m, int n)
     if (w[i][j] == 0) {
 	w[i][j] = (double *) calloc((size_t) c + 1, sizeof(double));
 #ifdef MATHLIB_STANDALONE
-	if (!w[i][j]) MATHLIB_ERROR(_("wilcox allocation error %d"), 3);
+	if (!w[i][j]) { MATHLIB_ERROR(_("wilcox allocation error %d"), 3); return ML_NAN; }
 #endif
 	for (int l = 0; l <= c; l++)
 	    w[i][j][l] = -1;
@@ -184,7 +186,7 @@ double dwilcox(double x, double m, double n, int give_log)
 	return(R_D__0);
 
     int mm = (int) m, nn = (int) n, xx = (int) x;
-    w_init_maybe(mm, nn);
+    if (!w_init_maybe(mm, nn)) return ML_NAN;
     double d = give_log ?
 	log(cwilcox(xx, mm, nn)) - lchoose(m + n, n) :
 	    cwilcox(xx, mm, nn)  /  choose(m + n, n);
@@ -214,7 +216,7 @@ double pwilcox(double q, double m, double n, int lower_tail, int log_p)
 	return(R_DT_1);
 
     int mm = (int) m, nn = (int) n;
-    w_init_maybe(mm, nn);
+    if (!w_init_maybe(mm, nn)) return ML_NAN;
     double c = choose(m + n, n),
 	p = 0;
     /* Use summation of probs over the shorter range */
@@ -258,7 +260,7 @@ double qwilcox(double x, double m, double n, int lower_tail, int log_p)
 	x = R_DT_qIv(x); /* lower_tail,non-log "p" */
 
     int mm = (int) m, nn = (int) n;
-    w_init_maybe(mm, nn);
+    if (!w_init_maybe(mm, nn)) return ML_NAN;
     double c = choose(m + n, n),
 	p = 0.;
     int q = 0;
@@ -308,7 +310,7 @@ double rwilcox(double m, double n)
     k = (int) (m + n);
     x = (int *) calloc((size_t) k, sizeof(int));
 #ifdef MATHLIB_STANDALONE
-    if (!x) MATHLIB_ERROR(_("wilcox allocation error %d"), 4);
+    if (!x) { MATHLIB_ERROR(_("wilcox allocation error %d"), 4); return ML_NAN; }
 #endif
     for (i = 0; i < k; i++)
 	x[i] = i;

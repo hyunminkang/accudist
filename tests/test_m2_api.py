@@ -1,9 +1,11 @@
 import struct
+import inspect
 
 import numpy as np
 import pytest
 
 import accudist as ad
+import accudist.rmath as rmath
 
 
 def bits(value):
@@ -62,3 +64,15 @@ def test_m2_ufuncs_broadcast_and_preserve_out():
     assert returned is out
     np.testing.assert_allclose(out, [0.15865525393145705, 0.5, 0.8413447460685429])
 
+
+def test_manifest_defaults_and_raw_rmath_exports():
+    assert inspect.signature(ad.dbinom).parameters["prob"].default is inspect.Parameter.empty
+    assert inspect.signature(ad.dcauchy).parameters["scale"].default == 1.0
+    assert inspect.signature(ad.dgamma).parameters["rate"].default == 1.0
+    assert callable(rmath.dbinom_raw)
+    assert callable(rmath.dpois_raw)
+
+
+def test_special_docstrings_name_the_r_equivalent():
+    assert "R: gamma(x)" in ad.gammafn.__doc__
+    assert "R: besselI" in ad.bessel_i.__doc__

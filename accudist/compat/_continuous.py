@@ -15,7 +15,7 @@ class _Continuous(_Dist):
 
     @property
     def _family(self):
-        return {"chi2": "chisq", "weibull_min": "weibull", "lognorm": "lnorm", "logistic": "logis", "uniform": "unif"}.get(self.name, self.name)
+        return {"chi2": "chisq", "expon": "exp", "weibull_min": "weibull", "lognorm": "lnorm", "logistic": "logis", "uniform": "unif"}.get(self.name, self.name)
 
     def _mapping(self, value, shapes, loc, scale):
         if scale <= 0:
@@ -113,4 +113,3 @@ lognorm = _Continuous("lognorm")
 cauchy = _Continuous("cauchy")
 logistic = _Continuous("logistic")
 uniform = _Continuous("uniform")
-

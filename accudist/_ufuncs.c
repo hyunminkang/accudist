@@ -2,6 +2,8 @@
 #define PY_SSIZE_T_CLEAN
 #define NPY_NO_DEPRECATED_API NPY_1_25_API_VERSION
 #include <Python.h>
+#include <limits.h>
+#include <math.h>
 #include <numpy/arrayobject.h>
 #include <numpy/ufuncobject.h>
 #include <Rmath.h>
@@ -17,20 +19,12 @@ dnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double mean = *(double *)(args[1] + i * steps[1]);
         double sd = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = dnorm(x, mean, sd, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = dnorm(x, mean, sd, (int)log_arg);
     }
 }
 
@@ -43,21 +37,13 @@ pnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double mean = *(double *)(args[1] + i * steps[1]);
         double sd = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = pnorm(q, mean, sd, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = pnorm(q, mean, sd, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -70,21 +56,13 @@ qnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double mean = *(double *)(args[1] + i * steps[1]);
         double sd = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qnorm(p, mean, sd, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qnorm(p, mean, sd, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -97,18 +75,10 @@ rnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double mean = *(double *)(args[0] + i * steps[0]);
         double sd = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = rnorm(mean, sd);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = rnorm(mean, sd);
     }
 }
 
@@ -121,20 +91,12 @@ dunif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double min = *(double *)(args[1] + i * steps[1]);
         double max = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = dunif(x, min, max, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = dunif(x, min, max, (int)log_arg);
     }
 }
 
@@ -147,21 +109,13 @@ punif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double min = *(double *)(args[1] + i * steps[1]);
         double max = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = punif(q, min, max, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = punif(q, min, max, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -174,21 +128,13 @@ qunif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double min = *(double *)(args[1] + i * steps[1]);
         double max = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qunif(p, min, max, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qunif(p, min, max, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -201,18 +147,10 @@ runif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double min = *(double *)(args[0] + i * steps[0]);
         double max = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = runif(min, max);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = runif(min, max);
     }
 }
 
@@ -225,20 +163,12 @@ dgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double shape = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = dgamma(x, shape, scale, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = dgamma(x, shape, scale, (int)log_arg);
     }
 }
 
@@ -251,21 +181,13 @@ pgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double shape = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = pgamma(q, shape, scale, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = pgamma(q, shape, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -278,21 +200,13 @@ qgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double shape = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qgamma(p, shape, scale, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qgamma(p, shape, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -305,18 +219,10 @@ rgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double shape = *(double *)(args[0] + i * steps[0]);
         double scale = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = rgamma(shape, scale);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = rgamma(shape, scale);
     }
 }
 
@@ -329,20 +235,12 @@ dbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double shape1 = *(double *)(args[1] + i * steps[1]);
         double shape2 = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = dbeta(x, shape1, shape2, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = dbeta(x, shape1, shape2, (int)log_arg);
     }
 }
 
@@ -355,21 +253,13 @@ dnbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double shape1 = *(double *)(args[1] + i * steps[1]);
         double shape2 = *(double *)(args[2] + i * steps[2]);
         double ncp = *(double *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = dnbeta(x, shape1, shape2, ncp, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = dnbeta(x, shape1, shape2, ncp, (int)log_arg);
     }
 }
 
@@ -382,21 +272,13 @@ pbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double shape1 = *(double *)(args[1] + i * steps[1]);
         double shape2 = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = pbeta(q, shape1, shape2, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = pbeta(q, shape1, shape2, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -409,7 +291,6 @@ pnbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double shape1 = *(double *)(args[1] + i * steps[1]);
@@ -417,14 +298,7 @@ pnbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double ncp = *(double *)(args[3] + i * steps[3]);
         long lower_tail = *(long *)(args[4] + i * steps[4]);
         long log_arg = *(long *)(args[5] + i * steps[5]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[6] + i * steps[6]) = pnbeta(q, shape1, shape2, ncp, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[6] + i * steps[6]) = pnbeta(q, shape1, shape2, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -437,21 +311,13 @@ qbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double shape1 = *(double *)(args[1] + i * steps[1]);
         double shape2 = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qbeta(p, shape1, shape2, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qbeta(p, shape1, shape2, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -464,7 +330,6 @@ qnbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double shape1 = *(double *)(args[1] + i * steps[1]);
@@ -472,14 +337,7 @@ qnbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double ncp = *(double *)(args[3] + i * steps[3]);
         long lower_tail = *(long *)(args[4] + i * steps[4]);
         long log_arg = *(long *)(args[5] + i * steps[5]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[6] + i * steps[6]) = qnbeta(p, shape1, shape2, ncp, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[6] + i * steps[6]) = qnbeta(p, shape1, shape2, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -492,18 +350,10 @@ rbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double shape1 = *(double *)(args[0] + i * steps[0]);
         double shape2 = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = rbeta(shape1, shape2);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = rbeta(shape1, shape2);
     }
 }
 
@@ -516,20 +366,12 @@ dlnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double meanlog = *(double *)(args[1] + i * steps[1]);
         double sdlog = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = dlnorm(x, meanlog, sdlog, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = dlnorm(x, meanlog, sdlog, (int)log_arg);
     }
 }
 
@@ -542,21 +384,13 @@ plnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double meanlog = *(double *)(args[1] + i * steps[1]);
         double sdlog = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = plnorm(q, meanlog, sdlog, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = plnorm(q, meanlog, sdlog, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -569,21 +403,13 @@ qlnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double meanlog = *(double *)(args[1] + i * steps[1]);
         double sdlog = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qlnorm(p, meanlog, sdlog, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qlnorm(p, meanlog, sdlog, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -596,18 +422,10 @@ rlnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double meanlog = *(double *)(args[0] + i * steps[0]);
         double sdlog = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = rlnorm(meanlog, sdlog);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = rlnorm(meanlog, sdlog);
     }
 }
 
@@ -620,19 +438,11 @@ dchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         long log_arg = *(long *)(args[2] + i * steps[2]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[3] + i * steps[3]) = dchisq(x, df, (int)log_arg);
-        } else {
-            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[3] + i * steps[3]) = dchisq(x, df, (int)log_arg);
     }
 }
 
@@ -645,20 +455,12 @@ dnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         double ncp = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = dnchisq(x, df, ncp, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = dnchisq(x, df, ncp, (int)log_arg);
     }
 }
 
@@ -671,20 +473,12 @@ pchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         long lower_tail = *(long *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = pchisq(q, df, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = pchisq(q, df, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -697,21 +491,13 @@ pnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         double ncp = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = pnchisq(q, df, ncp, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = pnchisq(q, df, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -724,20 +510,12 @@ qchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         long lower_tail = *(long *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = qchisq(p, df, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = qchisq(p, df, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -750,21 +528,13 @@ qnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         double ncp = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qnchisq(p, df, ncp, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qnchisq(p, df, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -777,17 +547,9 @@ rchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double df = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = rchisq(df);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = rchisq(df);
     }
 }
 
@@ -800,18 +562,10 @@ rnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double df = *(double *)(args[0] + i * steps[0]);
         double ncp = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = rnchisq(df, ncp);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = rnchisq(df, ncp);
     }
 }
 
@@ -824,20 +578,12 @@ df_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double df1 = *(double *)(args[1] + i * steps[1]);
         double df2 = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = df(x, df1, df2, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = df(x, df1, df2, (int)log_arg);
     }
 }
 
@@ -850,21 +596,13 @@ dnf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double df1 = *(double *)(args[1] + i * steps[1]);
         double df2 = *(double *)(args[2] + i * steps[2]);
         double ncp = *(double *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = dnf(x, df1, df2, ncp, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = dnf(x, df1, df2, ncp, (int)log_arg);
     }
 }
 
@@ -877,21 +615,13 @@ pf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double df1 = *(double *)(args[1] + i * steps[1]);
         double df2 = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = pf(q, df1, df2, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = pf(q, df1, df2, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -904,7 +634,6 @@ pnf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double df1 = *(double *)(args[1] + i * steps[1]);
@@ -912,14 +641,7 @@ pnf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double ncp = *(double *)(args[3] + i * steps[3]);
         long lower_tail = *(long *)(args[4] + i * steps[4]);
         long log_arg = *(long *)(args[5] + i * steps[5]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[6] + i * steps[6]) = pnf(q, df1, df2, ncp, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[6] + i * steps[6]) = pnf(q, df1, df2, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -932,21 +654,13 @@ qf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double df1 = *(double *)(args[1] + i * steps[1]);
         double df2 = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qf(p, df1, df2, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qf(p, df1, df2, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -959,7 +673,6 @@ qnf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double df1 = *(double *)(args[1] + i * steps[1]);
@@ -967,14 +680,7 @@ qnf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double ncp = *(double *)(args[3] + i * steps[3]);
         long lower_tail = *(long *)(args[4] + i * steps[4]);
         long log_arg = *(long *)(args[5] + i * steps[5]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[6] + i * steps[6]) = qnf(p, df1, df2, ncp, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[6] + i * steps[6]) = qnf(p, df1, df2, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -987,18 +693,10 @@ rf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double df1 = *(double *)(args[0] + i * steps[0]);
         double df2 = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = rf(df1, df2);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = rf(df1, df2);
     }
 }
 
@@ -1011,19 +709,11 @@ dt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         long log_arg = *(long *)(args[2] + i * steps[2]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[3] + i * steps[3]) = dt(x, df, (int)log_arg);
-        } else {
-            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[3] + i * steps[3]) = dt(x, df, (int)log_arg);
     }
 }
 
@@ -1036,20 +726,12 @@ dnt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         double ncp = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = dnt(x, df, ncp, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = dnt(x, df, ncp, (int)log_arg);
     }
 }
 
@@ -1062,20 +744,12 @@ pt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         long lower_tail = *(long *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = pt(q, df, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = pt(q, df, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1088,21 +762,13 @@ pnt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         double ncp = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = pnt(q, df, ncp, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = pnt(q, df, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1115,20 +781,12 @@ qt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         long lower_tail = *(long *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = qt(p, df, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = qt(p, df, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1141,21 +799,13 @@ qnt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         double ncp = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qnt(p, df, ncp, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qnt(p, df, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1168,17 +818,9 @@ rt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double df = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = rt(df);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = rt(df);
     }
 }
 
@@ -1191,20 +833,12 @@ dbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double prob = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = dbinom(x, size, prob, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = dbinom(x, size, prob, (int)log_arg);
     }
 }
 
@@ -1217,21 +851,13 @@ pbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double prob = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = pbinom(q, size, prob, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = pbinom(q, size, prob, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1244,21 +870,13 @@ qbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double prob = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qbinom(p, size, prob, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qbinom(p, size, prob, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1271,18 +889,10 @@ rbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double size = *(double *)(args[0] + i * steps[0]);
         double prob = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = rbinom(size, prob);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = rbinom(size, prob);
     }
 }
 
@@ -1295,20 +905,12 @@ dcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double location = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = dcauchy(x, location, scale, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = dcauchy(x, location, scale, (int)log_arg);
     }
 }
 
@@ -1321,21 +923,13 @@ pcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double location = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = pcauchy(q, location, scale, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = pcauchy(q, location, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1348,21 +942,13 @@ qcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double location = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qcauchy(p, location, scale, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qcauchy(p, location, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1375,18 +961,10 @@ rcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double location = *(double *)(args[0] + i * steps[0]);
         double scale = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = rcauchy(location, scale);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = rcauchy(location, scale);
     }
 }
 
@@ -1399,19 +977,11 @@ dexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double rate = *(double *)(args[1] + i * steps[1]);
         long log_arg = *(long *)(args[2] + i * steps[2]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[3] + i * steps[3]) = dexp(x, rate, (int)log_arg);
-        } else {
-            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[3] + i * steps[3]) = dexp(x, rate, (int)log_arg);
     }
 }
 
@@ -1424,20 +994,12 @@ pexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double rate = *(double *)(args[1] + i * steps[1]);
         long lower_tail = *(long *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = pexp(q, rate, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = pexp(q, rate, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1450,20 +1012,12 @@ qexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double rate = *(double *)(args[1] + i * steps[1]);
         long lower_tail = *(long *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = qexp(p, rate, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = qexp(p, rate, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1476,17 +1030,9 @@ rexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double rate = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = rexp(rate);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = rexp(rate);
     }
 }
 
@@ -1499,19 +1045,11 @@ dgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double prob = *(double *)(args[1] + i * steps[1]);
         long log_arg = *(long *)(args[2] + i * steps[2]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[3] + i * steps[3]) = dgeom(x, prob, (int)log_arg);
-        } else {
-            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[3] + i * steps[3]) = dgeom(x, prob, (int)log_arg);
     }
 }
 
@@ -1524,20 +1062,12 @@ pgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double prob = *(double *)(args[1] + i * steps[1]);
         long lower_tail = *(long *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = pgeom(q, prob, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = pgeom(q, prob, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1550,20 +1080,12 @@ qgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double prob = *(double *)(args[1] + i * steps[1]);
         long lower_tail = *(long *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = qgeom(p, prob, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = qgeom(p, prob, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1576,17 +1098,9 @@ rgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double prob = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = rgeom(prob);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = rgeom(prob);
     }
 }
 
@@ -1599,21 +1113,13 @@ dhyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double m = *(double *)(args[1] + i * steps[1]);
         double n = *(double *)(args[2] + i * steps[2]);
         double k = *(double *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = dhyper(x, m, n, k, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = dhyper(x, m, n, k, (int)log_arg);
     }
 }
 
@@ -1626,7 +1132,6 @@ phyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double m = *(double *)(args[1] + i * steps[1]);
@@ -1634,14 +1139,7 @@ phyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double k = *(double *)(args[3] + i * steps[3]);
         long lower_tail = *(long *)(args[4] + i * steps[4]);
         long log_arg = *(long *)(args[5] + i * steps[5]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[6] + i * steps[6]) = phyper(q, m, n, k, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[6] + i * steps[6]) = phyper(q, m, n, k, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1654,7 +1152,6 @@ qhyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double m = *(double *)(args[1] + i * steps[1]);
@@ -1662,14 +1159,7 @@ qhyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double k = *(double *)(args[3] + i * steps[3]);
         long lower_tail = *(long *)(args[4] + i * steps[4]);
         long log_arg = *(long *)(args[5] + i * steps[5]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[6] + i * steps[6]) = qhyper(p, m, n, k, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[6] + i * steps[6]) = qhyper(p, m, n, k, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1682,19 +1172,11 @@ rhyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double m = *(double *)(args[0] + i * steps[0]);
         double n = *(double *)(args[1] + i * steps[1]);
         double k = *(double *)(args[2] + i * steps[2]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[3] + i * steps[3]) = rhyper(m, n, k);
-        } else {
-            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[3] + i * steps[3]) = rhyper(m, n, k);
     }
 }
 
@@ -1707,20 +1189,12 @@ dnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double prob = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = dnbinom(x, size, prob, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = dnbinom(x, size, prob, (int)log_arg);
     }
 }
 
@@ -1733,20 +1207,12 @@ dnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double mu = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = dnbinom_mu(x, size, mu, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = dnbinom_mu(x, size, mu, (int)log_arg);
     }
 }
 
@@ -1759,21 +1225,13 @@ pnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double prob = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = pnbinom(q, size, prob, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = pnbinom(q, size, prob, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1786,21 +1244,13 @@ pnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double mu = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = pnbinom_mu(q, size, mu, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = pnbinom_mu(q, size, mu, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1813,21 +1263,13 @@ qnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double prob = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qnbinom(p, size, prob, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qnbinom(p, size, prob, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1840,21 +1282,13 @@ qnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double mu = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qnbinom_mu(p, size, mu, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qnbinom_mu(p, size, mu, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1867,18 +1301,10 @@ rnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double size = *(double *)(args[0] + i * steps[0]);
         double prob = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = rnbinom(size, prob);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = rnbinom(size, prob);
     }
 }
 
@@ -1891,18 +1317,10 @@ rnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double size = *(double *)(args[0] + i * steps[0]);
         double mu = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = rnbinom_mu(size, mu);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = rnbinom_mu(size, mu);
     }
 }
 
@@ -1915,19 +1333,11 @@ dpois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double lambda = *(double *)(args[1] + i * steps[1]);
         long log_arg = *(long *)(args[2] + i * steps[2]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[3] + i * steps[3]) = dpois(x, lambda, (int)log_arg);
-        } else {
-            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[3] + i * steps[3]) = dpois(x, lambda, (int)log_arg);
     }
 }
 
@@ -1940,20 +1350,12 @@ ppois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double lambda = *(double *)(args[1] + i * steps[1]);
         long lower_tail = *(long *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = ppois(q, lambda, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = ppois(q, lambda, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1966,20 +1368,12 @@ qpois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double lambda = *(double *)(args[1] + i * steps[1]);
         long lower_tail = *(long *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = qpois(p, lambda, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = qpois(p, lambda, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -1992,17 +1386,9 @@ rpois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double lambda = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = rpois(lambda);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = rpois(lambda);
     }
 }
 
@@ -2015,20 +1401,12 @@ dweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double shape = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = dweibull(x, shape, scale, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = dweibull(x, shape, scale, (int)log_arg);
     }
 }
 
@@ -2041,21 +1419,13 @@ pweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double shape = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = pweibull(q, shape, scale, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = pweibull(q, shape, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -2068,21 +1438,13 @@ qweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double shape = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qweibull(p, shape, scale, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qweibull(p, shape, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -2095,18 +1457,10 @@ rweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double shape = *(double *)(args[0] + i * steps[0]);
         double scale = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = rweibull(shape, scale);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = rweibull(shape, scale);
     }
 }
 
@@ -2119,20 +1473,12 @@ dlogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double location = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = dlogis(x, location, scale, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = dlogis(x, location, scale, (int)log_arg);
     }
 }
 
@@ -2145,21 +1491,13 @@ plogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double location = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = plogis(q, location, scale, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = plogis(q, location, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -2172,21 +1510,13 @@ qlogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double location = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qlogis(p, location, scale, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qlogis(p, location, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -2199,18 +1529,10 @@ rlogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double location = *(double *)(args[0] + i * steps[0]);
         double scale = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = rlogis(location, scale);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = rlogis(location, scale);
     }
 }
 
@@ -2224,20 +1546,12 @@ dwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
     npy_intp n = dims[0];
     (void)data;
     PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double m = *(double *)(args[1] + i * steps[1]);
         double n = *(double *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = dwilcox(x, m, n, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = dwilcox(x, m, n, (int)log_arg);
     }
     PyThread_release_lock(accudist_cache_lock);
 }
@@ -2252,21 +1566,13 @@ pwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
     npy_intp n = dims[0];
     (void)data;
     PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double m = *(double *)(args[1] + i * steps[1]);
         double n = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = pwilcox(q, m, n, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = pwilcox(q, m, n, (int)lower_tail, (int)log_arg);
     }
     PyThread_release_lock(accudist_cache_lock);
 }
@@ -2281,21 +1587,13 @@ qwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
     npy_intp n = dims[0];
     (void)data;
     PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double m = *(double *)(args[1] + i * steps[1]);
         double n = *(double *)(args[2] + i * steps[2]);
         long lower_tail = *(long *)(args[3] + i * steps[3]);
         long log_arg = *(long *)(args[4] + i * steps[4]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[5] + i * steps[5]) = qwilcox(p, m, n, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[5] + i * steps[5]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[5] + i * steps[5]) = qwilcox(p, m, n, (int)lower_tail, (int)log_arg);
     }
     PyThread_release_lock(accudist_cache_lock);
 }
@@ -2310,18 +1608,10 @@ rwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
     npy_intp n = dims[0];
     (void)data;
     PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
-    
     for (npy_intp i = 0; i < n; i++) {
         double m = *(double *)(args[0] + i * steps[0]);
         double n = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = rwilcox(m, n);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = rwilcox(m, n);
     }
     PyThread_release_lock(accudist_cache_lock);
 }
@@ -2336,19 +1626,11 @@ dsignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *d
     npy_intp n = dims[0];
     (void)data;
     PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double n = *(double *)(args[1] + i * steps[1]);
         long log_arg = *(long *)(args[2] + i * steps[2]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[3] + i * steps[3]) = dsignrank(x, n, (int)log_arg);
-        } else {
-            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[3] + i * steps[3]) = dsignrank(x, n, (int)log_arg);
     }
     PyThread_release_lock(accudist_cache_lock);
 }
@@ -2363,20 +1645,12 @@ psignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *d
     npy_intp n = dims[0];
     (void)data;
     PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double n = *(double *)(args[1] + i * steps[1]);
         long lower_tail = *(long *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = psignrank(q, n, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = psignrank(q, n, (int)lower_tail, (int)log_arg);
     }
     PyThread_release_lock(accudist_cache_lock);
 }
@@ -2391,20 +1665,12 @@ qsignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *d
     npy_intp n = dims[0];
     (void)data;
     PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double n = *(double *)(args[1] + i * steps[1]);
         long lower_tail = *(long *)(args[2] + i * steps[2]);
         long log_arg = *(long *)(args[3] + i * steps[3]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[4] + i * steps[4]) = qsignrank(p, n, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[4] + i * steps[4]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[4] + i * steps[4]) = qsignrank(p, n, (int)lower_tail, (int)log_arg);
     }
     PyThread_release_lock(accudist_cache_lock);
 }
@@ -2419,17 +1685,9 @@ rsignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *d
     npy_intp n = dims[0];
     (void)data;
     PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);
-    
     for (npy_intp i = 0; i < n; i++) {
         double n = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = rsignrank(n);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = rsignrank(n);
     }
     PyThread_release_lock(accudist_cache_lock);
 }
@@ -2443,7 +1701,6 @@ ptukey_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double nranges = *(double *)(args[1] + i * steps[1]);
@@ -2451,14 +1708,7 @@ ptukey_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double df = *(double *)(args[3] + i * steps[3]);
         long lower_tail = *(long *)(args[4] + i * steps[4]);
         long log_arg = *(long *)(args[5] + i * steps[5]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[6] + i * steps[6]) = ptukey(q, nranges, nmeans, df, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[6] + i * steps[6]) = ptukey(q, nranges, nmeans, df, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -2471,7 +1721,6 @@ qtukey_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double nranges = *(double *)(args[1] + i * steps[1]);
@@ -2479,14 +1728,7 @@ qtukey_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double df = *(double *)(args[3] + i * steps[3]);
         long lower_tail = *(long *)(args[4] + i * steps[4]);
         long log_arg = *(long *)(args[5] + i * steps[5]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[6] + i * steps[6]) = qtukey(p, nranges, nmeans, df, (int)lower_tail, (int)log_arg);
-        } else {
-            *(double *)(args[6] + i * steps[6]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[6] + i * steps[6]) = qtukey(p, nranges, nmeans, df, (int)lower_tail, (int)log_arg);
     }
 }
 
@@ -2499,17 +1741,9 @@ gammafn_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = gammafn(x);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = gammafn(x);
     }
 }
 
@@ -2522,17 +1756,9 @@ lgammafn_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = lgammafn(x);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = lgammafn(x);
     }
 }
 
@@ -2545,17 +1771,9 @@ digamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = digamma(x);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = digamma(x);
     }
 }
 
@@ -2568,17 +1786,9 @@ trigamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = trigamma(x);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = trigamma(x);
     }
 }
 
@@ -2591,17 +1801,9 @@ tetragamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = tetragamma(x);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = tetragamma(x);
     }
 }
 
@@ -2614,17 +1816,9 @@ pentagamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = pentagamma(x);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = pentagamma(x);
     }
 }
 
@@ -2637,18 +1831,10 @@ psigamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double deriv = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = psigamma(x, deriv);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = psigamma(x, deriv);
     }
 }
 
@@ -2661,18 +1847,10 @@ beta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double a = *(double *)(args[0] + i * steps[0]);
         double b = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = beta(a, b);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = beta(a, b);
     }
 }
 
@@ -2685,18 +1863,10 @@ lbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double a = *(double *)(args[0] + i * steps[0]);
         double b = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = lbeta(a, b);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = lbeta(a, b);
     }
 }
 
@@ -2709,18 +1879,10 @@ choose_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double n = *(double *)(args[0] + i * steps[0]);
         double k = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = choose(n, k);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = choose(n, k);
     }
 }
 
@@ -2733,18 +1895,10 @@ lchoose_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double n = *(double *)(args[0] + i * steps[0]);
         double k = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = lchoose(n, k);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = lchoose(n, k);
     }
 }
 
@@ -2757,18 +1911,10 @@ bessel_j_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double nu = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = bessel_j(x, nu);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = bessel_j(x, nu);
     }
 }
 
@@ -2781,18 +1927,10 @@ bessel_y_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double nu = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = bessel_y(x, nu);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = bessel_y(x, nu);
     }
 }
 
@@ -2805,19 +1943,11 @@ bessel_i_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double nu = *(double *)(args[1] + i * steps[1]);
         double expon_scaled = *(double *)(args[2] + i * steps[2]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[3] + i * steps[3]) = bessel_i(x, nu, expon_scaled);
-        } else {
-            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[3] + i * steps[3]) = bessel_i(x, nu, expon_scaled);
     }
 }
 
@@ -2830,19 +1960,11 @@ bessel_k_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double nu = *(double *)(args[1] + i * steps[1]);
         double expon_scaled = *(double *)(args[2] + i * steps[2]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[3] + i * steps[3]) = bessel_k(x, nu, expon_scaled);
-        } else {
-            *(double *)(args[3] + i * steps[3]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[3] + i * steps[3]) = bessel_k(x, nu, expon_scaled);
     }
 }
 
@@ -2855,17 +1977,9 @@ log1pmx_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = log1pmx(x);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = log1pmx(x);
     }
 }
 
@@ -2878,17 +1992,9 @@ log1pexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = log1pexp(x);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = log1pexp(x);
     }
 }
 
@@ -2901,17 +2007,9 @@ lgamma1p_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = lgamma1p(x);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = lgamma1p(x);
     }
 }
 
@@ -2924,18 +2022,10 @@ logspace_add_loop(char **args, const npy_intp *dims, const npy_intp *steps, void
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double logx = *(double *)(args[0] + i * steps[0]);
         double logy = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = logspace_add(logx, logy);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = logspace_add(logx, logy);
     }
 }
 
@@ -2948,18 +2038,10 @@ logspace_sub_loop(char **args, const npy_intp *dims, const npy_intp *steps, void
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double logx = *(double *)(args[0] + i * steps[0]);
         double logy = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = logspace_sub(logx, logy);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = logspace_sub(logx, logy);
     }
 }
 
@@ -2972,17 +2054,9 @@ cospi_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = cospi(x);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = cospi(x);
     }
 }
 
@@ -2995,17 +2069,9 @@ sinpi_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = sinpi(x);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = sinpi(x);
     }
 }
 
@@ -3018,17 +2084,9 @@ tanpi_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = tanpi(x);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = tanpi(x);
     }
 }
 
@@ -3041,18 +2099,10 @@ fprec_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double digits = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = fprec(x, digits);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = fprec(x, digits);
     }
 }
 
@@ -3065,18 +2115,10 @@ fround_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double digits = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = fround(x, digits);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = fround(x, digits);
     }
 }
 
@@ -3089,18 +2131,10 @@ fsign_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double y = *(double *)(args[1] + i * steps[1]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[2] + i * steps[2]) = fsign(x, y);
-        } else {
-            *(double *)(args[2] + i * steps[2]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[2] + i * steps[2]) = fsign(x, y);
     }
 }
 
@@ -3113,17 +2147,9 @@ ftrunc_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = ftrunc(x);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = ftrunc(x);
     }
 }
 
@@ -3136,23 +2162,51 @@ sign_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
 {
     npy_intp n = dims[0];
     (void)data;
-    
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {
-            *(double *)(args[1] + i * steps[1]) = sign(x);
-        } else {
-            *(double *)(args[1] + i * steps[1]) = NPY_NAN;
-        }
-        accudist_jump_target = NULL;
+        *(double *)(args[1] + i * steps[1]) = sign(x);
     }
 }
 
 static PyUFuncGenericFunction sign_funcs[1] = {sign_loop};
 static void *sign_data[1] = {NULL};
 static char sign_types[] = {NPY_DOUBLE, NPY_DOUBLE};
+
+static void
+dbinom_raw_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double n = *(double *)(args[1] + i * steps[1]);
+        double p = *(double *)(args[2] + i * steps[2]);
+        double q = *(double *)(args[3] + i * steps[3]);
+        long give_log = *(long *)(args[4] + i * steps[4]);
+        *(double *)(args[5] + i * steps[5]) = dbinom_raw(x, n, p, q, (int)give_log);
+    }
+}
+
+static PyUFuncGenericFunction dbinom_raw_funcs[1] = {dbinom_raw_loop};
+static void *dbinom_raw_data[1] = {NULL};
+static char dbinom_raw_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+
+static void
+dpois_raw_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
+{
+    npy_intp n = dims[0];
+    (void)data;
+    for (npy_intp i = 0; i < n; i++) {
+        double x = *(double *)(args[0] + i * steps[0]);
+        double lambda = *(double *)(args[1] + i * steps[1]);
+        long give_log = *(long *)(args[2] + i * steps[2]);
+        *(double *)(args[3] + i * steps[3]) = dpois_raw(x, lambda, (int)give_log);
+    }
+}
+
+static PyUFuncGenericFunction dpois_raw_funcs[1] = {dpois_raw_loop};
+static void *dpois_raw_data[1] = {NULL};
+static char dpois_raw_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
 
 static PyObject *
 py_clear_error(PyObject *self, PyObject *ignored)
@@ -3178,6 +2232,128 @@ py_force_allocation_failure(PyObject *self, PyObject *ignored)
     (void)ignored;
     accudist_fatal("forced allocation failure: %d", 1);
     Py_RETURN_NONE;
+}
+
+static PyObject *
+py_pnorm_both_scalar(PyObject *self, PyObject *args)
+{
+    double x, lower, upper;
+    int log_p;
+    (void)self;
+    if (!PyArg_ParseTuple(args, "di:_pnorm_both_scalar", &x, &log_p)) return NULL;
+    pnorm_both(x, &lower, &upper, 2, log_p);
+    return Py_BuildValue("(dd)", lower, upper);
+}
+
+static PyObject *
+py_lgammafn_sign_scalar(PyObject *self, PyObject *args)
+{
+    double x, value;
+    int sign = 1;
+    (void)self;
+    if (!PyArg_ParseTuple(args, "d:_lgammafn_sign_scalar", &x)) return NULL;
+    value = lgammafn_sign(x, &sign);
+    return Py_BuildValue("(di)", value, sign);
+}
+
+static PyObject *
+py_logspace_sum_1d(PyObject *self, PyObject *argument)
+{
+    PyObject *sequence;
+    Py_ssize_t length;
+    double *values;
+    double result;
+    (void)self;
+    sequence = PySequence_Fast(argument, "values must be a one-dimensional sequence");
+    if (sequence == NULL) return NULL;
+    length = PySequence_Fast_GET_SIZE(sequence);
+    if (length > INT_MAX) {
+        Py_DECREF(sequence);
+        return PyErr_Format(PyExc_OverflowError, "too many values for Rmath logspace_sum");
+    }
+    values = PyMem_Malloc((size_t)(length > 0 ? length : 1) * sizeof(double));
+    if (values == NULL) {
+        Py_DECREF(sequence);
+        return PyErr_NoMemory();
+    }
+    for (Py_ssize_t i = 0; i < length; i++) {
+        values[i] = PyFloat_AsDouble(PySequence_Fast_GET_ITEM(sequence, i));
+        if (PyErr_Occurred()) {
+            PyMem_Free(values);
+            Py_DECREF(sequence);
+            return NULL;
+        }
+    }
+    result = logspace_sum(values, (int)length);
+    PyMem_Free(values);
+    Py_DECREF(sequence);
+    return PyFloat_FromDouble(result);
+}
+
+static PyObject *
+py_rmultinom_one(PyObject *self, PyObject *args)
+{
+    int size;
+    PyObject *argument;
+    PyObject *sequence;
+    PyObject *result;
+    Py_ssize_t length;
+    double *probabilities;
+    int *draws;
+    long double total = 0.0L;
+    (void)self;
+    if (!PyArg_ParseTuple(args, "iO:_rmultinom_one", &size, &argument)) return NULL;
+    sequence = PySequence_Fast(argument, "prob must be a one-dimensional sequence");
+    if (sequence == NULL) return NULL;
+    length = PySequence_Fast_GET_SIZE(sequence);
+    if (length < 1 || length > INT_MAX) {
+        Py_DECREF(sequence);
+        return PyErr_Format(PyExc_ValueError, "prob must contain between 1 and INT_MAX values");
+    }
+    probabilities = PyMem_Malloc((size_t)length * sizeof(double));
+    draws = PyMem_Malloc((size_t)length * sizeof(int));
+    if (probabilities == NULL || draws == NULL) {
+        PyMem_Free(probabilities);
+        PyMem_Free(draws);
+        Py_DECREF(sequence);
+        return PyErr_NoMemory();
+    }
+    for (Py_ssize_t i = 0; i < length; i++) {
+        probabilities[i] = PyFloat_AsDouble(PySequence_Fast_GET_ITEM(sequence, i));
+        if (PyErr_Occurred()) {
+            PyMem_Free(probabilities);
+            PyMem_Free(draws);
+            Py_DECREF(sequence);
+            return NULL;
+        }
+        total += (long double)probabilities[i];
+    }
+    rmultinom(size, probabilities, (int)length, draws);
+    if (fabsl(total - 1.0L) > 1e-7L) {
+        accudist_errword &= ~(unsigned)ACCUDIST_ALLOC;
+        PyMem_Free(probabilities);
+        PyMem_Free(draws);
+        Py_DECREF(sequence);
+        PyErr_SetString(PyExc_ValueError,
+                        "probabilities must sum to 1 (rbinom probability sum should be 1)");
+        return NULL;
+    }
+    result = PyTuple_New(length);
+    if (result != NULL) {
+        for (Py_ssize_t i = 0; i < length; i++) {
+            PyObject *value = PyLong_FromLong(draws[i]);
+            if (value == NULL) {
+                Py_DECREF(result);
+                result = NULL;
+                break;
+            }
+            PyTuple_SET_ITEM(result, i, value);
+        }
+    }
+    PyMem_Free(probabilities);
+    PyMem_Free(draws);
+    Py_DECREF(sequence);
+    return result;
 }
 
 static PyObject *
@@ -3216,6 +2392,10 @@ static PyMethodDef module_methods[] = {
     {"_clear_error", py_clear_error, METH_NOARGS, NULL},
     {"_take_error", py_take_error, METH_NOARGS, NULL},
     {"_force_allocation_failure", py_force_allocation_failure, METH_NOARGS, NULL},
+    {"_pnorm_both_scalar", py_pnorm_both_scalar, METH_VARARGS, NULL},
+    {"_lgammafn_sign_scalar", py_lgammafn_sign_scalar, METH_VARARGS, NULL},
+    {"_logspace_sum_1d", py_logspace_sum_1d, METH_O, NULL},
+    {"_rmultinom_one", py_rmultinom_one, METH_VARARGS, NULL},
     {"_set_seed", py_set_seed, METH_VARARGS, NULL},
     {"_get_seed", py_get_seed, METH_NOARGS, NULL},
     {"_free_caches", py_free_caches, METH_NOARGS, NULL},
@@ -3235,13 +2415,23 @@ module_free(void *module)
     accudist_free_locks();
 }
 
+#if PY_VERSION_HEX >= 0x030D0000
+static PyModuleDef_Slot module_slots[] = {
+    {Py_mod_gil, Py_MOD_GIL_NOT_USED},
+    {0, NULL}
+};
+#define ACCUDIST_MODULE_SLOTS module_slots
+#else
+#define ACCUDIST_MODULE_SLOTS NULL
+#endif
+
 static struct PyModuleDef module_def = {
     PyModuleDef_HEAD_INIT,
     "_ufuncs",
     "Generated NumPy ufuncs backed by R nmath.",
     -1,
     module_methods,
-    NULL,
+    ACCUDIST_MODULE_SLOTS,
     NULL,
     NULL,
     module_free
@@ -4733,6 +3923,30 @@ PyInit__ufuncs(void)
             "sign", "Raw R nmath sign ufunc.", 0
         );
         if (ufunc == NULL || PyModule_AddObject(module, "sign", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dbinom_raw_funcs, dbinom_raw_data, dbinom_raw_types,
+            1, 5, 1, PyUFunc_None,
+            "dbinom_raw", "Raw R nmath dbinom_raw ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dbinom_raw", ufunc) < 0) {
+            Py_XDECREF(ufunc);
+            Py_DECREF(module);
+            return NULL;
+        }
+    }
+    {
+        PyObject *ufunc = PyUFunc_FromFuncAndData(
+            dpois_raw_funcs, dpois_raw_data, dpois_raw_types,
+            1, 3, 1, PyUFunc_None,
+            "dpois_raw", "Raw R nmath dpois_raw ufunc.", 0
+        );
+        if (ufunc == NULL || PyModule_AddObject(module, "dpois_raw", ufunc) < 0) {
             Py_XDECREF(ufunc);
             Py_DECREF(module);
             return NULL;

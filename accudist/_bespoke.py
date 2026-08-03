@@ -4,22 +4,40 @@ from __future__ import annotations
 
 import numpy as np
 
-from . import _api
+from . import _errstate, _ufuncs
+
+
+def _pairwise(values, operation):
+    array = np.asarray(values, dtype=np.float64)
+    if array.ndim == 0:
+        first, second = operation(float(array))
+        return np.float64(first), np.float64(second)
+    first = np.empty(array.shape, dtype=np.float64)
+    second = np.empty(array.shape, dtype=np.float64)
+    for index in np.ndindex(array.shape):
+        first[index], second[index] = operation(float(array[index]))
+    return first, second
 
 
 def pnorm_both(x, *, log=False):
     """Return R's directly computed lower and upper normal tails."""
 
-    lower = _api.pnorm(x, lower_tail=True, log=log)
-    upper = _api.pnorm(x, lower_tail=False, log=log)
-    return lower, upper
+    with _errstate.capture("pnorm_both") as captured:
+        result = _pairwise(x, lambda value: _ufuncs._pnorm_both_scalar(value, int(log)))
+    captured.check()
+    return result
 
 
 def lgammafn_sign(x):
     """Return ``(lgamma(abs(x)), sign(gamma(x)))`` with NumPy broadcasting."""
 
-    value = _api.lgammafn(x)
-    sign = np.sign(_api.gammafn(x)).astype(np.intc)
+    with _errstate.capture("lgammafn_sign") as captured:
+        value, sign = _pairwise(x, _ufuncs._lgammafn_sign_scalar)
+    captured.check()
+    if np.ndim(sign) == 0:
+        sign = np.intc(sign)
+    else:
+        sign = np.asarray(sign, dtype=np.intc)
     return value, sign
 
 
@@ -33,27 +51,27 @@ def rmultinom(n, size, prob):
     probabilities = np.asarray(prob, dtype=np.float64).reshape(-1)
     if probabilities.size < 1 or np.any(~np.isfinite(probabilities)) or np.any(probabilities < 0):
         raise ValueError("probabilities must be finite and non-negative")
-    total = float(np.sum(probabilities, dtype=np.longdouble))
-    if abs(total - 1.0) > 1e-7:
-        raise ValueError("multinomial probabilities must sum to 1")
-    result = np.zeros((count, probabilities.size), dtype=np.intc)
-    with _rng.locked():
+    def draw_rows():
+        result = np.empty((count, probabilities.size), dtype=np.intc)
         for row in range(count):
-            remaining = size
-            remaining_probability = total
-            for column in range(probabilities.size - 1):
-                probability = probabilities[column]
-                if probability != 0.0:
-                    conditional = probability / remaining_probability
-                    draw = int(_api.rbinom(1, remaining, min(conditional, 1.0))[0])
-                    result[row, column] = draw
-                    remaining -= draw
-                remaining_probability -= probability
-            result[row, -1] = remaining
+            result[row] = _ufuncs._rmultinom_one(size, probabilities)
+        return result
+
+    with _errstate.capture("rmultinom") as captured:
+        result = _rng.execute(draw_rows)
+    captured.check()
     return result
 
 
 def logspace_sum(values, axis=-1):
     """Sum exponentials in log space along one array axis."""
 
-    return np.logaddexp.reduce(np.asarray(values, dtype=np.float64), axis=axis)
+    array = np.asarray(values, dtype=np.float64)
+    if array.ndim == 0:
+        raise np.exceptions.AxisError(axis, ndim=0)
+    axis = np.core.numeric.normalize_axis_index(axis, array.ndim)
+    rows = np.moveaxis(array, axis, -1)
+    output = np.empty(rows.shape[:-1], dtype=np.float64)
+    for index in np.ndindex(output.shape):
+        output[index] = _ufuncs._logspace_sum_1d(rows[index])
+    return np.float64(output) if output.ndim == 0 else output

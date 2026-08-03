@@ -56,7 +56,7 @@ void signrank_free(void)
     w_free();
 }
 
-static void
+static int
 w_init_maybe(int n)
 {
     int u, c;
@@ -68,16 +68,17 @@ w_init_maybe(int n)
         if(n != allocated_n) {
 	    w_free();
 	}
-	else return;
+	else return 1;
     }
 
     if(!w) {
 	w = (double *) calloc((size_t) c + 1, sizeof(double));
 #ifdef MATHLIB_STANDALONE
-	if (!w) MATHLIB_ERROR("%s", _("signrank allocation error"));
+	if (!w) { MATHLIB_ERROR("%s", _("signrank allocation error")); return 0; }
 #endif
 	allocated_n = n;
     }
+    return 1;
 }
 
 static double
@@ -131,7 +132,7 @@ double dsignrank(double x, double n, int give_log)
 	return(R_D__0);
 
     int nn = (int) n;
-    w_init_maybe(nn);
+    if (!w_init_maybe(nn)) return ML_NAN;
     d = R_D_exp(log(csignrank((int) x, nn)) - n * M_LN2);
 
     return(d);
@@ -157,7 +158,7 @@ double psignrank(double x, double n, int lower_tail, int log_p)
 	return(R_DT_1);
 
     int nn = (int) n;
-    w_init_maybe(nn);
+    if (!w_init_maybe(nn)) return ML_NAN;
     f = exp(- n * M_LN2);
     p = 0;
     if (x <= (n * (n + 1) / 4)) {
@@ -199,7 +200,7 @@ double qsignrank(double x, double n, int lower_tail, int log_p)
 	x = R_DT_qIv(x); /* lower_tail,non-log "p" */
 
     int nn = (int) n;
-    w_init_maybe(nn);
+    if (!w_init_maybe(nn)) return ML_NAN;
     f = exp(- n * M_LN2);
     p = 0;
     int q = 0;

@@ -62,6 +62,21 @@ def ufunc_specs(functions: list[dict]) -> dict[str, dict]:
             ):
                 raise ValueError(f"inconsistent signatures for C symbol {symbol}")
             specs[symbol] = spec
+    # Rmath.h exposes these helpers as part of its raw ABI.  They intentionally
+    # have no public accudist wrapper, but docs/functions.toml records them as
+    # raw-only exclusions and rmath.py must make them reachable.
+    specs["dbinom_raw"] = {
+        "symbol": "dbinom_raw",
+        "inputs": ["x", "n", "p", "q", "give_log"],
+        "flags": {"give_log"},
+        "cache": None,
+    }
+    specs["dpois_raw"] = {
+        "symbol": "dpois_raw",
+        "inputs": ["x", "lambda_", "give_log"],
+        "flags": {"give_log"},
+        "cache": None,
+    }
     return specs
 
 
@@ -107,17 +122,9 @@ def render_c(functions: list[dict]) -> str:
 {{
     npy_intp n = dims[0];
     (void)data;
-{lock_before}    
-    for (npy_intp i = 0; i < n; i++) {{
+{lock_before}    for (npy_intp i = 0; i < n; i++) {{
 {chr(10).join(declarations)}
-        jmp_buf jump;
-        accudist_jump_target = &jump;
-        if (setjmp(jump) == 0) {{
-            *(double *)(args[{output_index}] + i * steps[{output_index}]) = {call};
-        }} else {{
-            *(double *)(args[{output_index}] + i * steps[{output_index}]) = NPY_NAN;
-        }}
-        accudist_jump_target = NULL;
+        *(double *)(args[{output_index}] + i * steps[{output_index}]) = {call};
     }}
 {lock_after}}}
 
@@ -145,6 +152,8 @@ static char {symbol}_types[] = {{{', '.join(type_codes)}}};
 #define PY_SSIZE_T_CLEAN
 #define NPY_NO_DEPRECATED_API NPY_1_25_API_VERSION
 #include <Python.h>
+#include <limits.h>
+#include <math.h>
 #include <numpy/arrayobject.h>
 #include <numpy/ufuncobject.h>
 #include <Rmath.h>
@@ -183,6 +192,128 @@ py_force_allocation_failure(PyObject *self, PyObject *ignored)
 }}
 
 static PyObject *
+py_pnorm_both_scalar(PyObject *self, PyObject *args)
+{{
+    double x, lower, upper;
+    int log_p;
+    (void)self;
+    if (!PyArg_ParseTuple(args, "di:_pnorm_both_scalar", &x, &log_p)) return NULL;
+    pnorm_both(x, &lower, &upper, 2, log_p);
+    return Py_BuildValue("(dd)", lower, upper);
+}}
+
+static PyObject *
+py_lgammafn_sign_scalar(PyObject *self, PyObject *args)
+{{
+    double x, value;
+    int sign = 1;
+    (void)self;
+    if (!PyArg_ParseTuple(args, "d:_lgammafn_sign_scalar", &x)) return NULL;
+    value = lgammafn_sign(x, &sign);
+    return Py_BuildValue("(di)", value, sign);
+}}
+
+static PyObject *
+py_logspace_sum_1d(PyObject *self, PyObject *argument)
+{{
+    PyObject *sequence;
+    Py_ssize_t length;
+    double *values;
+    double result;
+    (void)self;
+    sequence = PySequence_Fast(argument, "values must be a one-dimensional sequence");
+    if (sequence == NULL) return NULL;
+    length = PySequence_Fast_GET_SIZE(sequence);
+    if (length > INT_MAX) {{
+        Py_DECREF(sequence);
+        return PyErr_Format(PyExc_OverflowError, "too many values for Rmath logspace_sum");
+    }}
+    values = PyMem_Malloc((size_t)(length > 0 ? length : 1) * sizeof(double));
+    if (values == NULL) {{
+        Py_DECREF(sequence);
+        return PyErr_NoMemory();
+    }}
+    for (Py_ssize_t i = 0; i < length; i++) {{
+        values[i] = PyFloat_AsDouble(PySequence_Fast_GET_ITEM(sequence, i));
+        if (PyErr_Occurred()) {{
+            PyMem_Free(values);
+            Py_DECREF(sequence);
+            return NULL;
+        }}
+    }}
+    result = logspace_sum(values, (int)length);
+    PyMem_Free(values);
+    Py_DECREF(sequence);
+    return PyFloat_FromDouble(result);
+}}
+
+static PyObject *
+py_rmultinom_one(PyObject *self, PyObject *args)
+{{
+    int size;
+    PyObject *argument;
+    PyObject *sequence;
+    PyObject *result;
+    Py_ssize_t length;
+    double *probabilities;
+    int *draws;
+    long double total = 0.0L;
+    (void)self;
+    if (!PyArg_ParseTuple(args, "iO:_rmultinom_one", &size, &argument)) return NULL;
+    sequence = PySequence_Fast(argument, "prob must be a one-dimensional sequence");
+    if (sequence == NULL) return NULL;
+    length = PySequence_Fast_GET_SIZE(sequence);
+    if (length < 1 || length > INT_MAX) {{
+        Py_DECREF(sequence);
+        return PyErr_Format(PyExc_ValueError, "prob must contain between 1 and INT_MAX values");
+    }}
+    probabilities = PyMem_Malloc((size_t)length * sizeof(double));
+    draws = PyMem_Malloc((size_t)length * sizeof(int));
+    if (probabilities == NULL || draws == NULL) {{
+        PyMem_Free(probabilities);
+        PyMem_Free(draws);
+        Py_DECREF(sequence);
+        return PyErr_NoMemory();
+    }}
+    for (Py_ssize_t i = 0; i < length; i++) {{
+        probabilities[i] = PyFloat_AsDouble(PySequence_Fast_GET_ITEM(sequence, i));
+        if (PyErr_Occurred()) {{
+            PyMem_Free(probabilities);
+            PyMem_Free(draws);
+            Py_DECREF(sequence);
+            return NULL;
+        }}
+        total += (long double)probabilities[i];
+    }}
+    rmultinom(size, probabilities, (int)length, draws);
+    if (fabsl(total - 1.0L) > 1e-7L) {{
+        accudist_errword &= ~(unsigned)ACCUDIST_ALLOC;
+        PyMem_Free(probabilities);
+        PyMem_Free(draws);
+        Py_DECREF(sequence);
+        PyErr_SetString(PyExc_ValueError,
+                        "probabilities must sum to 1 (rbinom probability sum should be 1)");
+        return NULL;
+    }}
+    result = PyTuple_New(length);
+    if (result != NULL) {{
+        for (Py_ssize_t i = 0; i < length; i++) {{
+            PyObject *value = PyLong_FromLong(draws[i]);
+            if (value == NULL) {{
+                Py_DECREF(result);
+                result = NULL;
+                break;
+            }}
+            PyTuple_SET_ITEM(result, i, value);
+        }}
+    }}
+    PyMem_Free(probabilities);
+    PyMem_Free(draws);
+    Py_DECREF(sequence);
+    return result;
+}}
+
+static PyObject *
 py_set_seed(PyObject *self, PyObject *args)
 {{
     unsigned int i1, i2;
@@ -218,6 +349,10 @@ static PyMethodDef module_methods[] = {{
     {{"_clear_error", py_clear_error, METH_NOARGS, NULL}},
     {{"_take_error", py_take_error, METH_NOARGS, NULL}},
     {{"_force_allocation_failure", py_force_allocation_failure, METH_NOARGS, NULL}},
+    {{"_pnorm_both_scalar", py_pnorm_both_scalar, METH_VARARGS, NULL}},
+    {{"_lgammafn_sign_scalar", py_lgammafn_sign_scalar, METH_VARARGS, NULL}},
+    {{"_logspace_sum_1d", py_logspace_sum_1d, METH_O, NULL}},
+    {{"_rmultinom_one", py_rmultinom_one, METH_VARARGS, NULL}},
     {{"_set_seed", py_set_seed, METH_VARARGS, NULL}},
     {{"_get_seed", py_get_seed, METH_NOARGS, NULL}},
     {{"_free_caches", py_free_caches, METH_NOARGS, NULL}},
@@ -237,13 +372,23 @@ module_free(void *module)
     accudist_free_locks();
 }}
 
+#if PY_VERSION_HEX >= 0x030D0000
+static PyModuleDef_Slot module_slots[] = {{
+    {{Py_mod_gil, Py_MOD_GIL_NOT_USED}},
+    {{0, NULL}}
+}};
+#define ACCUDIST_MODULE_SLOTS module_slots
+#else
+#define ACCUDIST_MODULE_SLOTS NULL
+#endif
+
 static struct PyModuleDef module_def = {{
     PyModuleDef_HEAD_INIT,
     "_ufuncs",
     "Generated NumPy ufuncs backed by R nmath.",
     -1,
     module_methods,
-    NULL,
+    ACCUDIST_MODULE_SLOTS,
     NULL,
     NULL,
     module_free
@@ -272,12 +417,11 @@ PyInit__ufuncs(void)
 
 def parameter_list(function: dict, *, typed: bool = False) -> list[str]:
     params: list[str] = []
-    special_optional = {"prob", "mu", "scale"}
     for param in function["params"]:
         name = param["py"]
-        if function.get("alias") == "rate_scale" and name == "rate":
+        if function.get("alias") == "rate_scale" and name == "scale":
             default = "None"
-        elif name in special_optional:
+        elif function.get("dispatch") == "prob_or_mu" and name in {"prob", "mu"}:
             default = "None"
         elif "default" in param:
             default = repr(param["default"])
@@ -322,6 +466,8 @@ def render_wrapper(function: dict) -> str:
         f"def {name}({', '.join(parameter_list(function))}):",
     ]
     summary = function.get("summary", name + " backed by R 4.5.2 nmath")
+    if function.get("r_equivalent"):
+        summary += f" R: {function['r_equivalent']}"
     if function["kind"] == "r":
         summary += "; does not reproduce R's set.seed() stream"
     lines.append(f'    """{summary}."""')

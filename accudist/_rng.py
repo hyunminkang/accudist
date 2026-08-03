@@ -46,11 +46,21 @@ class RNG:
         self.set_seed(i1, i2)
 
     def set_seed(self, i1: int, i2: int) -> None:
-        self._i1 = int(i1) & 0xFFFFFFFF
-        self._i2 = int(i2) & 0xFFFFFFFF
+        with _lock:
+            self._i1 = int(i1) & 0xFFFFFFFF
+            self._i2 = int(i2) & 0xFFFFFFFF
 
     def get_seed(self) -> tuple[int, int]:
-        return self._i1, self._i2
+        with _lock:
+            return self._i1, self._i2
+
+    def _execute(self, operation):
+        with _lock:
+            _ufuncs._set_seed(self._i1, self._i2)
+            try:
+                return operation()
+            finally:
+                self._i1, self._i2 = map(int, _ufuncs._get_seed())
 
     @contextmanager
     def _using(self):
@@ -66,13 +76,7 @@ class RNG:
         if size == 0:
             return np.empty(0, dtype=np.float64)
         recycled = [_recycle(parameter, size) for parameter in parameters]
-        with _lock:
-            _ufuncs._set_seed(self._i1, self._i2)
-            try:
-                result = ufunc(*recycled)
-            finally:
-                self._i1, self._i2 = map(int, _ufuncs._get_seed())
-        return result
+        return self._execute(lambda: ufunc(*recycled))
 
     def __getattr__(self, name: str):
         if not name.startswith("r"):
@@ -112,6 +116,13 @@ def locked():
 def draw(ufunc, n, *parameters) -> np.ndarray:
     rng = getattr(_active, "rng", None) or _default
     return rng._draw(ufunc, n, *parameters)
+
+
+def execute(operation):
+    """Run a bespoke RNG operation atomically on the active stream."""
+
+    rng = getattr(_active, "rng", None) or _default
+    return rng._execute(operation)
 
 
 def set_seed(i1: int, i2: int) -> None:
