@@ -16,7 +16,8 @@ if (machine_key %in% c("arm64", "aarch64")) machine_key <- "arm64"
 if (system_key == "windows" && machine_key %in% c("amd64", "x86_64")) machine_key <- "amd64"
 platform_key <- Sys.getenv("ACCUDIST_ORACLE_PLATFORM", paste(system_key, machine_key, sep = "-"))
 python <- Sys.which("python3")
-if (!nzchar(python)) stop("python3 is required to read functions.toml")
+if (!nzchar(python)) python <- Sys.which("python")
+if (!nzchar(python)) stop("Python is required to read functions.toml")
 
 plan <- tempfile(fileext = ".tsv")
 plan_args <- file.path(root, "tools", "reference_plan.py")
