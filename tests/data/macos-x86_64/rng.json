@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "oracle": "self-referential accudist standalone Rmath stream",
+    "r_version": "4.5.2",
+    "platform": "macos-x86_64",
+    "note": "Sampling algorithms are R's; this Marsaglia-MultiCarry stream is not R set.seed()."
+  },
+  "cases": [
+    {
+      "function": "rnorm",
+      "seed": [
+        1234,
+        5678
+      ],
+      "args": [
+        8,
+        0,
+        1
+      ],
+      "hex": [
+        "0xbff450d84345fc13",
+        "0xbfd567e2e598fb56",
+        "0x40084f8004f9935a",
+        "0xbfd349b7f28c6cd5",
+        "0xbfd55b391ef3ed4f",
+        "0x3fe0762b3be0f997",
+        "0xbfd631d08abd8571",
+        "0xbfa879e85832d799"
+      ],
+      "final_seed": [
+        1165198545,
+        717490018
+      ]
+    },
+    {
+      "function": "rpois",
+      "seed": [
+        1234,
+        5678
+      ],
+      "args": [
+        8,
+        3.5
+      ],
+      "hex": [
+        "0x3ff0000000000000",
+        "0x4014000000000000",
+        "0x4008000000000000",
+        "0x4000000000000000",
+        "0x4024000000000000",
+        "0x3ff0000000000000",
+        "0x4008000000000000",
+        "0x4022000000000000"
+      ],
+      "final_seed": [
+        924450249,
+        248577217
+      ]
+    },
+    {
+      "function": "rbinom",
+      "seed": [
+        1234,
+        5678
+      ],
+      "args": [
+        8,
+        10,
+        0.3
+      ],
+      "hex": [
+        "0x3ff0000000000000",
+        "0x4014000000000000",
+        "0x4000000000000000",
+        "0x4000000000000000",
+        "0x4020000000000000",
+        "0x3ff0000000000000",
+        "0x4000000000000000",
+        "0x401c000000000000"
+      ],
+      "final_seed": [
+        924450249,
+        248577217
+      ]
+    }
+  ]
+}
