@@ -238,6 +238,7 @@ double logspace_add (double logx, double logy)
  */
 double logspace_sub (double logx, double logy)
 {
+    if (ISNAN(logx)) return -fabs(logx);
     return logx + R_Log1_Exp(logy - logx);
 }
 

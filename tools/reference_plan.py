@@ -64,8 +64,9 @@ def value(param: str, index: int, name: str, position: int):
         probabilities = REFERENCE_VALUES["p"]
         return probabilities[(index * PRIMES[position]) % len(probabilities)]
     if param == "n" and name in {"choose", "lchoose"}:
-        choices = [-10.5, -3.0, -1.0, 0.0, 1e-10, 0.5, 1.0, 2.0, 3.0,
-                   5.0, 8.0, 10.0, 20.0, 50.0, 100.0, 1e3, 1e5, 1e10, math.inf]
+        choices = [math.nan, -math.inf, -10.5, -3.0, -1.0, 0.0, 1e-10, 0.5,
+                   1.0, 2.0, 3.0, 5.0, 8.0, 10.0, 20.0, 50.0, 100.0,
+                   1e3, 1e5, 1e10, math.inf]
         return choices[(index * PRIMES[position]) % len(choices)]
     if param == "k" and name in {"choose", "lchoose"}:
         choices = [-1e10, -100.0, -20.0, -5.0, -1.0, -1e-10, 0.0, 1e-10,

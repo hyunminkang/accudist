@@ -1,0 +1,10 @@
+--- a/src/pgamma.c
++++ b/src/pgamma.c
+@@ -238,6 +238,7 @@
+  */
+ double logspace_sub (double logx, double logy)
+ {
++    if (ISNAN(logx)) return -fabs(logx);
+     return logx + R_Log1_Exp(logy - logx);
+ }
+ 
