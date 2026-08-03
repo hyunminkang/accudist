@@ -17,7 +17,9 @@ def main() -> None:
         platform = artifact.name.removeprefix("oracle-")
         target = args.destination / platform
         target.mkdir(parents=True, exist_ok=True)
-        for vector in artifact.glob("*.jsonl"):
+        for vector in artifact.iterdir():
+            if vector.suffix != ".jsonl" and vector.name != "rng.json":
+                continue
             shutil.copy2(vector, target / vector.name)
 
 

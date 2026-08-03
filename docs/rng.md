@@ -15,6 +15,11 @@ The two integers seed standalone Rmath's deterministic Marsaglia-MultiCarry
 generator. This is not R's default Mersenne-Twister generator, so an accudist seed
 does **not** reproduce output from R's `set.seed()`.
 
+The same seed reproduces the exact draw sequence on the same supported platform.
+Compiler math libraries can change the last bits of transformed draws such as
+`rnorm`, so exact draw equality across operating systems or CPU architectures is not
+part of the contract. Seed-state transitions remain exact across platforms.
+
 Use `RNG` for independent streams:
 
 ```python

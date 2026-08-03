@@ -10,6 +10,7 @@ import pytest
 
 import accudist as ad
 from accudist._platform import platform_id
+from oracle_bits import can_apply_ulp_waiver, same_oracle_value
 
 
 DATA = Path(__file__).parent / "data" / platform_id()
@@ -70,8 +71,14 @@ def test_deterministic_functions_match_r_452_bit_for_bit(case_id, function, case
         actual = function(*case["args"], **case["kwargs"])
     actual = result_bits(actual)
     if isinstance(expected, list):
-        assert actual == expected
-    elif actual != expected and name in WAIVERS:
+        assert len(actual) == len(expected)
+        assert all(
+            same_oracle_value(actual_item, expected_item)
+            for actual_item, expected_item in zip(actual, expected, strict=True)
+        )
+    elif same_oracle_value(actual, expected):
+        pass
+    elif name in WAIVERS and can_apply_ulp_waiver(actual, expected):
         assert abs(ordered_bits(actual) - ordered_bits(expected)) <= WAIVERS[name]
     else:
         assert actual == expected

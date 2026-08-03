@@ -30,9 +30,10 @@ special function, and utility.
 ## Precision contract
 
 For the same input and supported platform, distribution results are expected to
-match the official R 4.5.2 binary at the raw 64-bit floating-point level. Use
-`lower_tail=False` for the directly computed upper tail and `log=True` to avoid
-unnecessary underflow. See [numerical errors](errors.md) for warning policies.
+match the official R 4.5.2 binary at the raw 64-bit floating-point level. NaN results
+match semantically; their sign and payload are not portable. Use `lower_tail=False`
+for the directly computed upper tail and `log=True` to avoid unnecessary underflow.
+See [numerical errors](errors.md) for warning policies.
 
 ## Important constraints
 

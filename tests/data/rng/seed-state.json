@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "r_version": "4.5.2",
+    "contract": "standalone Rmath RNG seed transitions are platform-independent"
+  },
+  "cases": [
+    {
+      "function": "rnorm",
+      "seed": [1234, 5678],
+      "args": [8, 0, 1],
+      "final_seed": [1165198545, 717490018]
+    },
+    {
+      "function": "rpois",
+      "seed": [1234, 5678],
+      "args": [8, 3.5],
+      "final_seed": [924450249, 248577217]
+    },
+    {
+      "function": "rbinom",
+      "seed": [1234, 5678],
+      "args": [8, 10, 0.3],
+      "final_seed": [924450249, 248577217]
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import pytest
 
 import accudist as ad
 from accudist._platform import platform_id
+from oracle_bits import same_oracle_value
 
 
 DATA = Path(__file__).parent / "data" / platform_id() / "ppois.jsonl"
@@ -24,4 +25,4 @@ def test_ppois_matches_r_452_bit_for_bit(case):
     expected = bytes.fromhex(case["hex"].removeprefix("0x"))
     with ad.errstate(all="ignore"):
         actual = ad.ppois(*case["args"], **case["kwargs"])
-    assert struct.pack(">d", float(actual)) == expected
+    assert same_oracle_value(struct.pack(">d", float(actual)), expected)

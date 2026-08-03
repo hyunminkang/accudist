@@ -14,7 +14,11 @@ np_inc = run_command(
   'import numpy; print(numpy.get_include())',
   check : true,
 ).stdout().strip()
-np_dep = declare_dependency(include_directories : include_directories(np_inc))
+# NumPy may be installed in an in-tree virtual environment. Meson deliberately
+# rejects absolute source-tree paths passed to include_directories(), so pass the
+# compiler's native include argument through the dependency instead.
+np_include_flag = cc.get_argument_syntax() == 'msvc' ? '/I' : '-I'
+np_dep = declare_dependency(compile_args : [np_include_flag + np_inc])
 m_dep = cc.find_library('m', required : false)
 
 source_output = run_command(
