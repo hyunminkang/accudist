@@ -107,8 +107,10 @@ def render_c(functions: list[dict]) -> str:
         for index, item in enumerate(inputs):
             name = c_identifier(item)
             if item in flags:
+                # NumPy resolves Python integers as 64-bit values on 64-bit Windows,
+                # where C long is only 32 bits and therefore rejects a safe cast.
                 declarations.append(
-                    f"        long {name} = *(long *)(args[{index}] + i * steps[{index}]);"
+                    f"        npy_int64 {name} = *(npy_int64 *)(args[{index}] + i * steps[{index}]);"
                 )
                 call_args.append(f"(int){name}")
             else:
@@ -125,7 +127,7 @@ def render_c(functions: list[dict]) -> str:
         if spec["cache"]:
             lock_before += "    PyThread_acquire_lock(accudist_cache_lock, WAIT_LOCK);\n"
             lock_after = "    PyThread_release_lock(accudist_cache_lock);\n" + lock_after
-        type_codes = ["NPY_LONG" if item in flags else "NPY_DOUBLE" for item in inputs]
+        type_codes = ["NPY_INT64" if item in flags else "NPY_DOUBLE" for item in inputs]
         type_codes.append("NPY_DOUBLE")
         call = f"{symbol}({', '.join(call_args)})"
         loops.append(

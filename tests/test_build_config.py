@@ -32,3 +32,13 @@ def test_free_threaded_wheels_use_the_focused_thread_safety_suite():
     assert free_threaded["test-requires"] == ["pytest"]
     assert "test_free_threading.py" in free_threaded["test-command"]
     assert "test_thread_safety.py" in free_threaded["test-command"]
+
+
+def test_generated_flag_ufuncs_use_a_platform_stable_integer_type():
+    source = (ROOT / "accudist" / "_ufuncs.c").read_text()
+
+    assert "npy_int64 lower_tail" in source
+    assert "npy_int64 log_arg" in source
+    assert "NPY_INT64, NPY_INT64" in source
+    assert "long lower_tail" not in source
+    assert "long log_arg" not in source

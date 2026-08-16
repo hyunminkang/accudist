@@ -23,14 +23,14 @@ dnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double x = *(double *)(args[0] + i * steps[0]);
         double mean = *(double *)(args[1] + i * steps[1]);
         double sd = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = dnorm(x, mean, sd, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dnorm_funcs[1] = {dnorm_loop};
 static void *dnorm_data[1] = {NULL};
-static char dnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 pnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -41,15 +41,15 @@ pnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double q = *(double *)(args[0] + i * steps[0]);
         double mean = *(double *)(args[1] + i * steps[1]);
         double sd = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = pnorm(q, mean, sd, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pnorm_funcs[1] = {pnorm_loop};
 static void *pnorm_data[1] = {NULL};
-static char pnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -60,15 +60,15 @@ qnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double p = *(double *)(args[0] + i * steps[0]);
         double mean = *(double *)(args[1] + i * steps[1]);
         double sd = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qnorm(p, mean, sd, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qnorm_funcs[1] = {qnorm_loop};
 static void *qnorm_data[1] = {NULL};
-static char qnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -97,14 +97,14 @@ dunif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double x = *(double *)(args[0] + i * steps[0]);
         double min = *(double *)(args[1] + i * steps[1]);
         double max = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = dunif(x, min, max, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dunif_funcs[1] = {dunif_loop};
 static void *dunif_data[1] = {NULL};
-static char dunif_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dunif_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 punif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -115,15 +115,15 @@ punif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double q = *(double *)(args[0] + i * steps[0]);
         double min = *(double *)(args[1] + i * steps[1]);
         double max = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = punif(q, min, max, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction punif_funcs[1] = {punif_loop};
 static void *punif_data[1] = {NULL};
-static char punif_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char punif_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qunif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -134,15 +134,15 @@ qunif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double p = *(double *)(args[0] + i * steps[0]);
         double min = *(double *)(args[1] + i * steps[1]);
         double max = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qunif(p, min, max, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qunif_funcs[1] = {qunif_loop};
 static void *qunif_data[1] = {NULL};
-static char qunif_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qunif_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 runif_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -171,14 +171,14 @@ dgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double x = *(double *)(args[0] + i * steps[0]);
         double shape = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = dgamma(x, shape, scale, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dgamma_funcs[1] = {dgamma_loop};
 static void *dgamma_data[1] = {NULL};
-static char dgamma_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dgamma_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 pgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -189,15 +189,15 @@ pgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double q = *(double *)(args[0] + i * steps[0]);
         double shape = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = pgamma(q, shape, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pgamma_funcs[1] = {pgamma_loop};
 static void *pgamma_data[1] = {NULL};
-static char pgamma_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pgamma_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -208,15 +208,15 @@ qgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double p = *(double *)(args[0] + i * steps[0]);
         double shape = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qgamma(p, shape, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qgamma_funcs[1] = {qgamma_loop};
 static void *qgamma_data[1] = {NULL};
-static char qgamma_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qgamma_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rgamma_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -245,14 +245,14 @@ dbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double x = *(double *)(args[0] + i * steps[0]);
         double shape1 = *(double *)(args[1] + i * steps[1]);
         double shape2 = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = dbeta(x, shape1, shape2, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dbeta_funcs[1] = {dbeta_loop};
 static void *dbeta_data[1] = {NULL};
-static char dbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 dnbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -264,14 +264,14 @@ dnbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double shape1 = *(double *)(args[1] + i * steps[1]);
         double shape2 = *(double *)(args[2] + i * steps[2]);
         double ncp = *(double *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = dnbeta(x, shape1, shape2, ncp, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dnbeta_funcs[1] = {dnbeta_loop};
 static void *dnbeta_data[1] = {NULL};
-static char dnbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dnbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 pbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -282,15 +282,15 @@ pbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double q = *(double *)(args[0] + i * steps[0]);
         double shape1 = *(double *)(args[1] + i * steps[1]);
         double shape2 = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = pbeta(q, shape1, shape2, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pbeta_funcs[1] = {pbeta_loop};
 static void *pbeta_data[1] = {NULL};
-static char pbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 pnbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -302,15 +302,15 @@ pnbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double shape1 = *(double *)(args[1] + i * steps[1]);
         double shape2 = *(double *)(args[2] + i * steps[2]);
         double ncp = *(double *)(args[3] + i * steps[3]);
-        long lower_tail = *(long *)(args[4] + i * steps[4]);
-        long log_arg = *(long *)(args[5] + i * steps[5]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[4] + i * steps[4]);
+        npy_int64 log_arg = *(npy_int64 *)(args[5] + i * steps[5]);
         *(double *)(args[6] + i * steps[6]) = pnbeta(q, shape1, shape2, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pnbeta_funcs[1] = {pnbeta_loop};
 static void *pnbeta_data[1] = {NULL};
-static char pnbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pnbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -321,15 +321,15 @@ qbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double p = *(double *)(args[0] + i * steps[0]);
         double shape1 = *(double *)(args[1] + i * steps[1]);
         double shape2 = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qbeta(p, shape1, shape2, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qbeta_funcs[1] = {qbeta_loop};
 static void *qbeta_data[1] = {NULL};
-static char qbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qnbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -341,15 +341,15 @@ qnbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double shape1 = *(double *)(args[1] + i * steps[1]);
         double shape2 = *(double *)(args[2] + i * steps[2]);
         double ncp = *(double *)(args[3] + i * steps[3]);
-        long lower_tail = *(long *)(args[4] + i * steps[4]);
-        long log_arg = *(long *)(args[5] + i * steps[5]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[4] + i * steps[4]);
+        npy_int64 log_arg = *(npy_int64 *)(args[5] + i * steps[5]);
         *(double *)(args[6] + i * steps[6]) = qnbeta(p, shape1, shape2, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qnbeta_funcs[1] = {qnbeta_loop};
 static void *qnbeta_data[1] = {NULL};
-static char qnbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qnbeta_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rbeta_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -378,14 +378,14 @@ dlnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double x = *(double *)(args[0] + i * steps[0]);
         double meanlog = *(double *)(args[1] + i * steps[1]);
         double sdlog = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = dlnorm(x, meanlog, sdlog, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dlnorm_funcs[1] = {dlnorm_loop};
 static void *dlnorm_data[1] = {NULL};
-static char dlnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dlnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 plnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -396,15 +396,15 @@ plnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double q = *(double *)(args[0] + i * steps[0]);
         double meanlog = *(double *)(args[1] + i * steps[1]);
         double sdlog = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = plnorm(q, meanlog, sdlog, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction plnorm_funcs[1] = {plnorm_loop};
 static void *plnorm_data[1] = {NULL};
-static char plnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char plnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qlnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -415,15 +415,15 @@ qlnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double p = *(double *)(args[0] + i * steps[0]);
         double meanlog = *(double *)(args[1] + i * steps[1]);
         double sdlog = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qlnorm(p, meanlog, sdlog, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qlnorm_funcs[1] = {qlnorm_loop};
 static void *qlnorm_data[1] = {NULL};
-static char qlnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qlnorm_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rlnorm_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -451,14 +451,14 @@ dchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
-        long log_arg = *(long *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[2] + i * steps[2]);
         *(double *)(args[3] + i * steps[3]) = dchisq(x, df, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dchisq_funcs[1] = {dchisq_loop};
 static void *dchisq_data[1] = {NULL};
-static char dchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 dnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -469,14 +469,14 @@ dnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
         double x = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         double ncp = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = dnchisq(x, df, ncp, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dnchisq_funcs[1] = {dnchisq_loop};
 static void *dnchisq_data[1] = {NULL};
-static char dnchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dnchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 pchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -486,15 +486,15 @@ pchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
-        long lower_tail = *(long *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = pchisq(q, df, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pchisq_funcs[1] = {pchisq_loop};
 static void *pchisq_data[1] = {NULL};
-static char pchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 pnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -505,15 +505,15 @@ pnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
         double q = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         double ncp = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = pnchisq(q, df, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pnchisq_funcs[1] = {pnchisq_loop};
 static void *pnchisq_data[1] = {NULL};
-static char pnchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pnchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -523,15 +523,15 @@ qchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
-        long lower_tail = *(long *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = qchisq(p, df, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qchisq_funcs[1] = {qchisq_loop};
 static void *qchisq_data[1] = {NULL};
-static char qchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -542,15 +542,15 @@ qnchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
         double p = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         double ncp = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qnchisq(p, df, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qnchisq_funcs[1] = {qnchisq_loop};
 static void *qnchisq_data[1] = {NULL};
-static char qnchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qnchisq_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rchisq_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -596,14 +596,14 @@ df_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double x = *(double *)(args[0] + i * steps[0]);
         double df1 = *(double *)(args[1] + i * steps[1]);
         double df2 = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = df(x, df1, df2, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction df_funcs[1] = {df_loop};
 static void *df_data[1] = {NULL};
-static char df_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char df_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 dnf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -615,14 +615,14 @@ dnf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double df1 = *(double *)(args[1] + i * steps[1]);
         double df2 = *(double *)(args[2] + i * steps[2]);
         double ncp = *(double *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = dnf(x, df1, df2, ncp, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dnf_funcs[1] = {dnf_loop};
 static void *dnf_data[1] = {NULL};
-static char dnf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dnf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 pf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -633,15 +633,15 @@ pf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double q = *(double *)(args[0] + i * steps[0]);
         double df1 = *(double *)(args[1] + i * steps[1]);
         double df2 = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = pf(q, df1, df2, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pf_funcs[1] = {pf_loop};
 static void *pf_data[1] = {NULL};
-static char pf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 pnf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -653,15 +653,15 @@ pnf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double df1 = *(double *)(args[1] + i * steps[1]);
         double df2 = *(double *)(args[2] + i * steps[2]);
         double ncp = *(double *)(args[3] + i * steps[3]);
-        long lower_tail = *(long *)(args[4] + i * steps[4]);
-        long log_arg = *(long *)(args[5] + i * steps[5]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[4] + i * steps[4]);
+        npy_int64 log_arg = *(npy_int64 *)(args[5] + i * steps[5]);
         *(double *)(args[6] + i * steps[6]) = pnf(q, df1, df2, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pnf_funcs[1] = {pnf_loop};
 static void *pnf_data[1] = {NULL};
-static char pnf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pnf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -672,15 +672,15 @@ qf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double p = *(double *)(args[0] + i * steps[0]);
         double df1 = *(double *)(args[1] + i * steps[1]);
         double df2 = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qf(p, df1, df2, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qf_funcs[1] = {qf_loop};
 static void *qf_data[1] = {NULL};
-static char qf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qnf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -692,15 +692,15 @@ qnf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double df1 = *(double *)(args[1] + i * steps[1]);
         double df2 = *(double *)(args[2] + i * steps[2]);
         double ncp = *(double *)(args[3] + i * steps[3]);
-        long lower_tail = *(long *)(args[4] + i * steps[4]);
-        long log_arg = *(long *)(args[5] + i * steps[5]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[4] + i * steps[4]);
+        npy_int64 log_arg = *(npy_int64 *)(args[5] + i * steps[5]);
         *(double *)(args[6] + i * steps[6]) = qnf(p, df1, df2, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qnf_funcs[1] = {qnf_loop};
 static void *qnf_data[1] = {NULL};
-static char qnf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qnf_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rf_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -728,14 +728,14 @@ dt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
-        long log_arg = *(long *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[2] + i * steps[2]);
         *(double *)(args[3] + i * steps[3]) = dt(x, df, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dt_funcs[1] = {dt_loop};
 static void *dt_data[1] = {NULL};
-static char dt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 dnt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -746,14 +746,14 @@ dnt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double x = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         double ncp = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = dnt(x, df, ncp, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dnt_funcs[1] = {dnt_loop};
 static void *dnt_data[1] = {NULL};
-static char dnt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dnt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 pt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -763,15 +763,15 @@ pt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
-        long lower_tail = *(long *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = pt(q, df, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pt_funcs[1] = {pt_loop};
 static void *pt_data[1] = {NULL};
-static char pt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 pnt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -782,15 +782,15 @@ pnt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double q = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         double ncp = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = pnt(q, df, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pnt_funcs[1] = {pnt_loop};
 static void *pnt_data[1] = {NULL};
-static char pnt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pnt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -800,15 +800,15 @@ qt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
-        long lower_tail = *(long *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = qt(p, df, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qt_funcs[1] = {qt_loop};
 static void *qt_data[1] = {NULL};
-static char qt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qnt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -819,15 +819,15 @@ qnt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
         double p = *(double *)(args[0] + i * steps[0]);
         double df = *(double *)(args[1] + i * steps[1]);
         double ncp = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qnt(p, df, ncp, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qnt_funcs[1] = {qnt_loop};
 static void *qnt_data[1] = {NULL};
-static char qnt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qnt_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rt_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -855,14 +855,14 @@ dbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double x = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double prob = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = dbinom(x, size, prob, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dbinom_funcs[1] = {dbinom_loop};
 static void *dbinom_data[1] = {NULL};
-static char dbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 pbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -873,15 +873,15 @@ pbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double q = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double prob = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = pbinom(q, size, prob, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pbinom_funcs[1] = {pbinom_loop};
 static void *pbinom_data[1] = {NULL};
-static char pbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -892,15 +892,15 @@ qbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double p = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double prob = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qbinom(p, size, prob, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qbinom_funcs[1] = {qbinom_loop};
 static void *qbinom_data[1] = {NULL};
-static char qbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -929,14 +929,14 @@ dcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
         double x = *(double *)(args[0] + i * steps[0]);
         double location = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = dcauchy(x, location, scale, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dcauchy_funcs[1] = {dcauchy_loop};
 static void *dcauchy_data[1] = {NULL};
-static char dcauchy_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dcauchy_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 pcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -947,15 +947,15 @@ pcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
         double q = *(double *)(args[0] + i * steps[0]);
         double location = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = pcauchy(q, location, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pcauchy_funcs[1] = {pcauchy_loop};
 static void *pcauchy_data[1] = {NULL};
-static char pcauchy_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pcauchy_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -966,15 +966,15 @@ qcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
         double p = *(double *)(args[0] + i * steps[0]);
         double location = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qcauchy(p, location, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qcauchy_funcs[1] = {qcauchy_loop};
 static void *qcauchy_data[1] = {NULL};
-static char qcauchy_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qcauchy_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rcauchy_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1002,14 +1002,14 @@ dexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double rate = *(double *)(args[1] + i * steps[1]);
-        long log_arg = *(long *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[2] + i * steps[2]);
         *(double *)(args[3] + i * steps[3]) = dexp(x, rate, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dexp_funcs[1] = {dexp_loop};
 static void *dexp_data[1] = {NULL};
-static char dexp_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dexp_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 pexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1019,15 +1019,15 @@ pexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double rate = *(double *)(args[1] + i * steps[1]);
-        long lower_tail = *(long *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = pexp(q, rate, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pexp_funcs[1] = {pexp_loop};
 static void *pexp_data[1] = {NULL};
-static char pexp_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pexp_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1037,15 +1037,15 @@ qexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double rate = *(double *)(args[1] + i * steps[1]);
-        long lower_tail = *(long *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = qexp(p, rate, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qexp_funcs[1] = {qexp_loop};
 static void *qexp_data[1] = {NULL};
-static char qexp_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qexp_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rexp_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1072,14 +1072,14 @@ dgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double prob = *(double *)(args[1] + i * steps[1]);
-        long log_arg = *(long *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[2] + i * steps[2]);
         *(double *)(args[3] + i * steps[3]) = dgeom(x, prob, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dgeom_funcs[1] = {dgeom_loop};
 static void *dgeom_data[1] = {NULL};
-static char dgeom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dgeom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 pgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1089,15 +1089,15 @@ pgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double prob = *(double *)(args[1] + i * steps[1]);
-        long lower_tail = *(long *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = pgeom(q, prob, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pgeom_funcs[1] = {pgeom_loop};
 static void *pgeom_data[1] = {NULL};
-static char pgeom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pgeom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1107,15 +1107,15 @@ qgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double prob = *(double *)(args[1] + i * steps[1]);
-        long lower_tail = *(long *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = qgeom(p, prob, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qgeom_funcs[1] = {qgeom_loop};
 static void *qgeom_data[1] = {NULL};
-static char qgeom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qgeom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rgeom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1144,14 +1144,14 @@ dhyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double m = *(double *)(args[1] + i * steps[1]);
         double n = *(double *)(args[2] + i * steps[2]);
         double k = *(double *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = dhyper(x, m, n, k, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dhyper_funcs[1] = {dhyper_loop};
 static void *dhyper_data[1] = {NULL};
-static char dhyper_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dhyper_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 phyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1163,15 +1163,15 @@ phyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double m = *(double *)(args[1] + i * steps[1]);
         double n = *(double *)(args[2] + i * steps[2]);
         double k = *(double *)(args[3] + i * steps[3]);
-        long lower_tail = *(long *)(args[4] + i * steps[4]);
-        long log_arg = *(long *)(args[5] + i * steps[5]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[4] + i * steps[4]);
+        npy_int64 log_arg = *(npy_int64 *)(args[5] + i * steps[5]);
         *(double *)(args[6] + i * steps[6]) = phyper(q, m, n, k, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction phyper_funcs[1] = {phyper_loop};
 static void *phyper_data[1] = {NULL};
-static char phyper_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char phyper_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qhyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1183,15 +1183,15 @@ qhyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double m = *(double *)(args[1] + i * steps[1]);
         double n = *(double *)(args[2] + i * steps[2]);
         double k = *(double *)(args[3] + i * steps[3]);
-        long lower_tail = *(long *)(args[4] + i * steps[4]);
-        long log_arg = *(long *)(args[5] + i * steps[5]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[4] + i * steps[4]);
+        npy_int64 log_arg = *(npy_int64 *)(args[5] + i * steps[5]);
         *(double *)(args[6] + i * steps[6]) = qhyper(p, m, n, k, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qhyper_funcs[1] = {qhyper_loop};
 static void *qhyper_data[1] = {NULL};
-static char qhyper_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qhyper_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rhyper_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1221,14 +1221,14 @@ dnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
         double x = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double prob = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = dnbinom(x, size, prob, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dnbinom_funcs[1] = {dnbinom_loop};
 static void *dnbinom_data[1] = {NULL};
-static char dnbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dnbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 dnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1239,14 +1239,14 @@ dnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *
         double x = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double mu = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = dnbinom_mu(x, size, mu, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dnbinom_mu_funcs[1] = {dnbinom_mu_loop};
 static void *dnbinom_mu_data[1] = {NULL};
-static char dnbinom_mu_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dnbinom_mu_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 pnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1257,15 +1257,15 @@ pnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
         double q = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double prob = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = pnbinom(q, size, prob, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pnbinom_funcs[1] = {pnbinom_loop};
 static void *pnbinom_data[1] = {NULL};
-static char pnbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pnbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 pnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1276,15 +1276,15 @@ pnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *
         double q = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double mu = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = pnbinom_mu(q, size, mu, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pnbinom_mu_funcs[1] = {pnbinom_mu_loop};
 static void *pnbinom_mu_data[1] = {NULL};
-static char pnbinom_mu_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pnbinom_mu_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1295,15 +1295,15 @@ qnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
         double p = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double prob = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qnbinom(p, size, prob, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qnbinom_funcs[1] = {qnbinom_loop};
 static void *qnbinom_data[1] = {NULL};
-static char qnbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qnbinom_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1314,15 +1314,15 @@ qnbinom_mu_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *
         double p = *(double *)(args[0] + i * steps[0]);
         double size = *(double *)(args[1] + i * steps[1]);
         double mu = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qnbinom_mu(p, size, mu, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qnbinom_mu_funcs[1] = {qnbinom_mu_loop};
 static void *qnbinom_mu_data[1] = {NULL};
-static char qnbinom_mu_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qnbinom_mu_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rnbinom_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1368,14 +1368,14 @@ dpois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double lambda = *(double *)(args[1] + i * steps[1]);
-        long log_arg = *(long *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[2] + i * steps[2]);
         *(double *)(args[3] + i * steps[3]) = dpois(x, lambda, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dpois_funcs[1] = {dpois_loop};
 static void *dpois_data[1] = {NULL};
-static char dpois_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dpois_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 ppois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1385,15 +1385,15 @@ ppois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double lambda = *(double *)(args[1] + i * steps[1]);
-        long lower_tail = *(long *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = ppois(q, lambda, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction ppois_funcs[1] = {ppois_loop};
 static void *ppois_data[1] = {NULL};
-static char ppois_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char ppois_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qpois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1403,15 +1403,15 @@ qpois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double lambda = *(double *)(args[1] + i * steps[1]);
-        long lower_tail = *(long *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = qpois(p, lambda, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qpois_funcs[1] = {qpois_loop};
 static void *qpois_data[1] = {NULL};
-static char qpois_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qpois_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rpois_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1439,14 +1439,14 @@ dweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
         double x = *(double *)(args[0] + i * steps[0]);
         double shape = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = dweibull(x, shape, scale, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dweibull_funcs[1] = {dweibull_loop};
 static void *dweibull_data[1] = {NULL};
-static char dweibull_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dweibull_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 pweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1457,15 +1457,15 @@ pweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
         double q = *(double *)(args[0] + i * steps[0]);
         double shape = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = pweibull(q, shape, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction pweibull_funcs[1] = {pweibull_loop};
 static void *pweibull_data[1] = {NULL};
-static char pweibull_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pweibull_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1476,15 +1476,15 @@ qweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *da
         double p = *(double *)(args[0] + i * steps[0]);
         double shape = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qweibull(p, shape, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qweibull_funcs[1] = {qweibull_loop};
 static void *qweibull_data[1] = {NULL};
-static char qweibull_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qweibull_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rweibull_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1513,14 +1513,14 @@ dlogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double x = *(double *)(args[0] + i * steps[0]);
         double location = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = dlogis(x, location, scale, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction dlogis_funcs[1] = {dlogis_loop};
 static void *dlogis_data[1] = {NULL};
-static char dlogis_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dlogis_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 plogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1531,15 +1531,15 @@ plogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double q = *(double *)(args[0] + i * steps[0]);
         double location = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = plogis(q, location, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction plogis_funcs[1] = {plogis_loop};
 static void *plogis_data[1] = {NULL};
-static char plogis_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char plogis_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qlogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1550,15 +1550,15 @@ qlogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double p = *(double *)(args[0] + i * steps[0]);
         double location = *(double *)(args[1] + i * steps[1]);
         double scale = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qlogis(p, location, scale, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qlogis_funcs[1] = {qlogis_loop};
 static void *qlogis_data[1] = {NULL};
-static char qlogis_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qlogis_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rlogis_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1588,7 +1588,7 @@ dwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
         double x = *(double *)(args[0] + i * steps[0]);
         double m = *(double *)(args[1] + i * steps[1]);
         double n = *(double *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = dwilcox(x, m, n, (int)log_arg);
     }
     PyThread_release_lock(accudist_cache_lock);
@@ -1596,7 +1596,7 @@ dwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 
 static PyUFuncGenericFunction dwilcox_funcs[1] = {dwilcox_loop};
 static void *dwilcox_data[1] = {NULL};
-static char dwilcox_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dwilcox_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 pwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1608,8 +1608,8 @@ pwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
         double q = *(double *)(args[0] + i * steps[0]);
         double m = *(double *)(args[1] + i * steps[1]);
         double n = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = pwilcox(q, m, n, (int)lower_tail, (int)log_arg);
     }
     PyThread_release_lock(accudist_cache_lock);
@@ -1617,7 +1617,7 @@ pwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 
 static PyUFuncGenericFunction pwilcox_funcs[1] = {pwilcox_loop};
 static void *pwilcox_data[1] = {NULL};
-static char pwilcox_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char pwilcox_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1629,8 +1629,8 @@ qwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
         double p = *(double *)(args[0] + i * steps[0]);
         double m = *(double *)(args[1] + i * steps[1]);
         double n = *(double *)(args[2] + i * steps[2]);
-        long lower_tail = *(long *)(args[3] + i * steps[3]);
-        long log_arg = *(long *)(args[4] + i * steps[4]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[3] + i * steps[3]);
+        npy_int64 log_arg = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = qwilcox(p, m, n, (int)lower_tail, (int)log_arg);
     }
     PyThread_release_lock(accudist_cache_lock);
@@ -1638,7 +1638,7 @@ qwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *dat
 
 static PyUFuncGenericFunction qwilcox_funcs[1] = {qwilcox_loop};
 static void *qwilcox_data[1] = {NULL};
-static char qwilcox_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qwilcox_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rwilcox_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1669,7 +1669,7 @@ dsignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *d
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double n = *(double *)(args[1] + i * steps[1]);
-        long log_arg = *(long *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[2] + i * steps[2]);
         *(double *)(args[3] + i * steps[3]) = dsignrank(x, n, (int)log_arg);
     }
     PyThread_release_lock(accudist_cache_lock);
@@ -1677,7 +1677,7 @@ dsignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *d
 
 static PyUFuncGenericFunction dsignrank_funcs[1] = {dsignrank_loop};
 static void *dsignrank_data[1] = {NULL};
-static char dsignrank_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dsignrank_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 psignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1688,8 +1688,8 @@ psignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *d
     for (npy_intp i = 0; i < n; i++) {
         double q = *(double *)(args[0] + i * steps[0]);
         double n = *(double *)(args[1] + i * steps[1]);
-        long lower_tail = *(long *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = psignrank(q, n, (int)lower_tail, (int)log_arg);
     }
     PyThread_release_lock(accudist_cache_lock);
@@ -1697,7 +1697,7 @@ psignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *d
 
 static PyUFuncGenericFunction psignrank_funcs[1] = {psignrank_loop};
 static void *psignrank_data[1] = {NULL};
-static char psignrank_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char psignrank_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qsignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1708,8 +1708,8 @@ qsignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *d
     for (npy_intp i = 0; i < n; i++) {
         double p = *(double *)(args[0] + i * steps[0]);
         double n = *(double *)(args[1] + i * steps[1]);
-        long lower_tail = *(long *)(args[2] + i * steps[2]);
-        long log_arg = *(long *)(args[3] + i * steps[3]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[2] + i * steps[2]);
+        npy_int64 log_arg = *(npy_int64 *)(args[3] + i * steps[3]);
         *(double *)(args[4] + i * steps[4]) = qsignrank(p, n, (int)lower_tail, (int)log_arg);
     }
     PyThread_release_lock(accudist_cache_lock);
@@ -1717,7 +1717,7 @@ qsignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *d
 
 static PyUFuncGenericFunction qsignrank_funcs[1] = {qsignrank_loop};
 static void *qsignrank_data[1] = {NULL};
-static char qsignrank_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qsignrank_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 rsignrank_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1748,15 +1748,15 @@ ptukey_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double nranges = *(double *)(args[1] + i * steps[1]);
         double nmeans = *(double *)(args[2] + i * steps[2]);
         double df = *(double *)(args[3] + i * steps[3]);
-        long lower_tail = *(long *)(args[4] + i * steps[4]);
-        long log_arg = *(long *)(args[5] + i * steps[5]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[4] + i * steps[4]);
+        npy_int64 log_arg = *(npy_int64 *)(args[5] + i * steps[5]);
         *(double *)(args[6] + i * steps[6]) = ptukey(q, nranges, nmeans, df, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction ptukey_funcs[1] = {ptukey_loop};
 static void *ptukey_data[1] = {NULL};
-static char ptukey_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char ptukey_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 qtukey_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -1768,15 +1768,15 @@ qtukey_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data
         double nranges = *(double *)(args[1] + i * steps[1]);
         double nmeans = *(double *)(args[2] + i * steps[2]);
         double df = *(double *)(args[3] + i * steps[3]);
-        long lower_tail = *(long *)(args[4] + i * steps[4]);
-        long log_arg = *(long *)(args[5] + i * steps[5]);
+        npy_int64 lower_tail = *(npy_int64 *)(args[4] + i * steps[4]);
+        npy_int64 log_arg = *(npy_int64 *)(args[5] + i * steps[5]);
         *(double *)(args[6] + i * steps[6]) = qtukey(p, nranges, nmeans, df, (int)lower_tail, (int)log_arg);
     }
 }
 
 static PyUFuncGenericFunction qtukey_funcs[1] = {qtukey_loop};
 static void *qtukey_data[1] = {NULL};
-static char qtukey_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_LONG, NPY_DOUBLE};
+static char qtukey_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_INT64, NPY_DOUBLE};
 
 static void
 gammafn_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -2224,14 +2224,14 @@ dbinom_raw_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *
         double n = *(double *)(args[1] + i * steps[1]);
         double p = *(double *)(args[2] + i * steps[2]);
         double q = *(double *)(args[3] + i * steps[3]);
-        long give_log = *(long *)(args[4] + i * steps[4]);
+        npy_int64 give_log = *(npy_int64 *)(args[4] + i * steps[4]);
         *(double *)(args[5] + i * steps[5]) = dbinom_raw(x, n, p, q, (int)give_log);
     }
 }
 
 static PyUFuncGenericFunction dbinom_raw_funcs[1] = {dbinom_raw_loop};
 static void *dbinom_raw_data[1] = {NULL};
-static char dbinom_raw_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dbinom_raw_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static void
 dpois_raw_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *data)
@@ -2241,14 +2241,14 @@ dpois_raw_loop(char **args, const npy_intp *dims, const npy_intp *steps, void *d
     for (npy_intp i = 0; i < n; i++) {
         double x = *(double *)(args[0] + i * steps[0]);
         double lambda = *(double *)(args[1] + i * steps[1]);
-        long give_log = *(long *)(args[2] + i * steps[2]);
+        npy_int64 give_log = *(npy_int64 *)(args[2] + i * steps[2]);
         *(double *)(args[3] + i * steps[3]) = dpois_raw(x, lambda, (int)give_log);
     }
 }
 
 static PyUFuncGenericFunction dpois_raw_funcs[1] = {dpois_raw_loop};
 static void *dpois_raw_data[1] = {NULL};
-static char dpois_raw_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE};
+static char dpois_raw_types[] = {NPY_DOUBLE, NPY_DOUBLE, NPY_INT64, NPY_DOUBLE};
 
 static PyObject *
 py_clear_error(PyObject *self, PyObject *ignored)
