@@ -22,3 +22,13 @@ def test_standalone_nmath_uses_msvc_safe_special_values():
 # define ML_NAN NAN
 #else"""
     assert expected in header
+
+
+def test_free_threaded_wheels_use_the_focused_thread_safety_suite():
+    config = tomllib.loads((ROOT / "pyproject.toml").read_text())
+    overrides = config["tool"]["cibuildwheel"]["overrides"]
+    free_threaded = next(item for item in overrides if item["select"] == "cp3??t-*")
+
+    assert free_threaded["test-requires"] == ["pytest"]
+    assert "test_free_threading.py" in free_threaded["test-command"]
+    assert "test_thread_safety.py" in free_threaded["test-command"]

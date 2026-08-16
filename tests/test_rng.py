@@ -1,4 +1,3 @@
-from concurrent.futures import ThreadPoolExecutor
 import json
 from pathlib import Path
 import struct
@@ -106,26 +105,6 @@ def test_noncentral_rf_and_rt_preserve_r_draw_order():
     expected_t = manual_t.rnorm(8, 1.5) / np.sqrt(manual_t.rchisq(8, 7.0) / 7.0)
     np.testing.assert_array_equal(actual_t, expected_t)
     assert composed_t.get_seed() == manual_t.get_seed()
-
-
-def test_independent_rngs_are_thread_safe():
-    seeds = [(index + 1, index + 101) for index in range(8)]
-    expected = [ad.RNG(*seed).rgamma(10_000, 2.5) for seed in seeds]
-    with ThreadPoolExecutor(max_workers=8) as pool:
-        actual = list(pool.map(lambda seed: ad.RNG(*seed).rgamma(10_000, 2.5), seeds))
-    for got, want in zip(actual, expected, strict=True):
-        np.testing.assert_array_equal(got, want)
-
-
-def test_raw_rng_ufuncs_serialize_the_entire_vector_loop():
-    means = np.zeros(20_000)
-    scales = np.ones(20_000)
-    _ufuncs._set_seed(301, 907)
-    expected = [rmath.rnorm(means, scales) for _ in range(4)]
-    _ufuncs._set_seed(301, 907)
-    with ThreadPoolExecutor(max_workers=4) as pool:
-        actual = list(pool.map(lambda _: rmath.rnorm(means, scales), range(4)))
-    assert sorted(item.tobytes() for item in actual) == sorted(item.tobytes() for item in expected)
 
 
 def test_fixed_seed_samplers_pass_goodness_of_fit_at_one_in_a_million():

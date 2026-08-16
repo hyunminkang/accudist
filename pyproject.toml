@@ -37,6 +37,11 @@ archs = ["x86_64", "arm64"]
 [tool.cibuildwheel.windows]
 archs = ["AMD64"]
 
+[[tool.cibuildwheel.overrides]]
+select = "cp3??t-*"
+test-requires = ["pytest"]
+test-command = "pytest -q {project}/tests/test_free_threading.py {project}/tests/test_thread_safety.py"
+
 [tool.pytest.ini_options]
 addopts = "-ra"
 markers = ["scipy_gap: numerical cases where scipy loses tail precision"]

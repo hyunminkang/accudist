@@ -22,6 +22,23 @@ def test_installed_package_tests_run_outside_the_checkout():
     assert "${{ github.workspace }}/tests" in pytest_step["run"]
 
 
+def test_free_threaded_ci_runs_the_focused_thread_safety_suite():
+    workflow = yaml.safe_load((ROOT / ".github/workflows/test.yml").read_text())
+
+    standard_versions = workflow["jobs"]["test"]["strategy"]["matrix"]["python"]
+    assert all(not version.endswith("t") for version in standard_versions)
+
+    job = workflow["jobs"]["free-threaded"]
+    assert job["strategy"]["matrix"]["python"] == ["3.13t", "3.14t"]
+    install_step = next(step for step in job["steps"] if "pip install" in step.get("run", ""))
+    assert install_step["run"] == "python -m pip install . pytest"
+    pytest_step = next(
+        step for step in job["steps"] if "python -m pytest" in step.get("run", "")
+    )
+    assert "test_free_threading.py" in pytest_step["run"]
+    assert "test_thread_safety.py" in pytest_step["run"]
+
+
 def test_reference_build_imports_accudist_before_rtools_changes_path():
     workflow = yaml.safe_load((ROOT / ".github/workflows/reference.yml").read_text())
     steps = workflow["jobs"]["generate"]["steps"]

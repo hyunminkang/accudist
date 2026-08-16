@@ -1,6 +1,5 @@
 import struct
 import sys
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import numpy as np
@@ -78,14 +77,6 @@ def test_lgammafn_sign_does_not_reconstruct_sign_from_underflowed_gamma():
     value, sign = ad.lgammafn_sign(-200.5)
     assert np.isfinite(value)
     assert sign == -1
-
-
-def test_wilcox_cache_is_safe_across_threads():
-    cases = [(5, 3, 4), (12, 5, 6), (20, 7, 8), (30, 8, 9)]
-    expected = [ad.pwilcox(*case) for case in cases]
-    with ThreadPoolExecutor(max_workers=8) as pool:
-        actual = list(pool.map(lambda case: ad.pwilcox(*case), cases * 25))
-    np.testing.assert_array_equal(actual, expected * 25)
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="resource usage is unavailable on Windows")
