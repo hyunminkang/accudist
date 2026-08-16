@@ -33,9 +33,11 @@ def test_upper_log_tail_remains_finite_where_scipy_underflows(ours, scipy_value,
         (lambda: ad.qt(-700, 5, log=True), lambda: stats.t.ppf(np.exp(-700), 5), -9.923896826e60),
     ],
 )
-def test_log_probability_quantiles_preserve_input_scipy_cannot_represent(ours, scipy_value, expected):
-    assert ours() == pytest.approx(expected, rel=1e-9)
-    assert not np.isfinite(scipy_value()) or scipy_value() == 0
+def test_log_probability_quantiles_retain_accuracy_where_scipy_does_not(
+    ours, scipy_value, expected
+):
+    assert ours() == pytest.approx(expected, rel=1e-9, abs=0)
+    assert scipy_value() != pytest.approx(expected, rel=1e-9, abs=0)
 
 
 @pytest.mark.scipy_gap

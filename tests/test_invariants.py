@@ -5,6 +5,14 @@ from hypothesis import example, given, seed, settings, strategies as st
 import accudist as ad
 
 
+def noncentral_beta_cdf(x, *args, **kwargs):
+    return ad.pbeta(x, *args, ncp=1.5, **kwargs)
+
+
+def noncentral_f_cdf(x, *args, **kwargs):
+    return ad.pf(x, *args, ncp=1.5, **kwargs)
+
+
 CDF_CASES = [
     (ad.pnorm, (0.0, 1.0)),
     (ad.pgamma, (2.0,)),
@@ -27,15 +35,18 @@ CDF_CASES = [
     (ad.pwilcox, (5.0, 6.0)),
     (ad.psignrank, (8.0,)),
     (ad.ptukey, (5.0, 20.0, 1.0)),
-    (lambda x, *args, **kwargs: ad.pbeta(x, *args, ncp=1.5, **kwargs), (2.0, 3.0)),
-    (lambda x, *args, **kwargs: ad.pf(x, *args, ncp=1.5, **kwargs), (5.0, 9.0)),
+    (noncentral_beta_cdf, (2.0, 3.0)),
+    (noncentral_f_cdf, (5.0, 9.0)),
     (lambda x, *args, **kwargs: ad.pt(x, *args, ncp=1.5, **kwargs), (7.0,)),
 ]
 
 # The direct and log-probability branches are separate R algorithms.  Compare them
 # in log space so the check measures relative error without adding exp() rounding.
-# 256 binary64 eps is still far tighter than the algorithms' documented accuracy.
-LOG_LINEAR_ABS_TOL = 256 * np.finfo(np.float64).eps
+# The AS 226 noncentral beta algorithm, also used by noncentral F, has a 1e-9
+# convergence bound.  A 1e-12 consistency check remains substantially tighter while
+# allowing for its platform-dependent long-double rounding.
+DEFAULT_LOG_LINEAR_ABS_TOL = 256 * np.finfo(np.float64).eps
+AS226_LOG_LINEAR_ABS_TOL = 1e-12
 
 
 @pytest.mark.parametrize(("cdf", "parameters"), CDF_CASES)
@@ -43,8 +54,14 @@ LOG_LINEAR_ABS_TOL = 256 * np.finfo(np.float64).eps
 @seed(452)
 @example(14.54)
 @example(14.17)
+@example(17.76)
 @given(st.integers(min_value=-2_000, max_value=2_000).map(lambda value: value / 100.0))
 def test_cdf_tail_log_and_monotonic_invariants(cdf, parameters, x):
+    log_linear_abs_tol = (
+        AS226_LOG_LINEAR_ABS_TOL
+        if cdf in (noncentral_beta_cdf, noncentral_f_cdf)
+        else DEFAULT_LOG_LINEAR_ABS_TOL
+    )
     lower = cdf(x, *parameters)
     upper = cdf(x, *parameters, lower_tail=False)
     logged = cdf(x, *parameters, log=True)
@@ -53,10 +70,10 @@ def test_cdf_tail_log_and_monotonic_invariants(cdf, parameters, x):
     assert logged <= 0
     assert logged_upper <= 0
     if lower > 0:
-        assert logged == pytest.approx(np.log(lower), rel=0, abs=LOG_LINEAR_ABS_TOL)
+        assert logged == pytest.approx(np.log(lower), rel=0, abs=log_linear_abs_tol)
     if upper > 0:
         assert logged_upper == pytest.approx(
-            np.log(upper), rel=0, abs=LOG_LINEAR_ABS_TOL
+            np.log(upper), rel=0, abs=log_linear_abs_tol
         )
     assert cdf(x - 1e-7, *parameters) <= cdf(x + 1e-7, *parameters)
 
