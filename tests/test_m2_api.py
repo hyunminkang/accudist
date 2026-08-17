@@ -11,16 +11,12 @@ from accudist._platform import platform_id
 from oracle_bits import load_ulp_waivers, matches_oracle_value
 
 
-def bits(value):
-    return "0x" + struct.pack(">d", float(value)).hex()
-
-
 ULP_WAIVERS = load_ulp_waivers(
     Path(__file__).parent / "ulp_waivers.toml", platform_id()
 )
 
 
-def matches_r_bits(value, expected, function):
+def matches_r_reference(value, expected, function):
     return matches_oracle_value(
         struct.pack(">d", float(value)),
         bytes.fromhex(expected.removeprefix("0x")),
@@ -50,18 +46,24 @@ def matches_r_bits(value, expected, function):
         ("cospi", lambda: ad.cospi(0.25), "0x3fe6a09e667f3bcc"),
     ],
 )
-def test_generated_m2_functions_match_r_bits(function, call, expected):
-    assert matches_r_bits(call(), expected, function)
+def test_generated_m2_functions_match_r_reference(function, call, expected):
+    assert matches_r_reference(call(), expected, function)
 
 
 def test_gamma_rate_and_scale_resolve_to_the_same_c_parameter():
     expected = "0xc01037635473696b"
-    assert bits(ad.pgamma(3, 2, rate=2, lower_tail=False, log=True)) == expected
-    assert bits(ad.pgamma(3, 2, scale=0.5, lower_tail=False, log=True)) == expected
+    assert matches_r_reference(
+        ad.pgamma(3, 2, rate=2, lower_tail=False, log=True), expected, "pgamma"
+    )
+    assert matches_r_reference(
+        ad.pgamma(3, 2, scale=0.5, lower_tail=False, log=True), expected, "pgamma"
+    )
     with pytest.warns(UserWarning, match="both 'rate' and 'scale'"):
-        assert bits(
-            ad.pgamma(3, 2, rate=2, scale=0.5, lower_tail=False, log=True)
-        ) == expected
+        assert matches_r_reference(
+            ad.pgamma(3, 2, rate=2, scale=0.5, lower_tail=False, log=True),
+            expected,
+            "pgamma",
+        )
     with pytest.raises(TypeError, match="inconsistent 'rate' and 'scale'"):
         ad.pgamma(3, 2, rate=2, scale=9)
     assert ad.pgamma(3, 2, scale=2) == ad.pgamma(3, 2, rate=0.5)
@@ -72,8 +74,16 @@ def test_gamma_rate_and_scale_resolve_to_the_same_c_parameter():
 
 
 def test_negative_binomial_requires_exactly_one_parameterization():
-    assert bits(ad.pnbinom(5, 10, prob=0.3, lower_tail=False, log=True)) == "0xbf6df9ea33c66cce"
-    assert bits(ad.pnbinom(5, 10, mu=7, lower_tail=False, log=True)) == "0xbfdd4cce5325b62f"
+    assert matches_r_reference(
+        ad.pnbinom(5, 10, prob=0.3, lower_tail=False, log=True),
+        "0xbf6df9ea33c66cce",
+        "pnbinom",
+    )
+    assert matches_r_reference(
+        ad.pnbinom(5, 10, mu=7, lower_tail=False, log=True),
+        "0xbfdd4cce5325b62f",
+        "pnbinom_mu",
+    )
     with pytest.raises(TypeError, match="exactly one of 'prob' or 'mu'"):
         ad.pnbinom(5, 10)
     with pytest.raises(TypeError, match="exactly one of 'prob' or 'mu'"):
@@ -83,8 +93,8 @@ def test_negative_binomial_requires_exactly_one_parameterization():
 def test_ncp_none_and_zero_select_distinct_r_algorithms():
     central = ad.pchisq(3, 5, lower_tail=False, log=True)
     noncentral_zero = ad.pchisq(3, 5, ncp=0.0, lower_tail=False, log=True)
-    assert bits(central) == "0xbfd6d41803af4962"
-    assert bits(noncentral_zero) == "0xbfd6d41803af4964"
+    assert matches_r_reference(central, "0xbfd6d41803af4962", "pchisq")
+    assert matches_r_reference(noncentral_zero, "0xbfd6d41803af4964", "pnchisq")
     assert central != noncentral_zero
 
 

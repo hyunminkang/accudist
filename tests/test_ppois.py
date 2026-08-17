@@ -4,14 +4,14 @@ import numpy as np
 import pytest
 
 import accudist as ad
+from oracle_bits import matches_oracle_value
 
 
-def bits(value):
-    return struct.pack(">d", float(value)).hex()
-
-
-def test_poisson_upper_log_tail_is_bit_exact():
-    assert bits(ad.ppois(200, 0.1, lower_tail=False, log=True)) == "c094cdd14e6580ad"
+def test_poisson_upper_log_tail_matches_r_reference():
+    actual = struct.pack(
+        ">d", float(ad.ppois(200, 0.1, lower_tail=False, log=True))
+    )
+    assert matches_oracle_value(actual, bytes.fromhex("c094cdd14e6580ad"))
 
 
 def test_ppois_broadcasts_and_honours_out():

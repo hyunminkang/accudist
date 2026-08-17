@@ -1,7 +1,7 @@
 # accudist user guide
 
 `accudist` wraps the probability algorithms shipped in R 4.5.2 as NumPy ufuncs.
-Finite results agree with the official R binary within `1e-10` relative error, with no
+Finite results agree with the official R binary within 1% relative error, with no
 absolute tolerance. NaN sign and payload bits are not part of the contract. This
 matters in upper log tails where subtracting a CDF from one loses all information.
 

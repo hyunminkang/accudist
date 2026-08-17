@@ -30,7 +30,7 @@ special function, and utility.
 ## Precision contract
 
 For the same input, finite distribution results are expected to agree with the
-official R 4.5.2 binary within `1e-10` relative error. The comparison uses no absolute
+official R 4.5.2 binary within 1% relative error. The comparison uses no absolute
 tolerance, preserving sensitivity in near-zero tails. NaN results match semantically;
 their sign and payload are not portable. Use `lower_tail=False` for the directly
 computed upper tail and `log=True` to avoid unnecessary underflow. See

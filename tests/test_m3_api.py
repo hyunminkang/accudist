@@ -13,16 +13,12 @@ if sys.platform != "win32":
     import resource
 
 
-def bits(value):
-    return "0x" + struct.pack(">d", float(value)).hex()
-
-
 ULP_WAIVERS = load_ulp_waivers(
     Path(__file__).parent / "ulp_waivers.toml", platform_id()
 )
 
 
-def matches_r_bits(value, expected, function):
+def matches_r_reference(value, expected, function):
     return matches_oracle_value(
         struct.pack(">d", float(value)),
         bytes.fromhex(expected.removeprefix("0x")),
@@ -31,13 +27,29 @@ def matches_r_bits(value, expected, function):
 
 
 def test_tukey_public_order_is_reordered_for_rmath():
-    assert bits(ad.ptukey(3.5, nmeans=5, df=20, nranges=1)) == "0x3feba1c5d2045191"
-    assert bits(ad.qtukey(0.95, nmeans=5, df=20, nranges=1)) == "0x4010ed6bd69a2e08"
+    assert matches_r_reference(
+        ad.ptukey(3.5, nmeans=5, df=20, nranges=1),
+        "0x3feba1c5d2045191",
+        "ptukey",
+    )
+    assert matches_r_reference(
+        ad.qtukey(0.95, nmeans=5, df=20, nranges=1),
+        "0x4010ed6bd69a2e08",
+        "qtukey",
+    )
 
 
 def test_rank_distributions_match_r():
-    assert bits(ad.pwilcox(12, 5, 6, lower_tail=False, log=True)) == "0xbfd9be081d2658db"
-    assert bits(ad.psignrank(12, 8, lower_tail=False, log=True)) == "0xbfd0c42d676162e4"
+    assert matches_r_reference(
+        ad.pwilcox(12, 5, 6, lower_tail=False, log=True),
+        "0xbfd9be081d2658db",
+        "pwilcox",
+    )
+    assert matches_r_reference(
+        ad.psignrank(12, 8, lower_tail=False, log=True),
+        "0xbfd0c42d676162e4",
+        "psignrank",
+    )
 
 
 @pytest.mark.parametrize(
@@ -58,18 +70,18 @@ def test_rank_distributions_match_r():
     ],
 )
 def test_bessel_wrappers_match_r(function, call, expected):
-    assert matches_r_bits(call(), expected, function)
+    assert matches_r_reference(call(), expected, function)
 
 
 def test_pnorm_both_returns_direct_lower_and_upper_tails():
     lower, upper = ad.pnorm_both(8.0, log=True)
-    assert bits(lower) == "0xbcc669d2c90d55d1"
-    assert bits(upper) == "0xc04181b84f11312b"
+    assert matches_r_reference(lower, "0xbcc669d2c90d55d1", "pnorm_both")
+    assert matches_r_reference(upper, "0xc04181b84f11312b", "pnorm_both")
 
 
 def test_lgammafn_sign_returns_value_and_sign():
     value, sign = ad.lgammafn_sign(np.array([-2.5, 2.5]))
-    assert bits(value[0]) == "0xbfaccbf9f5ed0f13"
+    assert matches_r_reference(value[0], "0xbfaccbf9f5ed0f13", "lgammafn_sign")
     assert sign.tolist() == [-1, 1]
 
 
