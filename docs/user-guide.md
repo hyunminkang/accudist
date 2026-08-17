@@ -1,19 +1,18 @@
 # accudist user guide
 
 `accudist` wraps the probability algorithms shipped in R 4.5.2 as NumPy ufuncs.
-Its contract is raw 64-bit agreement with the official R binary on each supported
-platform for every non-NaN value. NaN sign and payload bits are not part of the
-contract. This matters in upper log tails where subtracting a CDF from one loses all
-information.
+Finite results agree with the official R binary within `1e-10` relative error, with no
+absolute tolerance. NaN sign and payload bits are not part of the contract. This
+matters in upper log tails where subtracting a CDF from one loses all information.
 
 The package is GPL-2.0-or-later because it includes R's nmath sources. Importing it
 into a distributed work can therefore affect that work's licensing; obtain legal
 advice when the implication is unclear.
 
 Random functions use standalone Rmath's Marsaglia-MultiCarry stream. They use R's
-sampling algorithms but **do not reproduce R's `set.seed()` output**. Exact draw
-sequences are reproducible on the same supported platform; floating-point transforms
-can differ in their last bits across platforms.
+sampling algorithms but **do not reproduce R's `set.seed()` output**. Equal seeds are
+reproducible within one build, but exact draw sequences are not promised across
+versions, platforms, or generator implementations.
 
 ## R to accudist
 

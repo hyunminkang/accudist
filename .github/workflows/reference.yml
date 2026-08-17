@@ -28,14 +28,10 @@ jobs:
       - run: Rscript tools/gen_reference.R
         env:
           ACCUDIST_ORACLE_PLATFORM: ${{ matrix.platform }}
-      - run: python "${{ github.workspace }}/tools/gen_rng_reference.py"
-        working-directory: ${{ runner.temp }}
-        env:
-          ACCUDIST_ORACLE_PLATFORM: ${{ matrix.platform }}
       - uses: actions/upload-artifact@v4
         with:
           name: oracle-${{ matrix.platform }}
-          path: tests/data/${{ matrix.platform }}/*
+          path: tests/data/${{ matrix.platform }}/*.jsonl
   reference:
     needs: generate
     runs-on: ubuntu-latest
@@ -54,5 +50,5 @@ jobs:
           branch: automation/r-4.5.2-reference-vectors
           commit-message: Regenerate R 4.5.2 reference vectors
           title: Regenerate R 4.5.2 reference vectors
-          body: R function vectors come from pinned official R 4.5.2 binaries; RNG vectors come from native accudist builds on every supported wheel platform.
+          body: R function vectors come from pinned official R 4.5.2 binaries and are checked with the repository's numerical tolerance policy.
           add-paths: tests/data

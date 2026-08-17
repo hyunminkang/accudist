@@ -1,5 +1,6 @@
 ---
-status: accepted
+status: superseded
+superseded_by: 0020-tolerant-numerical-compatibility
 date: 2026-08-03
 ---
 

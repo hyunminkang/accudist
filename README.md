@@ -1,7 +1,8 @@
 # accudist
 
 `accudist` exposes R 4.5.2's probability-distribution math library as NumPy
-ufuncs, preserving R's tail algorithms and raw floating-point results.
+ufuncs, preserving R's tail algorithms with tight numerical agreement across
+supported compiler and math-library environments.
 
 The package is **GPL-2.0-or-later**, including the vendored R nmath sources, and
 its random streams **do not reproduce R's `set.seed()`**. Evaluate both constraints
@@ -24,9 +25,9 @@ the GPL. Evaluate that implication before installing or distributing it.
 
 Random draws use standalone Rmath's deterministic Marsaglia-MultiCarry generator.
 They **do not reproduce R's `set.seed()` stream**. The sampling algorithms are R's,
-but R's default interpreter generator is Mersenne-Twister. A seed reproduces exact
-draws on the same supported platform; transformed floating-point draws may differ in
-their last bits across platforms.
+but R's default interpreter generator is Mersenne-Twister. Equal seeds reproduce a
+stream within one accudist build; the exact stream is not a compatibility guarantee
+across versions, platforms, or alternative generator implementations.
 
 ## Performance
 

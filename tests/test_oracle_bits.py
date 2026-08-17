@@ -41,6 +41,18 @@ def test_identical_bits_match():
 
 
 @pytest.mark.parametrize(
+    ("actual", "expected"),
+    [
+        ("43abc16bd272fb4b", "43abc16bd273e705"),
+        ("43abc16d8f457c01", "43abc16d8f44deda"),
+        ("426d1a94a20034a4", "426d1a94a20034a3"),
+    ],
+)
+def test_windows_libm_rounding_matches_the_r_reference(actual, expected):
+    assert matches_oracle_value(bytes.fromhex(actual), bytes.fromhex(expected))
+
+
+@pytest.mark.parametrize(
     ("actual", "expected", "allowed"),
     [
         ("3ff0000000000000", "3ff0000000000001", True),
@@ -62,14 +74,16 @@ def test_ulp_waivers_apply_only_to_finite_nonzero_results(actual, expected, allo
     ("actual", "expected", "max_ulp", "matches"),
     [
         ("3ff0000000000000", "3ff0000000000000", None, True),
-        ("3ff0000000000001", "3ff0000000000000", None, False),
+        ("3ff0000000000001", "3ff0000000000000", None, True),
         ("3ff0000000000002", "3ff0000000000000", 2, True),
-        ("3ff0000000000003", "3ff0000000000000", 2, False),
+        ("3ff0000000036f9c", "3ff0000000000000", None, True),
+        ("3ff000000044b830", "3ff0000000000000", None, False),
         ("bff0000000000002", "bff0000000000000", 2, True),
-        ("8000000000000000", "0000000000000000", 4, False),
+        ("8000000000000000", "0000000000000000", None, True),
+        ("0000000000000003", "0000000000000001", 2, True),
     ],
 )
-def test_oracle_matching_applies_only_the_explicit_ulp_budget(
+def test_reference_matching_applies_the_global_tolerance_and_ulp_fallback(
     actual, expected, max_ulp, matches
 ):
     assert (

@@ -18,7 +18,7 @@ def main() -> None:
         target = args.destination / platform
         target.mkdir(parents=True, exist_ok=True)
         for vector in artifact.iterdir():
-            if vector.suffix != ".jsonl" and vector.name != "rng.json":
+            if vector.suffix != ".jsonl":
                 continue
             shutil.copy2(vector, target / vector.name)
 

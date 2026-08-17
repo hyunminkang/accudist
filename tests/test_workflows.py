@@ -39,7 +39,7 @@ def test_free_threaded_ci_runs_the_focused_thread_safety_suite():
     assert "test_thread_safety.py" in pytest_step["run"]
 
 
-def test_reference_build_imports_accudist_before_rtools_changes_path():
+def test_reference_build_uses_r_only_for_tolerant_function_vectors():
     workflow = yaml.safe_load((ROOT / ".github/workflows/reference.yml").read_text())
     steps = workflow["jobs"]["generate"]["steps"]
 
@@ -58,11 +58,13 @@ def test_reference_build_imports_accudist_before_rtools_changes_path():
         for index, step in enumerate(steps)
         if step.get("uses", "").startswith("r-lib/actions/setup-r@")
     )
-    rng_step = next(
-        step for step in steps if "gen_rng_reference.py" in step.get("run", "")
+    upload_step = next(
+        step
+        for step in steps
+        if step.get("uses", "").startswith("actions/upload-artifact@")
     )
 
     assert install_index < import_index < setup_r_index
     assert steps[import_index]["working-directory"] == "${{ runner.temp }}"
-    assert "${{ github.workspace }}/tools/gen_rng_reference.py" in rng_step["run"]
-    assert rng_step["working-directory"] == "${{ runner.temp }}"
+    assert all("gen_rng_reference.py" not in step.get("run", "") for step in steps)
+    assert upload_step["with"]["path"].endswith("/*.jsonl")

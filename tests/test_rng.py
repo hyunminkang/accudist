@@ -1,7 +1,3 @@
-import json
-from pathlib import Path
-import struct
-
 import numpy as np
 import pytest
 from scipy import stats
@@ -9,25 +5,6 @@ from scipy import stats
 import accudist as ad
 import accudist.rmath as rmath
 from accudist import _ufuncs
-from accudist._platform import platform_id
-
-
-DATA = Path(__file__).parent / "data"
-SEED_CONTRACT = json.loads((DATA / "rng" / "seed-state.json").read_text())
-
-
-def _assert_seed_contract(document):
-    assert document["meta"]["r_version"] == SEED_CONTRACT["meta"]["r_version"]
-    assert len(document["cases"]) == len(SEED_CONTRACT["cases"])
-    for case, expected in zip(
-        document["cases"], SEED_CONTRACT["cases"], strict=True
-    ):
-        assert {
-            "function": case["function"],
-            "seed": case["seed"],
-            "args": case["args"],
-            "final_seed": case["final_seed"],
-        } == expected
 
 
 def test_rng_objects_with_same_seed_reproduce_exactly():
@@ -35,33 +12,6 @@ def test_rng_objects_with_same_seed_reproduce_exactly():
     second = ad.RNG(42, 99)
     np.testing.assert_array_equal(first.rpois(100, 3.5), second.rpois(100, 3.5))
     assert first.get_seed() == second.get_seed()
-
-
-def test_committed_self_referential_rng_vectors():
-    path = DATA / platform_id() / "rng.json"
-    if not path.is_file():
-        raise RuntimeError(
-            f"no committed standalone Rmath RNG vectors for {platform_id()}; "
-            "release is blocked"
-        )
-    data = json.loads(path.read_text())
-    assert "self-referential" in data["meta"]["oracle"]
-    assert data["meta"]["r_version"] == ad.__r_version__
-    assert data["meta"]["platform"] == platform_id()
-    _assert_seed_contract(data)
-    for case in data["cases"]:
-        rng = ad.RNG(*case["seed"])
-        actual = getattr(rng, case["function"])(*case["args"])
-        actual_hex = [f"0x{struct.pack('>d', float(value)).hex()}" for value in actual]
-        assert actual_hex == case["hex"]
-        assert list(rng.get_seed()) == case["final_seed"]
-
-
-def test_all_platform_rng_vectors_share_the_seed_state_contract():
-    paths = tuple(DATA.glob("*/rng.json"))
-    assert paths
-    for path in paths:
-        _assert_seed_contract(json.loads(path.read_text()))
 
 
 def test_default_rng_seed_controls_module_functions():

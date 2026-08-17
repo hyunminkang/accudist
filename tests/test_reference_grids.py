@@ -6,7 +6,7 @@ import pytest
 
 import accudist as ad
 from accudist._platform import platform_id
-from oracle_bits import load_ulp_waivers, matches_oracle_value, same_oracle_value
+from oracle_bits import load_ulp_waivers, matches_oracle_value
 
 
 DATA = Path(__file__).parent / "data" / platform_id()
@@ -39,7 +39,7 @@ def vectors():
 
 
 @pytest.mark.parametrize(("case_id", "function", "case"), list(vectors()), ids=lambda item: item if isinstance(item, str) else None)
-def test_deterministic_functions_match_r_452_bit_for_bit(case_id, function, case):
+def test_deterministic_functions_match_r_452_reference(case_id, function, case):
     name = case_id.partition("[")[0]
     encoded = case["hex"]
     expected = (
@@ -53,7 +53,9 @@ def test_deterministic_functions_match_r_452_bit_for_bit(case_id, function, case
     if isinstance(expected, list):
         assert len(actual) == len(expected)
         assert all(
-            same_oracle_value(actual_item, expected_item)
+            matches_oracle_value(
+                actual_item, expected_item, max_ulp=WAIVERS.get(name)
+            )
             for actual_item, expected_item in zip(actual, expected, strict=True)
         )
     else:

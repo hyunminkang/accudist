@@ -29,11 +29,12 @@ special function, and utility.
 
 ## Precision contract
 
-For the same input and supported platform, distribution results are expected to
-match the official R 4.5.2 binary at the raw 64-bit floating-point level. NaN results
-match semantically; their sign and payload are not portable. Use `lower_tail=False`
-for the directly computed upper tail and `log=True` to avoid unnecessary underflow.
-See [numerical errors](errors.md) for warning policies.
+For the same input, finite distribution results are expected to agree with the
+official R 4.5.2 binary within `1e-10` relative error. The comparison uses no absolute
+tolerance, preserving sensitivity in near-zero tails. NaN results match semantically;
+their sign and payload are not portable. Use `lower_tail=False` for the directly
+computed upper tail and `log=True` to avoid unnecessary underflow. See
+[numerical errors](errors.md) for warning policies.
 
 ## Important constraints
 
@@ -43,4 +44,5 @@ imports it.
 
 Random functions use standalone Rmath's Marsaglia-MultiCarry generator. They use
 R's sampling algorithms but do **not** reproduce the stream produced by R's
-`set.seed()`. See [random numbers](rng.md) for reproducible accudist streams.
+`set.seed()`. Exact output sequences are not a cross-version compatibility contract.
+See [random numbers](rng.md) for reproducible accudist streams.
