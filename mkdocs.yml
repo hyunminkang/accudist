@@ -3,7 +3,7 @@ site_description: Probability distributions with R-grade numerical precision
 site_url: https://hyunminkang.github.io/accudist/
 repo_url: https://github.com/hyunminkang/accudist
 repo_name: hyunminkang/accudist
-edit_uri: edit/codex/docs/
+edit_uri: edit/main/docs/
 docs_dir: docs
 strict: true
 copyright: Copyright &copy; accudist contributors; GPL-2.0-or-later

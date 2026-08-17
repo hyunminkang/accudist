@@ -40,7 +40,7 @@ without access to the repository checkout.
 ## Documentation publishing
 
 The `docs` GitHub Actions workflow validates pull requests and deploys pushes to
-the `codex` branch. In the repository's GitHub **Settings → Pages**, select
+the `main` branch. In the repository's GitHub **Settings → Pages**, select
 **GitHub Actions** as the publishing source. The deployed site is
 `https://hyunminkang.github.io/accudist/`.
 
