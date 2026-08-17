@@ -68,3 +68,34 @@ def test_reference_build_uses_r_only_for_tolerant_function_vectors():
     assert steps[import_index]["working-directory"] == "${{ runner.temp }}"
     assert all("gen_rng_reference.py" not in step.get("run", "") for step in steps)
     assert upload_step["with"]["path"].endswith("/*.jsonl")
+
+
+def test_documentation_workflow_builds_and_deploys_github_pages():
+    workflow = yaml.safe_load((ROOT / ".github/workflows/docs.yml").read_text())
+
+    assert workflow["permissions"]["pages"] == "write"
+    assert workflow["permissions"]["id-token"] == "write"
+    build_steps = workflow["jobs"]["build"]["steps"]
+    assert any("mkdocs build --strict" in step.get("run", "") for step in build_steps)
+    assert any(
+        step.get("uses", "").startswith("actions/upload-pages-artifact@")
+        for step in build_steps
+    )
+
+    deploy = workflow["jobs"]["deploy"]
+    assert deploy["needs"] == "build"
+    assert deploy["permissions"]["pages"] == "write"
+    assert deploy["permissions"]["id-token"] == "write"
+    assert any(
+        step.get("uses", "").startswith("actions/deploy-pages@")
+        for step in deploy["steps"]
+    )
+
+
+def test_release_workflow_checks_every_distribution_before_publish():
+    workflow = yaml.safe_load((ROOT / ".github/workflows/wheels.yml").read_text())
+
+    verify = workflow["jobs"]["verify"]
+    assert set(verify["needs"]) == {"build", "sdist"}
+    assert any("twine check" in step.get("run", "") for step in verify["steps"])
+    assert "verify" in workflow["jobs"]["publish"]["needs"]

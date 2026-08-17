@@ -1,11 +1,48 @@
 site_name: accudist
 site_description: Probability distributions with R-grade numerical precision
+site_url: https://hyunminkang.github.io/accudist/
+repo_url: https://github.com/hyunminkang/accudist
+repo_name: hyunminkang/accudist
+edit_uri: edit/codex/docs/
 docs_dir: docs
 strict: true
+copyright: Copyright &copy; accudist contributors; GPL-2.0-or-later
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - navigation.indexes
+    - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - search.highlight
+    - search.suggest
+plugins:
+  - search
+markdown_extensions:
+  - admonition
+  - attr_list
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - tables
 nav:
   - Home: index.md
-  - User guide: user-guide.md
-  - API reference: api-reference.md
-  - Numerical errors: errors.md
-  - Random numbers: rng.md
-  - SciPy compatibility: scipy-compat.md
+  - Getting started:
+      - Installation: installation.md
+      - Quickstart: quickstart.md
+  - User guide:
+      - Core concepts: user-guide.md
+      - Numerical errors: errors.md
+      - Random numbers: rng.md
+      - SciPy compatibility: scipy-compat.md
+      - Troubleshooting: troubleshooting.md
+  - Reference:
+      - API reference: api-reference.md
+  - Project:
+      - Benchmarks: benchmarks.md
+      - Packaging and release: packaging.md
+      - Decisions:
+          - Numerical compatibility: adr/0020-tolerant-numerical-compatibility.md
+          - Historical portability policy: adr/0019-nan-and-rng-portability.md

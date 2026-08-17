@@ -1,9 +1,11 @@
 # accudist
 
-`accudist` exposes the probability-distribution algorithms from R 4.5.2 as
-NumPy-aware Python functions. Its main purpose is accurate work in extreme tails,
-where computing an upper tail as `1 - cdf` or taking a logarithm after the fact can
-lose the result entirely.
+Accurate probability distributions for Python, backed by the standalone
+mathematical library from R 4.5.2.
+
+`accudist` exposes distribution and special-function algorithms as NumPy-aware
+functions. It is designed for work in extreme tails, where computing an upper tail
+as `1 - cdf` or taking a logarithm after the fact can lose the result entirely.
 
 ```python
 import accudist as ad
@@ -23,9 +25,17 @@ ad.qnorm(-1000, log=True)
 python -m pip install accudist
 ```
 
-The [user guide](user-guide.md) explains the R-to-Python conventions. The
-[generated API reference](api-reference.md) lists every public distribution,
-special function, and utility.
+Start with the [quickstart](quickstart.md), then use the [user guide](user-guide.md)
+for R-to-Python conventions or the [API reference](api-reference.md) for every
+public distribution, special function, and utility.
+
+## What it provides
+
+- Direct lower-tail, upper-tail, probability, and log-probability algorithms.
+- NumPy broadcasting and `out=` support for deterministic functions.
+- Density, CDF, quantile, random-generation, and special-function APIs.
+- Thread-local numerical error policies.
+- A deliberately small `scipy.stats`-style compatibility layer.
 
 ## Precision contract
 
@@ -46,3 +56,10 @@ Random functions use standalone Rmath's Marsaglia-MultiCarry generator. They use
 R's sampling algorithms but do **not** reproduce the stream produced by R's
 `set.seed()`. Exact output sequences are not a cross-version compatibility contract.
 See [random numbers](rng.md) for reproducible accudist streams.
+
+## Where to go next
+
+- [Installation](installation.md) covers supported Python versions and source builds.
+- [Numerical errors](errors.md) explains warnings, exceptions, and `errstate`.
+- [Troubleshooting](troubleshooting.md) collects common installation and API issues.
+- [Packaging and release](packaging.md) documents the maintainer workflow.

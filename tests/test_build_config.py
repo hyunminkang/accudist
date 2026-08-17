@@ -42,3 +42,31 @@ def test_generated_flag_ufuncs_use_a_platform_stable_integer_type():
     assert "NPY_INT64, NPY_INT64" in source
     assert "long lower_tail" not in source
     assert "long log_arg" not in source
+
+
+def test_package_metadata_exposes_documentation_and_discovery_links():
+    config = tomllib.loads((ROOT / "pyproject.toml").read_text())
+    project = config["project"]
+
+    assert project["authors"]
+    assert {"probability", "statistics", "numpy", "rmath"} <= set(
+        project["keywords"]
+    )
+    assert "Topic :: Scientific/Engineering :: Mathematics" in project["classifiers"]
+    assert project["urls"] == {
+        "Documentation": "https://hyunminkang.github.io/accudist/",
+        "Repository": "https://github.com/hyunminkang/accudist",
+        "Issues": "https://github.com/hyunminkang/accudist/issues",
+        "Changelog": "https://github.com/hyunminkang/accudist/blob/HEAD/CHANGELOG.md",
+    }
+    assert any(
+        dependency.startswith("mkdocs-material")
+        for dependency in project["optional-dependencies"]["docs"]
+    )
+
+
+def test_readme_links_work_when_rendered_on_pypi():
+    readme = (ROOT / "README.md").read_text()
+
+    assert "](benchmarks/" not in readme
+    assert "https://hyunminkang.github.io/accudist/" in readme

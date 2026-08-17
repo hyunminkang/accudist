@@ -36,9 +36,27 @@ jobs:
         with:
           name: wheels-${{ matrix.os }}
           path: wheelhouse/*
+  verify:
+    needs: [build, sdist]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          merge-multiple: true
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+      - run: python -m pip install twine
+      - run: python -m twine check dist/*
   publish:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: [build, sdist]
+    needs: [build, sdist, verify]
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
