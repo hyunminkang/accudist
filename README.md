@@ -1,5 +1,9 @@
 # accudist
 
+[![PyPI](https://img.shields.io/pypi/v/accudist.svg)](https://pypi.org/project/accudist/)
+[![Python](https://img.shields.io/pypi/pyversions/accudist.svg)](https://pypi.org/project/accudist/)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue.svg)](https://hyunminkang.github.io/accudist/)
+
 **Probability distributions with R-grade numerical precision, as NumPy ufuncs.**
 
 accudist wraps R 4.5.2's `nmath` C library (the code behind R's `pnorm`, `qbeta`,
