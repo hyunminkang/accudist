@@ -1,0 +1,24 @@
+accudist
+Copyright (C) 2026 Hyun Min Kang
+
+This package is licensed under the GNU General Public License, version 2 or
+(at your option) any later version. See LICENSE.
+
+It contains, unmodified except for the patches recorded in vendor/patches/,
+the "nmath" mathematical library from R version 4.5.2:
+
+    Copyright (C) 1998-2025 The R Core Team
+    Copyright (C) 2000-2025 The R Foundation
+    and the individual authors named in the per-file headers under
+    vendor/nmath/src/ (including Ross Ihaka, Robert Gentleman, Catherine Loader,
+    Morten Welinder and Martin Maechler)
+
+distributed under the GNU General Public License version 2 or later
+(vendor/nmath/COPYING). The header vendor/nmath/include/Rmath.h is licensed
+under the GNU Lesser General Public License version 2.1 or later.
+
+Source: https://cran.r-project.org/src/base/R-4/R-4.5.2.tar.gz
+        (src/nmath and src/include; see vendor/VENDOR.toml)
+
+Because the extension module statically links these sources, any work that
+imports accudist is subject to the terms of the GPL.
