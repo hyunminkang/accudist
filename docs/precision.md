@@ -57,9 +57,14 @@ mismatch is a bug in the wrapper until proven otherwise.
   silicon is built with contraction on, which is why a bit-exact comparison with
   R on a Mac fails in a few cancellation-prone spots even though the C source is
   identical.
-- `long double` is used where nmath uses it (`LDOUBLE`), so it is 80-bit on
-  x86_64, 128-bit on Linux/aarch64 and plain double on macOS/arm64 and MSVC,
-  again exactly like R on those platforms.
+- nmath's `LDOUBLE` accumulators are compiled as plain `double` on every
+  platform (R's own `--disable-long-double` configuration, and what R already
+  does on Apple silicon and Windows). With the platform `long double` instead,
+  the non-central beta/chi-squared/t/F tails differ between x86_64 (80-bit),
+  Linux/aarch64 (128-bit) and the double platforms by far more than the last
+  few bits; R itself disagrees with R across those platforms there. Plain
+  double makes every accudist wheel return identical numbers, and they match
+  the reference values, which were generated with R on Apple silicon.
 - R's `cospi`/`sinpi`/`tanpi` on macOS call Apple's `__cospi` family; accudist
   uses nmath's portable implementation everywhere. They agree except for
   arguments around 1e15 where Apple's version is wrong.

@@ -21,6 +21,6 @@ def test_compat_only_uses_the_public_namespace():
         assert not re.search(r"from \.\.(_api|_core|_errstate|_bespoke)", text), path
 
 
-def test_import_does_not_pull_in_scipy():
+def test_import_does_not_pull_in_scipy(tmp_path):
     code = "import sys, accudist; sys.exit(int('scipy' in sys.modules))"
-    assert subprocess.run([sys.executable, "-c", code]).returncode == 0
+    assert subprocess.run([sys.executable, "-c", code], cwd=tmp_path).returncode == 0

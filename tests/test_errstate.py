@@ -115,7 +115,7 @@ def test_allocation_failure_raises_memory_error():
     _ufuncs._set_fail_calloc_after(-1)
 
 
-def test_nothing_is_written_to_stdout_or_stderr():
+def test_nothing_is_written_to_stdout_or_stderr(tmp_path):
     """Regression guard for the printf patch: provoke every warning path in a subprocess."""
     code = r"""
 import warnings, accudist as ad, numpy as np
@@ -129,5 +129,6 @@ try:
 except ValueError:
     pass
 """
-    res = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True)
+    # cwd=tmp_path: the repo root would shadow the installed package with the source tree
+    res = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True, cwd=tmp_path)
     assert res.stdout == "" and res.stderr == ""
