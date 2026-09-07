@@ -86,6 +86,49 @@ with ad.errstate(all="ignore"):
     ad.qbinom(0.5, -1, 0.5)      # nan, silently
 ```
 
+## Coming from scipy: the compat layer
+
+You can keep scipy's names and parameters. `accudist.compat` provides the same
+distribution objects with the same method names, frozen or unfrozen, but every
+evaluation goes through R's algorithms. In most code the change is one import:
+
+```python
+# from scipy.stats import binom, poisson, nbinom, chi2, gamma, norm
+from accudist.compat import binom, poisson, nbinom, chi2, gamma, norm
+
+binom.logsf(900, 1000, 1/6)             # -1312.687973    scipy: -inf
+poisson(0.1).logsf(200)                 # -1331.454401    scipy: -inf
+nbinom.logsf(1e5, 10, 0.5)              # -69230.834396   scipy: -inf
+chi2.logsf(np.array([100, 300, 500]), 10)   # array([-37.45, -133.11, -231.08]); scipy: -inf beyond ~100
+```
+
+The methods that matter are `sf`, `logsf` and `isf`. scipy evaluates most
+survival functions as `1 - cdf`, which becomes exactly 0 once the CDF rounds to
+1, so `logsf` returns `-inf`. accudist calls R's direct upper-tail code
+instead. For the log-likelihood of a rare count, a tail p-value below 1e-16, or
+an extreme quantile, that is the difference between an answer and no answer.
+
+Where scipy is accurate, both agree to about 1e-12, including `loc` and
+`scale`, so switching the import does not change existing results:
+
+```python
+from scipy import stats
+norm.isf(1e-300)                              # 37.0470962993612 (scipy: same)
+gamma.pdf(3.0, 2.5, loc=1, scale=2)           # 0.1383691658068649
+stats.gamma.pdf(3.0, 2.5, loc=1, scale=2)     # 0.1383691658068649
+d = norm(loc=10, scale=2); d.cdf(12); d.rvs(size=3)
+```
+
+Available distributions: `binom`, `poisson`, `nbinom`, `geom`, `hypergeom`,
+`norm`, `gamma`, `beta`, `chi2`, `t`, `f`, `expon`, `weibull_min`, `lognorm`,
+`cauchy`, `logistic`, `uniform`. Methods: `pmf`/`pdf`, `logpmf`/`logpdf`,
+`cdf`, `logcdf`, `sf`, `logsf`, `ppf`, `isf`, `rvs`. Anything else (`fit`,
+`mean`, `var`, `entropy`, ...) raises `NotImplementedError` with a pointer to
+scipy: the shim is for evaluating distributions precisely, not a scipy
+replacement. Three parameterisation traps (`geom` support starting at 1,
+`hypergeom`'s `(M, n, N)`, `lognorm`'s `scale = exp(meanlog)`) are handled and
+documented in [the compat guide](compat.md).
+
 ## Random draws
 
 ```python

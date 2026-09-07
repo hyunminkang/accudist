@@ -63,10 +63,48 @@ See [docs/installation.md](docs/installation.md) for platform notes.
   become Python warnings or exceptions under `accudist.errstate`; a failed
   allocation raises `MemoryError`.
 - **Reproducible random streams** via `accudist.RNG`, thread-safe and independent.
-- **`accudist.compat`**: a deliberately partial `scipy.stats`-shaped shim
-  (`pmf/pdf, cdf, sf, ppf, isf, rvs` and log variants) for drop-in tail fixes.
+- **`accudist.compat`**: a `scipy.stats`-shaped drop-in for the evaluation
+  methods, so existing scipy code gets R's tails by changing an import (below).
 
 Full tables: [docs/api-reference.md](docs/api-reference.md).
+
+## For scipy users: `accudist.compat`
+
+If your code already uses `scipy.stats`, you do not have to learn R's names.
+`accudist.compat` offers the same distributions with scipy's parameters and
+scipy's method names, but with R's tail algorithms underneath. Changing one
+import is usually enough:
+
+```python
+# from scipy.stats import binom, poisson, chi2, gamma
+from accudist.compat import binom, poisson, chi2, gamma
+
+binom.logsf(900, 1000, 1/6)          # -1312.687973   scipy: -inf
+poisson(0.1).logsf(200)              # -1331.454401   scipy: -inf   (frozen form works too)
+chi2.logsf(3000, 10)                 # -1473.922504   scipy: -inf
+gamma.isf(1e-300, 2.5, scale=2.0)    # 1400.640586    scipy agrees here, so does accudist
+```
+
+`sf`, `logsf` and `isf` are where the difference lives: scipy computes the
+survival function as `1 - cdf` for most distributions and underflows to 0 (or
+`-inf` on the log scale) once the CDF rounds to 1; accudist runs R's direct
+upper-tail code. Everywhere scipy is accurate the two agree to about 1e-12,
+including `loc`/`scale` handling:
+
+```python
+from scipy import stats
+gamma.pdf(3.0, 2.5, loc=1, scale=2)           # 0.1383691658068649
+stats.gamma.pdf(3.0, 2.5, loc=1, scale=2)     # 0.1383691658068649
+```
+
+Available: `binom`, `poisson`, `nbinom`, `geom`, `hypergeom`, `norm`, `gamma`,
+`beta`, `chi2`, `t`, `f`, `expon`, `weibull_min`, `lognorm`, `cauchy`,
+`logistic`, `uniform`, each with `pmf`/`pdf`, `logpmf`/`logpdf`, `cdf`,
+`logcdf`, `sf`, `logsf`, `ppf`, `isf`, `rvs`, frozen or not. Deliberately
+absent: `fit`, `mean`, `var`, `entropy` and the other non-precision methods;
+they raise `NotImplementedError` pointing back at scipy. Details and the
+mapping traps (`geom` support, `hypergeom` parameters, `lognorm` scale) are in
+[docs/compat.md](docs/compat.md).
 
 ## R to accudist
 
