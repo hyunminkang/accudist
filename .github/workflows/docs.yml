@@ -30,7 +30,8 @@ jobs:
           path: site
 
   deploy:
-    if: github.event_name == 'push'
+    # the github-pages environment only allows deployments from main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:
