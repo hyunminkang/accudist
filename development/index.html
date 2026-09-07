@@ -690,6 +690,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#documentation-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation site
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#release" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -816,6 +827,17 @@
     <span class="md-ellipsis">
       
         Build flags
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation site
       
     </span>
   </a>
@@ -966,6 +988,13 @@ beyond a C compiler. CI fails if they are stale.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="documentation-site">Documentation site<a class="headerlink" href="#documentation-site" title="Permanent link">&para;</a></h2>
+<p>The site is published by hand from a checkout of <code>main</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="go">uv pip install mkdocs-material</span>
+<span class="go">mkdocs build --strict        # catches broken links; CI runs this on every push</span>
+<span class="go">mkdocs gh-deploy             # builds and pushes to the gh-pages branch</span>
+</code></pre></div>
+<p>GitHub Pages must be configured to serve from the <code>gh-pages</code> branch.</p>
 <h2 id="release">Release<a class="headerlink" href="#release" title="Permanent link">&para;</a></h2>
 <p>Wheels are built by <code>.github/workflows/wheels.yml</code> with cibuildwheel for CPython
 3.10 to 3.14 on manylinux x86_64/aarch64, macOS x86_64/arm64 and Windows AMD64,
