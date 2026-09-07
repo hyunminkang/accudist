@@ -1,0 +1,48 @@
+site_name: accudist
+site_description: Probability distributions with R-grade numerical precision
+site_url: https://hyunminkang.github.io/accudist/
+repo_url: https://github.com/hyunminkang/accudist
+repo_name: hyunminkang/accudist
+edit_uri: ""
+copyright: GPL-2.0-or-later. Vendored nmath sources copyright The R Core Team.
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.suggest
+  palette:
+    - scheme: default
+      primary: indigo
+      toggle:
+        icon: material/brightness-7
+        name: dark mode
+    - scheme: slate
+      primary: indigo
+      toggle:
+        icon: material/brightness-4
+        name: light mode
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Quickstart: quickstart.md
+  - User guide:
+      - R to accudist: r-mapping.md
+      - Precision and the log scale: precision.md
+      - Warnings and errors: errors.md
+      - Random numbers: rng.md
+      - scipy compatibility layer: compat.md
+  - API reference: api-reference.md
+  - Development and release: development.md
+  - Licence: license.md

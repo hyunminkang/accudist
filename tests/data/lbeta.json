@@ -1,0 +1,1098 @@
+{
+"meta":{
+"function":"lbeta",
+"r_version":"4.5.2",
+"generator":"tools/gen_reference.py"
+},
+"cases":[
+{
+"args":[
+1e-10,
+1e-10
+],
+"kwargs":{},
+"r":"lbeta(1e-10, 1e-10)",
+"expected":"23.718998110500401"
+},
+{
+"args":[
+1e-10,
+0.5
+],
+"kwargs":{},
+"r":"lbeta(1e-10, 0.5)",
+"expected":"23.025850930079088"
+},
+{
+"args":[
+1e-10,
+1.0
+],
+"kwargs":{},
+"r":"lbeta(1e-10, 1.0)",
+"expected":"23.025850929940457"
+},
+{
+"args":[
+1e-10,
+2.0
+],
+"kwargs":{},
+"r":"lbeta(1e-10, 2.0)",
+"expected":"23.025850929840455"
+},
+{
+"args":[
+1e-10,
+10.0
+],
+"kwargs":{},
+"r":"lbeta(1e-10, 10.0)",
+"expected":"23.025850929657558"
+},
+{
+"args":[
+1e-10,
+100.0
+],
+"kwargs":{},
+"r":"lbeta(1e-10, 100.0)",
+"expected":"23.025850929422717"
+},
+{
+"args":[
+1e-10,
+100000.0
+],
+"kwargs":{},
+"r":"lbeta(1e-10, 100000.0)",
+"expected":"23.025850928731444"
+},
+{
+"args":[
+1e-10,
+0.0
+],
+"kwargs":{},
+"r":"lbeta(1e-10, 0.0)",
+"expected":"inf"
+},
+{
+"args":[
+1e-10,
+-1.0
+],
+"kwargs":{},
+"r":"lbeta(1e-10, -1.0)",
+"expected":"nan"
+},
+{
+"args":[
+1e-10,
+"inf"
+],
+"kwargs":{},
+"r":"lbeta(1e-10, Inf)",
+"expected":"-inf"
+},
+{
+"args":[
+1e-10,
+"nan"
+],
+"kwargs":{},
+"r":"lbeta(1e-10, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+0.5,
+1e-10
+],
+"kwargs":{},
+"r":"lbeta(0.5, 1e-10)",
+"expected":"23.025850930079088"
+},
+{
+"args":[
+0.5,
+0.5
+],
+"kwargs":{},
+"r":"lbeta(0.5, 0.5)",
+"expected":"1.1447298858494004"
+},
+{
+"args":[
+0.5,
+1.0
+],
+"kwargs":{},
+"r":"lbeta(0.5, 1.0)",
+"expected":"0.69314718055994529"
+},
+{
+"args":[
+0.5,
+2.0
+],
+"kwargs":{},
+"r":"lbeta(0.5, 2.0)",
+"expected":"0.28768207245178101"
+},
+{
+"args":[
+0.5,
+10.0
+],
+"kwargs":{},
+"r":"lbeta(0.5, 10.0)",
+"expected":"-0.56643279639759392"
+},
+{
+"args":[
+0.5,
+100.0
+],
+"kwargs":{},
+"r":"lbeta(0.5, 100.0)",
+"expected":"-1.7289701552775227"
+},
+{
+"args":[
+0.5,
+100000.0
+],
+"kwargs":{},
+"r":"lbeta(0.5, 100000.0)",
+"expected":"-5.1840965395604135"
+},
+{
+"args":[
+0.5,
+0.0
+],
+"kwargs":{},
+"r":"lbeta(0.5, 0.0)",
+"expected":"inf"
+},
+{
+"args":[
+0.5,
+-1.0
+],
+"kwargs":{},
+"r":"lbeta(0.5, -1.0)",
+"expected":"nan"
+},
+{
+"args":[
+0.5,
+"inf"
+],
+"kwargs":{},
+"r":"lbeta(0.5, Inf)",
+"expected":"-inf"
+},
+{
+"args":[
+0.5,
+"nan"
+],
+"kwargs":{},
+"r":"lbeta(0.5, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+1.0,
+1e-10
+],
+"kwargs":{},
+"r":"lbeta(1.0, 1e-10)",
+"expected":"23.025850929940457"
+},
+{
+"args":[
+1.0,
+0.5
+],
+"kwargs":{},
+"r":"lbeta(1.0, 0.5)",
+"expected":"0.69314718055994529"
+},
+{
+"args":[
+1.0,
+1.0
+],
+"kwargs":{},
+"r":"lbeta(1.0, 1.0)",
+"expected":"0"
+},
+{
+"args":[
+1.0,
+2.0
+],
+"kwargs":{},
+"r":"lbeta(1.0, 2.0)",
+"expected":"-0.69314718055994529"
+},
+{
+"args":[
+1.0,
+10.0
+],
+"kwargs":{},
+"r":"lbeta(1.0, 10.0)",
+"expected":"-2.3025850929940459"
+},
+{
+"args":[
+1.0,
+100.0
+],
+"kwargs":{},
+"r":"lbeta(1.0, 100.0)",
+"expected":"-4.6051701859880918"
+},
+{
+"args":[
+1.0,
+100000.0
+],
+"kwargs":{},
+"r":"lbeta(1.0, 100000.0)",
+"expected":"-11.512925464970229"
+},
+{
+"args":[
+1.0,
+0.0
+],
+"kwargs":{},
+"r":"lbeta(1.0, 0.0)",
+"expected":"inf"
+},
+{
+"args":[
+1.0,
+-1.0
+],
+"kwargs":{},
+"r":"lbeta(1.0, -1.0)",
+"expected":"nan"
+},
+{
+"args":[
+1.0,
+"inf"
+],
+"kwargs":{},
+"r":"lbeta(1.0, Inf)",
+"expected":"-inf"
+},
+{
+"args":[
+1.0,
+"nan"
+],
+"kwargs":{},
+"r":"lbeta(1.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+2.0,
+1e-10
+],
+"kwargs":{},
+"r":"lbeta(2.0, 1e-10)",
+"expected":"23.025850929840455"
+},
+{
+"args":[
+2.0,
+0.5
+],
+"kwargs":{},
+"r":"lbeta(2.0, 0.5)",
+"expected":"0.28768207245178101"
+},
+{
+"args":[
+2.0,
+1.0
+],
+"kwargs":{},
+"r":"lbeta(2.0, 1.0)",
+"expected":"-0.69314718055994529"
+},
+{
+"args":[
+2.0,
+2.0
+],
+"kwargs":{},
+"r":"lbeta(2.0, 2.0)",
+"expected":"-1.791759469228055"
+},
+{
+"args":[
+2.0,
+10.0
+],
+"kwargs":{},
+"r":"lbeta(2.0, 10.0)",
+"expected":"-4.7004803657924166"
+},
+{
+"args":[
+2.0,
+100.0
+],
+"kwargs":{},
+"r":"lbeta(2.0, 100.0)",
+"expected":"-9.2202907028293506"
+},
+{
+"args":[
+2.0,
+100000.0
+],
+"kwargs":{},
+"r":"lbeta(2.0, 100000.0)",
+"expected":"-23.02586092989046"
+},
+{
+"args":[
+2.0,
+0.0
+],
+"kwargs":{},
+"r":"lbeta(2.0, 0.0)",
+"expected":"inf"
+},
+{
+"args":[
+2.0,
+-1.0
+],
+"kwargs":{},
+"r":"lbeta(2.0, -1.0)",
+"expected":"nan"
+},
+{
+"args":[
+2.0,
+"inf"
+],
+"kwargs":{},
+"r":"lbeta(2.0, Inf)",
+"expected":"-inf"
+},
+{
+"args":[
+2.0,
+"nan"
+],
+"kwargs":{},
+"r":"lbeta(2.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+10.0,
+1e-10
+],
+"kwargs":{},
+"r":"lbeta(10.0, 1e-10)",
+"expected":"23.025850929657558"
+},
+{
+"args":[
+10.0,
+0.5
+],
+"kwargs":{},
+"r":"lbeta(10.0, 0.5)",
+"expected":"-0.56643279639759392"
+},
+{
+"args":[
+10.0,
+1.0
+],
+"kwargs":{},
+"r":"lbeta(10.0, 1.0)",
+"expected":"-2.3025850929940459"
+},
+{
+"args":[
+10.0,
+2.0
+],
+"kwargs":{},
+"r":"lbeta(10.0, 2.0)",
+"expected":"-4.7004803657924166"
+},
+{
+"args":[
+10.0,
+10.0
+],
+"kwargs":{},
+"r":"lbeta(10.0, 10.0)",
+"expected":"-13.736229227036555"
+},
+{
+"args":[
+10.0,
+100.0
+],
+"kwargs":{},
+"r":"lbeta(10.0, 100.0)",
+"expected":"-33.68626331148802"
+},
+{
+"args":[
+10.0,
+100000.0
+],
+"kwargs":{},
+"r":"lbeta(10.0, 100000.0)",
+"expected":"-102.32787715537148"
+},
+{
+"args":[
+10.0,
+0.0
+],
+"kwargs":{},
+"r":"lbeta(10.0, 0.0)",
+"expected":"inf"
+},
+{
+"args":[
+10.0,
+-1.0
+],
+"kwargs":{},
+"r":"lbeta(10.0, -1.0)",
+"expected":"nan"
+},
+{
+"args":[
+10.0,
+"inf"
+],
+"kwargs":{},
+"r":"lbeta(10.0, Inf)",
+"expected":"-inf"
+},
+{
+"args":[
+10.0,
+"nan"
+],
+"kwargs":{},
+"r":"lbeta(10.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+100.0,
+1e-10
+],
+"kwargs":{},
+"r":"lbeta(100.0, 1e-10)",
+"expected":"23.025850929422717"
+},
+{
+"args":[
+100.0,
+0.5
+],
+"kwargs":{},
+"r":"lbeta(100.0, 0.5)",
+"expected":"-1.7289701552775227"
+},
+{
+"args":[
+100.0,
+1.0
+],
+"kwargs":{},
+"r":"lbeta(100.0, 1.0)",
+"expected":"-4.6051701859880918"
+},
+{
+"args":[
+100.0,
+2.0
+],
+"kwargs":{},
+"r":"lbeta(100.0, 2.0)",
+"expected":"-9.2202907028293506"
+},
+{
+"args":[
+100.0,
+10.0
+],
+"kwargs":{},
+"r":"lbeta(100.0, 10.0)",
+"expected":"-33.68626331148802"
+},
+{
+"args":[
+100.0,
+100.0
+],
+"kwargs":{},
+"r":"lbeta(100.0, 100.0)",
+"expected":"-139.66525908670664"
+},
+{
+"args":[
+100.0,
+100000.0
+],
+"kwargs":{},
+"r":"lbeta(100.0, 100000.0)",
+"expected":"-792.20782471811003"
+},
+{
+"args":[
+100.0,
+0.0
+],
+"kwargs":{},
+"r":"lbeta(100.0, 0.0)",
+"expected":"inf"
+},
+{
+"args":[
+100.0,
+-1.0
+],
+"kwargs":{},
+"r":"lbeta(100.0, -1.0)",
+"expected":"nan"
+},
+{
+"args":[
+100.0,
+"inf"
+],
+"kwargs":{},
+"r":"lbeta(100.0, Inf)",
+"expected":"-inf"
+},
+{
+"args":[
+100.0,
+"nan"
+],
+"kwargs":{},
+"r":"lbeta(100.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+100000.0,
+1e-10
+],
+"kwargs":{},
+"r":"lbeta(100000.0, 1e-10)",
+"expected":"23.025850928731444"
+},
+{
+"args":[
+100000.0,
+0.5
+],
+"kwargs":{},
+"r":"lbeta(100000.0, 0.5)",
+"expected":"-5.1840965395604135"
+},
+{
+"args":[
+100000.0,
+1.0
+],
+"kwargs":{},
+"r":"lbeta(100000.0, 1.0)",
+"expected":"-11.512925464970229"
+},
+{
+"args":[
+100000.0,
+2.0
+],
+"kwargs":{},
+"r":"lbeta(100000.0, 2.0)",
+"expected":"-23.02586092989046"
+},
+{
+"args":[
+100000.0,
+10.0
+],
+"kwargs":{},
+"r":"lbeta(100000.0, 10.0)",
+"expected":"-102.32787715537148"
+},
+{
+"args":[
+100000.0,
+100.0
+],
+"kwargs":{},
+"r":"lbeta(100000.0, 100.0)",
+"expected":"-792.20782471811003"
+},
+{
+"args":[
+100000.0,
+100000.0
+],
+"kwargs":{},
+"r":"lbeta(100000.0, 100000.0)",
+"expected":"-138633.92706134808"
+},
+{
+"args":[
+100000.0,
+0.0
+],
+"kwargs":{},
+"r":"lbeta(100000.0, 0.0)",
+"expected":"inf"
+},
+{
+"args":[
+100000.0,
+-1.0
+],
+"kwargs":{},
+"r":"lbeta(100000.0, -1.0)",
+"expected":"nan"
+},
+{
+"args":[
+100000.0,
+"inf"
+],
+"kwargs":{},
+"r":"lbeta(100000.0, Inf)",
+"expected":"-inf"
+},
+{
+"args":[
+100000.0,
+"nan"
+],
+"kwargs":{},
+"r":"lbeta(100000.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+0.0,
+1e-10
+],
+"kwargs":{},
+"r":"lbeta(0.0, 1e-10)",
+"expected":"inf"
+},
+{
+"args":[
+0.0,
+0.5
+],
+"kwargs":{},
+"r":"lbeta(0.0, 0.5)",
+"expected":"inf"
+},
+{
+"args":[
+0.0,
+1.0
+],
+"kwargs":{},
+"r":"lbeta(0.0, 1.0)",
+"expected":"inf"
+},
+{
+"args":[
+0.0,
+2.0
+],
+"kwargs":{},
+"r":"lbeta(0.0, 2.0)",
+"expected":"inf"
+},
+{
+"args":[
+0.0,
+10.0
+],
+"kwargs":{},
+"r":"lbeta(0.0, 10.0)",
+"expected":"inf"
+},
+{
+"args":[
+0.0,
+100.0
+],
+"kwargs":{},
+"r":"lbeta(0.0, 100.0)",
+"expected":"inf"
+},
+{
+"args":[
+0.0,
+100000.0
+],
+"kwargs":{},
+"r":"lbeta(0.0, 100000.0)",
+"expected":"inf"
+},
+{
+"args":[
+0.0,
+0.0
+],
+"kwargs":{},
+"r":"lbeta(0.0, 0.0)",
+"expected":"inf"
+},
+{
+"args":[
+0.0,
+-1.0
+],
+"kwargs":{},
+"r":"lbeta(0.0, -1.0)",
+"expected":"nan"
+},
+{
+"args":[
+0.0,
+"inf"
+],
+"kwargs":{},
+"r":"lbeta(0.0, Inf)",
+"expected":"inf"
+},
+{
+"args":[
+0.0,
+"nan"
+],
+"kwargs":{},
+"r":"lbeta(0.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+-1.0,
+1e-10
+],
+"kwargs":{},
+"r":"lbeta(-1.0, 1e-10)",
+"expected":"nan"
+},
+{
+"args":[
+-1.0,
+0.5
+],
+"kwargs":{},
+"r":"lbeta(-1.0, 0.5)",
+"expected":"nan"
+},
+{
+"args":[
+-1.0,
+1.0
+],
+"kwargs":{},
+"r":"lbeta(-1.0, 1.0)",
+"expected":"nan"
+},
+{
+"args":[
+-1.0,
+2.0
+],
+"kwargs":{},
+"r":"lbeta(-1.0, 2.0)",
+"expected":"nan"
+},
+{
+"args":[
+-1.0,
+10.0
+],
+"kwargs":{},
+"r":"lbeta(-1.0, 10.0)",
+"expected":"nan"
+},
+{
+"args":[
+-1.0,
+100.0
+],
+"kwargs":{},
+"r":"lbeta(-1.0, 100.0)",
+"expected":"nan"
+},
+{
+"args":[
+-1.0,
+100000.0
+],
+"kwargs":{},
+"r":"lbeta(-1.0, 100000.0)",
+"expected":"nan"
+},
+{
+"args":[
+-1.0,
+0.0
+],
+"kwargs":{},
+"r":"lbeta(-1.0, 0.0)",
+"expected":"nan"
+},
+{
+"args":[
+-1.0,
+-1.0
+],
+"kwargs":{},
+"r":"lbeta(-1.0, -1.0)",
+"expected":"nan"
+},
+{
+"args":[
+-1.0,
+"inf"
+],
+"kwargs":{},
+"r":"lbeta(-1.0, Inf)",
+"expected":"nan"
+},
+{
+"args":[
+-1.0,
+"nan"
+],
+"kwargs":{},
+"r":"lbeta(-1.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+"inf",
+1e-10
+],
+"kwargs":{},
+"r":"lbeta(Inf, 1e-10)",
+"expected":"-inf"
+},
+{
+"args":[
+"inf",
+0.5
+],
+"kwargs":{},
+"r":"lbeta(Inf, 0.5)",
+"expected":"-inf"
+},
+{
+"args":[
+"inf",
+1.0
+],
+"kwargs":{},
+"r":"lbeta(Inf, 1.0)",
+"expected":"-inf"
+},
+{
+"args":[
+"inf",
+2.0
+],
+"kwargs":{},
+"r":"lbeta(Inf, 2.0)",
+"expected":"-inf"
+},
+{
+"args":[
+"inf",
+10.0
+],
+"kwargs":{},
+"r":"lbeta(Inf, 10.0)",
+"expected":"-inf"
+},
+{
+"args":[
+"inf",
+100.0
+],
+"kwargs":{},
+"r":"lbeta(Inf, 100.0)",
+"expected":"-inf"
+},
+{
+"args":[
+"inf",
+100000.0
+],
+"kwargs":{},
+"r":"lbeta(Inf, 100000.0)",
+"expected":"-inf"
+},
+{
+"args":[
+"inf",
+0.0
+],
+"kwargs":{},
+"r":"lbeta(Inf, 0.0)",
+"expected":"inf"
+},
+{
+"args":[
+"inf",
+-1.0
+],
+"kwargs":{},
+"r":"lbeta(Inf, -1.0)",
+"expected":"nan"
+},
+{
+"args":[
+"inf",
+"inf"
+],
+"kwargs":{},
+"r":"lbeta(Inf, Inf)",
+"expected":"-inf"
+},
+{
+"args":[
+"inf",
+"nan"
+],
+"kwargs":{},
+"r":"lbeta(Inf, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+1e-10
+],
+"kwargs":{},
+"r":"lbeta(NaN, 1e-10)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+0.5
+],
+"kwargs":{},
+"r":"lbeta(NaN, 0.5)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+1.0
+],
+"kwargs":{},
+"r":"lbeta(NaN, 1.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+2.0
+],
+"kwargs":{},
+"r":"lbeta(NaN, 2.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+10.0
+],
+"kwargs":{},
+"r":"lbeta(NaN, 10.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+100.0
+],
+"kwargs":{},
+"r":"lbeta(NaN, 100.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+100000.0
+],
+"kwargs":{},
+"r":"lbeta(NaN, 100000.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+0.0
+],
+"kwargs":{},
+"r":"lbeta(NaN, 0.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+-1.0
+],
+"kwargs":{},
+"r":"lbeta(NaN, -1.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+"inf"
+],
+"kwargs":{},
+"r":"lbeta(NaN, Inf)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+"nan"
+],
+"kwargs":{},
+"r":"lbeta(NaN, NaN)",
+"expected":"nan"
+}
+]
+}

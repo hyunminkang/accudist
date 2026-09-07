@@ -1,0 +1,189 @@
+{
+"meta":{
+"function":"fsign",
+"r_version":"4.5.2",
+"generator":"tools/gen_reference.py"
+},
+"cases":[
+{
+"args":[
+-2.5,
+-1.0
+],
+"kwargs":{},
+"r":"if (-1.0 >= 0) abs(-2.5) else -abs(-2.5)",
+"expected":"-2.5"
+},
+{
+"args":[
+-2.5,
+0.0
+],
+"kwargs":{},
+"r":"if (0.0 >= 0) abs(-2.5) else -abs(-2.5)",
+"expected":"2.5"
+},
+{
+"args":[
+-2.5,
+2.0
+],
+"kwargs":{},
+"r":"if (2.0 >= 0) abs(-2.5) else -abs(-2.5)",
+"expected":"2.5"
+},
+{
+"args":[
+-2.5,
+-0.0
+],
+"kwargs":{},
+"r":"if (-0.0 >= 0) abs(-2.5) else -abs(-2.5)",
+"expected":"2.5"
+},
+{
+"args":[
+0.0,
+-1.0
+],
+"kwargs":{},
+"r":"if (-1.0 >= 0) abs(0.0) else -abs(0.0)",
+"expected":"-0"
+},
+{
+"args":[
+0.0,
+0.0
+],
+"kwargs":{},
+"r":"if (0.0 >= 0) abs(0.0) else -abs(0.0)",
+"expected":"0"
+},
+{
+"args":[
+0.0,
+2.0
+],
+"kwargs":{},
+"r":"if (2.0 >= 0) abs(0.0) else -abs(0.0)",
+"expected":"0"
+},
+{
+"args":[
+0.0,
+-0.0
+],
+"kwargs":{},
+"r":"if (-0.0 >= 0) abs(0.0) else -abs(0.0)",
+"expected":"0"
+},
+{
+"args":[
+3.0,
+-1.0
+],
+"kwargs":{},
+"r":"if (-1.0 >= 0) abs(3.0) else -abs(3.0)",
+"expected":"-3"
+},
+{
+"args":[
+3.0,
+0.0
+],
+"kwargs":{},
+"r":"if (0.0 >= 0) abs(3.0) else -abs(3.0)",
+"expected":"3"
+},
+{
+"args":[
+3.0,
+2.0
+],
+"kwargs":{},
+"r":"if (2.0 >= 0) abs(3.0) else -abs(3.0)",
+"expected":"3"
+},
+{
+"args":[
+3.0,
+-0.0
+],
+"kwargs":{},
+"r":"if (-0.0 >= 0) abs(3.0) else -abs(3.0)",
+"expected":"3"
+},
+{
+"args":[
+"inf",
+-1.0
+],
+"kwargs":{},
+"r":"if (-1.0 >= 0) abs(Inf) else -abs(Inf)",
+"expected":"-inf"
+},
+{
+"args":[
+"inf",
+0.0
+],
+"kwargs":{},
+"r":"if (0.0 >= 0) abs(Inf) else -abs(Inf)",
+"expected":"inf"
+},
+{
+"args":[
+"inf",
+2.0
+],
+"kwargs":{},
+"r":"if (2.0 >= 0) abs(Inf) else -abs(Inf)",
+"expected":"inf"
+},
+{
+"args":[
+"inf",
+-0.0
+],
+"kwargs":{},
+"r":"if (-0.0 >= 0) abs(Inf) else -abs(Inf)",
+"expected":"inf"
+},
+{
+"args":[
+"nan",
+-1.0
+],
+"kwargs":{},
+"r":"if (-1.0 >= 0) abs(NaN) else -abs(NaN)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+0.0
+],
+"kwargs":{},
+"r":"if (0.0 >= 0) abs(NaN) else -abs(NaN)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+2.0
+],
+"kwargs":{},
+"r":"if (2.0 >= 0) abs(NaN) else -abs(NaN)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+-0.0
+],
+"kwargs":{},
+"r":"if (-0.0 >= 0) abs(NaN) else -abs(NaN)",
+"expected":"nan"
+}
+]
+}

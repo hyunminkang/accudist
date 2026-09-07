@@ -1,0 +1,1098 @@
+{
+"meta":{
+"function":"lchoose",
+"r_version":"4.5.2",
+"generator":"tools/gen_reference.py"
+},
+"cases":[
+{
+"args":[
+0.0,
+0.0
+],
+"kwargs":{},
+"r":"lchoose(0.0, 0.0)",
+"expected":"0"
+},
+{
+"args":[
+0.0,
+1.0
+],
+"kwargs":{},
+"r":"lchoose(0.0, 1.0)",
+"expected":"-inf"
+},
+{
+"args":[
+0.0,
+2.0
+],
+"kwargs":{},
+"r":"lchoose(0.0, 2.0)",
+"expected":"-inf"
+},
+{
+"args":[
+0.0,
+5.0
+],
+"kwargs":{},
+"r":"lchoose(0.0, 5.0)",
+"expected":"-inf"
+},
+{
+"args":[
+0.0,
+10.0
+],
+"kwargs":{},
+"r":"lchoose(0.0, 10.0)",
+"expected":"-inf"
+},
+{
+"args":[
+0.0,
+49.0
+],
+"kwargs":{},
+"r":"lchoose(0.0, 49.0)",
+"expected":"-inf"
+},
+{
+"args":[
+0.0,
+50.0
+],
+"kwargs":{},
+"r":"lchoose(0.0, 50.0)",
+"expected":"-inf"
+},
+{
+"args":[
+0.0,
+100.0
+],
+"kwargs":{},
+"r":"lchoose(0.0, 100.0)",
+"expected":"-inf"
+},
+{
+"args":[
+0.0,
+500.0
+],
+"kwargs":{},
+"r":"lchoose(0.0, 500.0)",
+"expected":"-inf"
+},
+{
+"args":[
+0.0,
+-1.0
+],
+"kwargs":{},
+"r":"lchoose(0.0, -1.0)",
+"expected":"-inf"
+},
+{
+"args":[
+0.0,
+"nan"
+],
+"kwargs":{},
+"r":"lchoose(0.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+1.0,
+0.0
+],
+"kwargs":{},
+"r":"lchoose(1.0, 0.0)",
+"expected":"0"
+},
+{
+"args":[
+1.0,
+1.0
+],
+"kwargs":{},
+"r":"lchoose(1.0, 1.0)",
+"expected":"0"
+},
+{
+"args":[
+1.0,
+2.0
+],
+"kwargs":{},
+"r":"lchoose(1.0, 2.0)",
+"expected":"-inf"
+},
+{
+"args":[
+1.0,
+5.0
+],
+"kwargs":{},
+"r":"lchoose(1.0, 5.0)",
+"expected":"-inf"
+},
+{
+"args":[
+1.0,
+10.0
+],
+"kwargs":{},
+"r":"lchoose(1.0, 10.0)",
+"expected":"-inf"
+},
+{
+"args":[
+1.0,
+49.0
+],
+"kwargs":{},
+"r":"lchoose(1.0, 49.0)",
+"expected":"-inf"
+},
+{
+"args":[
+1.0,
+50.0
+],
+"kwargs":{},
+"r":"lchoose(1.0, 50.0)",
+"expected":"-inf"
+},
+{
+"args":[
+1.0,
+100.0
+],
+"kwargs":{},
+"r":"lchoose(1.0, 100.0)",
+"expected":"-inf"
+},
+{
+"args":[
+1.0,
+500.0
+],
+"kwargs":{},
+"r":"lchoose(1.0, 500.0)",
+"expected":"-inf"
+},
+{
+"args":[
+1.0,
+-1.0
+],
+"kwargs":{},
+"r":"lchoose(1.0, -1.0)",
+"expected":"-inf"
+},
+{
+"args":[
+1.0,
+"nan"
+],
+"kwargs":{},
+"r":"lchoose(1.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+5.0,
+0.0
+],
+"kwargs":{},
+"r":"lchoose(5.0, 0.0)",
+"expected":"0"
+},
+{
+"args":[
+5.0,
+1.0
+],
+"kwargs":{},
+"r":"lchoose(5.0, 1.0)",
+"expected":"1.6094379124341003"
+},
+{
+"args":[
+5.0,
+2.0
+],
+"kwargs":{},
+"r":"lchoose(5.0, 2.0)",
+"expected":"2.3025850929940455"
+},
+{
+"args":[
+5.0,
+5.0
+],
+"kwargs":{},
+"r":"lchoose(5.0, 5.0)",
+"expected":"0"
+},
+{
+"args":[
+5.0,
+10.0
+],
+"kwargs":{},
+"r":"lchoose(5.0, 10.0)",
+"expected":"-inf"
+},
+{
+"args":[
+5.0,
+49.0
+],
+"kwargs":{},
+"r":"lchoose(5.0, 49.0)",
+"expected":"-inf"
+},
+{
+"args":[
+5.0,
+50.0
+],
+"kwargs":{},
+"r":"lchoose(5.0, 50.0)",
+"expected":"-inf"
+},
+{
+"args":[
+5.0,
+100.0
+],
+"kwargs":{},
+"r":"lchoose(5.0, 100.0)",
+"expected":"-inf"
+},
+{
+"args":[
+5.0,
+500.0
+],
+"kwargs":{},
+"r":"lchoose(5.0, 500.0)",
+"expected":"-inf"
+},
+{
+"args":[
+5.0,
+-1.0
+],
+"kwargs":{},
+"r":"lchoose(5.0, -1.0)",
+"expected":"-inf"
+},
+{
+"args":[
+5.0,
+"nan"
+],
+"kwargs":{},
+"r":"lchoose(5.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+10.0,
+0.0
+],
+"kwargs":{},
+"r":"lchoose(10.0, 0.0)",
+"expected":"0"
+},
+{
+"args":[
+10.0,
+1.0
+],
+"kwargs":{},
+"r":"lchoose(10.0, 1.0)",
+"expected":"2.3025850929940459"
+},
+{
+"args":[
+10.0,
+2.0
+],
+"kwargs":{},
+"r":"lchoose(10.0, 2.0)",
+"expected":"3.8066624897703196"
+},
+{
+"args":[
+10.0,
+5.0
+],
+"kwargs":{},
+"r":"lchoose(10.0, 5.0)",
+"expected":"5.5294290875114234"
+},
+{
+"args":[
+10.0,
+10.0
+],
+"kwargs":{},
+"r":"lchoose(10.0, 10.0)",
+"expected":"0"
+},
+{
+"args":[
+10.0,
+49.0
+],
+"kwargs":{},
+"r":"lchoose(10.0, 49.0)",
+"expected":"-inf"
+},
+{
+"args":[
+10.0,
+50.0
+],
+"kwargs":{},
+"r":"lchoose(10.0, 50.0)",
+"expected":"-inf"
+},
+{
+"args":[
+10.0,
+100.0
+],
+"kwargs":{},
+"r":"lchoose(10.0, 100.0)",
+"expected":"-inf"
+},
+{
+"args":[
+10.0,
+500.0
+],
+"kwargs":{},
+"r":"lchoose(10.0, 500.0)",
+"expected":"-inf"
+},
+{
+"args":[
+10.0,
+-1.0
+],
+"kwargs":{},
+"r":"lchoose(10.0, -1.0)",
+"expected":"-inf"
+},
+{
+"args":[
+10.0,
+"nan"
+],
+"kwargs":{},
+"r":"lchoose(10.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+50.0,
+0.0
+],
+"kwargs":{},
+"r":"lchoose(50.0, 0.0)",
+"expected":"0"
+},
+{
+"args":[
+50.0,
+1.0
+],
+"kwargs":{},
+"r":"lchoose(50.0, 1.0)",
+"expected":"3.912023005428146"
+},
+{
+"args":[
+50.0,
+2.0
+],
+"kwargs":{},
+"r":"lchoose(50.0, 2.0)",
+"expected":"7.1106961229788279"
+},
+{
+"args":[
+50.0,
+5.0
+],
+"kwargs":{},
+"r":"lchoose(50.0, 5.0)",
+"expected":"14.566341569863773"
+},
+{
+"args":[
+50.0,
+10.0
+],
+"kwargs":{},
+"r":"lchoose(50.0, 10.0)",
+"expected":"23.052714663940122"
+},
+{
+"args":[
+50.0,
+49.0
+],
+"kwargs":{},
+"r":"lchoose(50.0, 49.0)",
+"expected":"3.912023005428146"
+},
+{
+"args":[
+50.0,
+50.0
+],
+"kwargs":{},
+"r":"lchoose(50.0, 50.0)",
+"expected":"0"
+},
+{
+"args":[
+50.0,
+100.0
+],
+"kwargs":{},
+"r":"lchoose(50.0, 100.0)",
+"expected":"-inf"
+},
+{
+"args":[
+50.0,
+500.0
+],
+"kwargs":{},
+"r":"lchoose(50.0, 500.0)",
+"expected":"-inf"
+},
+{
+"args":[
+50.0,
+-1.0
+],
+"kwargs":{},
+"r":"lchoose(50.0, -1.0)",
+"expected":"-inf"
+},
+{
+"args":[
+50.0,
+"nan"
+],
+"kwargs":{},
+"r":"lchoose(50.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+100.0,
+0.0
+],
+"kwargs":{},
+"r":"lchoose(100.0, 0.0)",
+"expected":"0"
+},
+{
+"args":[
+100.0,
+1.0
+],
+"kwargs":{},
+"r":"lchoose(100.0, 1.0)",
+"expected":"4.6051701859880918"
+},
+{
+"args":[
+100.0,
+2.0
+],
+"kwargs":{},
+"r":"lchoose(100.0, 2.0)",
+"expected":"8.5071428555627335"
+},
+{
+"args":[
+100.0,
+5.0
+],
+"kwargs":{},
+"r":"lchoose(100.0, 5.0)",
+"expected":"18.136824941982425"
+},
+{
+"args":[
+100.0,
+10.0
+],
+"kwargs":{},
+"r":"lchoose(100.0, 10.0)",
+"expected":"30.482323362278649"
+},
+{
+"args":[
+100.0,
+49.0
+],
+"kwargs":{},
+"r":"lchoose(100.0, 49.0)",
+"expected":"66.764039024721242"
+},
+{
+"args":[
+100.0,
+50.0
+],
+"kwargs":{},
+"r":"lchoose(100.0, 50.0)",
+"expected":"66.783841652017429"
+},
+{
+"args":[
+100.0,
+100.0
+],
+"kwargs":{},
+"r":"lchoose(100.0, 100.0)",
+"expected":"0"
+},
+{
+"args":[
+100.0,
+500.0
+],
+"kwargs":{},
+"r":"lchoose(100.0, 500.0)",
+"expected":"-inf"
+},
+{
+"args":[
+100.0,
+-1.0
+],
+"kwargs":{},
+"r":"lchoose(100.0, -1.0)",
+"expected":"-inf"
+},
+{
+"args":[
+100.0,
+"nan"
+],
+"kwargs":{},
+"r":"lchoose(100.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+1000.0,
+0.0
+],
+"kwargs":{},
+"r":"lchoose(1000.0, 0.0)",
+"expected":"0"
+},
+{
+"args":[
+1000.0,
+1.0
+],
+"kwargs":{},
+"r":"lchoose(1000.0, 1.0)",
+"expected":"6.9077552789821368"
+},
+{
+"args":[
+1000.0,
+2.0
+],
+"kwargs":{},
+"r":"lchoose(1000.0, 2.0)",
+"expected":"13.121362877070748"
+},
+{
+"args":[
+1000.0,
+5.0
+],
+"kwargs":{},
+"r":"lchoose(1000.0, 5.0)",
+"expected":"29.741269618706543"
+},
+{
+"args":[
+1000.0,
+10.0
+],
+"kwargs":{},
+"r":"lchoose(1000.0, 10.0)",
+"expected":"53.927997037888275"
+},
+{
+"args":[
+1000.0,
+49.0
+],
+"kwargs":{},
+"r":"lchoose(1000.0, 49.0)",
+"expected":"192.71877786961889"
+},
+{
+"args":[
+1000.0,
+50.0
+],
+"kwargs":{},
+"r":"lchoose(1000.0, 50.0)",
+"expected":"195.66426892673613"
+},
+{
+"args":[
+1000.0,
+100.0
+],
+"kwargs":{},
+"r":"lchoose(1000.0, 100.0)",
+"expected":"321.91328743326454"
+},
+{
+"args":[
+1000.0,
+500.0
+],
+"kwargs":{},
+"r":"lchoose(1000.0, 500.0)",
+"expected":"689.4672615678511"
+},
+{
+"args":[
+1000.0,
+-1.0
+],
+"kwargs":{},
+"r":"lchoose(1000.0, -1.0)",
+"expected":"-inf"
+},
+{
+"args":[
+1000.0,
+"nan"
+],
+"kwargs":{},
+"r":"lchoose(1000.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+0.5,
+0.0
+],
+"kwargs":{},
+"r":"lchoose(0.5, 0.0)",
+"expected":"0"
+},
+{
+"args":[
+0.5,
+1.0
+],
+"kwargs":{},
+"r":"lchoose(0.5, 1.0)",
+"expected":"-0.69314718055994529"
+},
+{
+"args":[
+0.5,
+2.0
+],
+"kwargs":{},
+"r":"lchoose(0.5, 2.0)",
+"expected":"-2.0794415416798357"
+},
+{
+"args":[
+0.5,
+5.0
+],
+"kwargs":{},
+"r":"lchoose(0.5, 5.0)",
+"expected":"-3.5992672954242488"
+},
+{
+"args":[
+0.5,
+10.0
+],
+"kwargs":{},
+"r":"lchoose(0.5, 10.0)",
+"expected":"-4.6805912757628931"
+},
+{
+"args":[
+0.5,
+49.0
+],
+"kwargs":{},
+"r":"lchoose(0.5, 49.0)",
+"expected":"-7.0955370466269585"
+},
+{
+"args":[
+0.5,
+50.0
+],
+"kwargs":{},
+"r":"lchoose(0.5, 50.0)",
+"expected":"-7.1259962541116693"
+},
+{
+"args":[
+0.5,
+100.0
+],
+"kwargs":{},
+"r":"lchoose(0.5, 100.0)",
+"expected":"-8.1695048554350365"
+},
+{
+"args":[
+0.5,
+500.0
+],
+"kwargs":{},
+"r":"lchoose(0.5, 500.0)",
+"expected":"-10.586673770742891"
+},
+{
+"args":[
+0.5,
+-1.0
+],
+"kwargs":{},
+"r":"lchoose(0.5, -1.0)",
+"expected":"-inf"
+},
+{
+"args":[
+0.5,
+"nan"
+],
+"kwargs":{},
+"r":"lchoose(0.5, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+-3.0,
+0.0
+],
+"kwargs":{},
+"r":"lchoose(-3.0, 0.0)",
+"expected":"0"
+},
+{
+"args":[
+-3.0,
+1.0
+],
+"kwargs":{},
+"r":"lchoose(-3.0, 1.0)",
+"expected":"1.0986122886681098"
+},
+{
+"args":[
+-3.0,
+2.0
+],
+"kwargs":{},
+"r":"lchoose(-3.0, 2.0)",
+"expected":"1.7917594692280552"
+},
+{
+"args":[
+-3.0,
+5.0
+],
+"kwargs":{},
+"r":"lchoose(-3.0, 5.0)",
+"expected":"3.044522437723423"
+},
+{
+"args":[
+-3.0,
+10.0
+],
+"kwargs":{},
+"r":"lchoose(-3.0, 10.0)",
+"expected":"4.1896547420264234"
+},
+{
+"args":[
+-3.0,
+49.0
+],
+"kwargs":{},
+"r":"lchoose(-3.0, 49.0)",
+"expected":"7.1507014575925272"
+},
+{
+"args":[
+-3.0,
+50.0
+],
+"kwargs":{},
+"r":"lchoose(-3.0, 50.0)",
+"expected":"7.1899221707458079"
+},
+{
+"args":[
+-3.0,
+100.0
+],
+"kwargs":{},
+"r":"lchoose(-3.0, 100.0)",
+"expected":"8.5469461495655832"
+},
+{
+"args":[
+-3.0,
+500.0
+],
+"kwargs":{},
+"r":"lchoose(-3.0, 500.0)",
+"expected":"11.742059040216649"
+},
+{
+"args":[
+-3.0,
+-1.0
+],
+"kwargs":{},
+"r":"lchoose(-3.0, -1.0)",
+"expected":"-inf"
+},
+{
+"args":[
+-3.0,
+"nan"
+],
+"kwargs":{},
+"r":"lchoose(-3.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+1000000.0,
+0.0
+],
+"kwargs":{},
+"r":"lchoose(1000000.0, 0.0)",
+"expected":"0"
+},
+{
+"args":[
+1000000.0,
+1.0
+],
+"kwargs":{},
+"r":"lchoose(1000000.0, 1.0)",
+"expected":"13.815510557964274"
+},
+{
+"args":[
+1000000.0,
+2.0
+],
+"kwargs":{},
+"r":"lchoose(1000000.0, 2.0)",
+"expected":"26.937872935368105"
+},
+{
+"args":[
+1000000.0,
+5.0
+],
+"kwargs":{},
+"r":"lchoose(1000000.0, 5.0)",
+"expected":"64.29005104702432"
+},
+{
+"args":[
+1000000.0,
+10.0
+],
+"kwargs":{},
+"r":"lchoose(1000000.0, 10.0)",
+"expected":"123.05064800642471"
+},
+{
+"args":[
+1000000.0,
+49.0
+],
+"kwargs":{},
+"r":"lchoose(1000000.0, 49.0)",
+"expected":"532.39309737489202"
+},
+{
+"args":[
+1000000.0,
+50.0
+],
+"kwargs":{},
+"r":"lchoose(1000000.0, 50.0)",
+"expected":"542.29653592622765"
+},
+{
+"args":[
+1000000.0,
+100.0
+],
+"kwargs":{},
+"r":"lchoose(1000000.0, 100.0)",
+"expected":"1017.8067300766808"
+},
+{
+"args":[
+1000000.0,
+500.0
+],
+"kwargs":{},
+"r":"lchoose(1000000.0, 500.0)",
+"expected":"4296.300049745917"
+},
+{
+"args":[
+1000000.0,
+-1.0
+],
+"kwargs":{},
+"r":"lchoose(1000000.0, -1.0)",
+"expected":"-inf"
+},
+{
+"args":[
+1000000.0,
+"nan"
+],
+"kwargs":{},
+"r":"lchoose(1000000.0, NaN)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+0.0
+],
+"kwargs":{},
+"r":"lchoose(NaN, 0.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+1.0
+],
+"kwargs":{},
+"r":"lchoose(NaN, 1.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+2.0
+],
+"kwargs":{},
+"r":"lchoose(NaN, 2.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+5.0
+],
+"kwargs":{},
+"r":"lchoose(NaN, 5.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+10.0
+],
+"kwargs":{},
+"r":"lchoose(NaN, 10.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+49.0
+],
+"kwargs":{},
+"r":"lchoose(NaN, 49.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+50.0
+],
+"kwargs":{},
+"r":"lchoose(NaN, 50.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+100.0
+],
+"kwargs":{},
+"r":"lchoose(NaN, 100.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+500.0
+],
+"kwargs":{},
+"r":"lchoose(NaN, 500.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+-1.0
+],
+"kwargs":{},
+"r":"lchoose(NaN, -1.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan",
+"nan"
+],
+"kwargs":{},
+"r":"lchoose(NaN, NaN)",
+"expected":"nan"
+}
+]
+}

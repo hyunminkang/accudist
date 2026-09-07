@@ -1,0 +1,84 @@
+accudist patch 0001: standalone nmath must never print or exit.
+Redirect MATHLIB_ERROR/MATHLIB_WARNING/ML_WARNING into src/accudist_shim.h, route
+calloc through the shim, and use C99 INFINITY/NAN (MSVC rejects 1.0/0.0).
+
+--- a/src/nmath.h	2026-09-07 08:18:08
++++ b/src/nmath.h	2026-09-07 08:19:42
+@@ -102,15 +102,20 @@
+ #else
+ /* Mathlib standalone */
+ 
+-#include <stdio.h>
+-#include <stdlib.h> /* for exit */
+-#define MATHLIB_ERROR(fmt,x)	{ printf(fmt,x); exit(1); }
+-#define MATHLIB_WARNING(fmt,x)		printf(fmt,x)
+-#define MATHLIB_WARNING2(fmt,x,x2)	printf(fmt,x,x2)
+-#define MATHLIB_WARNING3(fmt,x,x2,x3)	printf(fmt,x,x2,x3)
+-#define MATHLIB_WARNING4(fmt,x,x2,x3,x4) printf(fmt,x,x2,x3,x4)
+-#define MATHLIB_WARNING5(fmt,x,x2,x3,x4,x5) printf(fmt,x,x2,x3,x4,x5)
+-#define MATHLIB_WARNING6(fmt,x,x2,x3,x4,x5,x6) printf(fmt,x,x2,x3,x4,x5,x6)
++/* accudist: never print, never exit.  Errors and warnings are recorded in a
++   thread-local flag word (and message buffer) by src/accudist_shim.c and
++   turned into Python warnings/exceptions by the wrapper. */
++#include <stdlib.h>
++#include "accudist_shim.h"
++#define MATHLIB_ERROR(fmt,x)	{ accudist_fatal(fmt,x); }
++#define MATHLIB_WARNING(fmt,x)		accudist_warning(fmt,x)
++#define MATHLIB_WARNING2(fmt,x,x2)	accudist_warning(fmt,x,x2)
++#define MATHLIB_WARNING3(fmt,x,x2,x3)	accudist_warning(fmt,x,x2,x3)
++#define MATHLIB_WARNING4(fmt,x,x2,x3,x4) accudist_warning(fmt,x,x2,x3,x4)
++#define MATHLIB_WARNING5(fmt,x,x2,x3,x4,x5) accudist_warning(fmt,x,x2,x3,x4,x5)
++#define MATHLIB_WARNING6(fmt,x,x2,x3,x4,x5,x6) accudist_warning(fmt,x,x2,x3,x4,x5,x6)
++/* route allocations through the shim so allocation failure is testable */
++#define calloc accudist_calloc
+ 
+ #define ISNAN(x) (isnan(x)!=0)
+ // Arith.h defines it
+@@ -124,9 +129,11 @@
+ #endif
+ int R_finite(double);
+ 
+-#define ML_POSINF	(1.0 / 0.0)
+-#define ML_NEGINF	((-1.0) / 0.0)
+-#define ML_NAN		(0.0 / 0.0)
++/* accudist: C99 macros instead of constant division by zero, which MSVC
++   rejects (C2124) and recent clang warns about. */
++#define ML_POSINF	INFINITY
++#define ML_NEGINF	(-INFINITY)
++#define ML_NAN		NAN
+ 
+ #define _(String) String
+ #endif /* standalone */
+@@ -153,29 +160,9 @@
+    We don't report ME_DOMAIN errors as the callers collect ML_NANs into
+    a single warning.
+  */
+-#define ML_WARNING(x, s) { \
+-   if(x > ME_DOMAIN) { \
+-       char *msg = ""; \
+-       switch(x) { \
+-       case ME_DOMAIN: \
+-	   msg = _("argument out of domain in '%s'\n");	\
+-	   break; \
+-       case ME_RANGE: \
+-	   msg = _("value out of range in '%s'\n");	\
+-	   break; \
+-       case ME_NOCONV: \
+-	   msg = _("convergence failed in '%s'\n");	\
+-	   break; \
+-       case ME_PRECISION: \
+-	   msg = _("full precision may not have been achieved in '%s'\n"); \
+-	   break; \
+-       case ME_UNDERFLOW: \
+-	   msg = _("underflow occurred in '%s'\n");	\
+-	   break; \
+-       } \
+-       MATHLIB_WARNING(msg, s); \
+-   } \
+-}
++/* accudist: record the ME_* code in the thread-local flag word; the Python
++   wrapper knows the function name and reconstructs R's message. */
++#define ML_WARNING(x, s) accudist_set_flag(x)
+ 
+ /* Wilcoxon Rank Sum Distribution */
+ 

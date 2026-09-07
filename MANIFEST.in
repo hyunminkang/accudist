@@ -1,0 +1,8 @@
+include LICENSE NOTICE README.md CHANGELOG.md functions.toml
+recursive-include src *.c *.h
+recursive-include vendor/nmath *.c *.h COPYING
+include vendor/VENDOR.toml
+recursive-include vendor/patches *.patch
+recursive-include tests *.py *.json
+recursive-include tools *.py *.R
+global-exclude __pycache__ *.py[cod]

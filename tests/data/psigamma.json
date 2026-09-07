@@ -1,0 +1,729 @@
+{
+"meta":{
+"function":"psigamma",
+"r_version":"4.5.2",
+"generator":"tools/gen_reference.py"
+},
+"cases":[
+{
+"args":[
+"-inf"
+],
+"kwargs":{
+"deriv":0.0
+},
+"r":"psigamma(-Inf, 0.0)",
+"expected":"nan"
+},
+{
+"args":[
+"-inf"
+],
+"kwargs":{
+"deriv":1.0
+},
+"r":"psigamma(-Inf, 1.0)",
+"expected":"inf"
+},
+{
+"args":[
+"-inf"
+],
+"kwargs":{
+"deriv":2.0
+},
+"r":"psigamma(-Inf, 2.0)",
+"expected":"nan"
+},
+{
+"args":[
+"-inf"
+],
+"kwargs":{
+"deriv":3.0
+},
+"r":"psigamma(-Inf, 3.0)",
+"expected":"inf"
+},
+{
+"args":[
+"-inf"
+],
+"kwargs":{
+"deriv":5.0
+},
+"r":"psigamma(-Inf, 5.0)",
+"expected":"inf"
+},
+{
+"args":[
+"-inf"
+],
+"kwargs":{
+"deriv":10.0
+},
+"r":"psigamma(-Inf, 10.0)",
+"expected":"nan"
+},
+{
+"args":[
+-5.5
+],
+"kwargs":{
+"deriv":0.0
+},
+"r":"psigamma(-5.5, 0.0)",
+"expected":"1.7929113303999409"
+},
+{
+"args":[
+-5.5
+],
+"kwargs":{
+"deriv":1.0
+},
+"r":"psigamma(-5.5, 1.0)",
+"expected":"9.7033198653393988"
+},
+{
+"args":[
+-5.5
+],
+"kwargs":{
+"deriv":2.0
+},
+"r":"psigamma(-5.5, 2.0)",
+"expected":"-0.02758791070672488"
+},
+{
+"args":[
+-5.5
+],
+"kwargs":{
+"deriv":3.0
+},
+"r":"psigamma(-5.5, 3.0)",
+"expected":"194.80904840450046"
+},
+{
+"args":[
+-5.5
+],
+"kwargs":{
+"deriv":5.0
+},
+"r":"psigamma(-5.5, 5.0)",
+"expected":"15382.224113383909"
+},
+{
+"args":[
+-5.5
+],
+"kwargs":{
+"deriv":10.0
+},
+"r":"psigamma(-5.5, 10.0)",
+"expected":"nan"
+},
+{
+"args":[
+-1.0
+],
+"kwargs":{
+"deriv":0.0
+},
+"r":"psigamma(-1.0, 0.0)",
+"expected":"nan"
+},
+{
+"args":[
+-1.0
+],
+"kwargs":{
+"deriv":1.0
+},
+"r":"psigamma(-1.0, 1.0)",
+"expected":"inf"
+},
+{
+"args":[
+-1.0
+],
+"kwargs":{
+"deriv":2.0
+},
+"r":"psigamma(-1.0, 2.0)",
+"expected":"nan"
+},
+{
+"args":[
+-1.0
+],
+"kwargs":{
+"deriv":3.0
+},
+"r":"psigamma(-1.0, 3.0)",
+"expected":"inf"
+},
+{
+"args":[
+-1.0
+],
+"kwargs":{
+"deriv":5.0
+},
+"r":"psigamma(-1.0, 5.0)",
+"expected":"inf"
+},
+{
+"args":[
+-1.0
+],
+"kwargs":{
+"deriv":10.0
+},
+"r":"psigamma(-1.0, 10.0)",
+"expected":"nan"
+},
+{
+"args":[
+-1e-10
+],
+"kwargs":{
+"deriv":0.0
+},
+"r":"psigamma(-1e-10, 0.0)",
+"expected":"9999999999.4227829"
+},
+{
+"args":[
+-1e-10
+],
+"kwargs":{
+"deriv":1.0
+},
+"r":"psigamma(-1e-10, 1.0)",
+"expected":"1e+20"
+},
+{
+"args":[
+-1e-10
+],
+"kwargs":{
+"deriv":2.0
+},
+"r":"psigamma(-1e-10, 2.0)",
+"expected":"1.9999999999999998e+30"
+},
+{
+"args":[
+-1e-10
+],
+"kwargs":{
+"deriv":3.0
+},
+"r":"psigamma(-1e-10, 3.0)",
+"expected":"5.9999999999999985e+40"
+},
+{
+"args":[
+-1e-10
+],
+"kwargs":{
+"deriv":5.0
+},
+"r":"psigamma(-1e-10, 5.0)",
+"expected":"1.1999999999999995e+62"
+},
+{
+"args":[
+-1e-10
+],
+"kwargs":{
+"deriv":10.0
+},
+"r":"psigamma(-1e-10, 10.0)",
+"expected":"nan"
+},
+{
+"args":[
+1e-10
+],
+"kwargs":{
+"deriv":0.0
+},
+"r":"psigamma(1e-10, 0.0)",
+"expected":"-10000000000.577217"
+},
+{
+"args":[
+1e-10
+],
+"kwargs":{
+"deriv":1.0
+},
+"r":"psigamma(1e-10, 1.0)",
+"expected":"1.0000000000000008e+20"
+},
+{
+"args":[
+1e-10
+],
+"kwargs":{
+"deriv":2.0
+},
+"r":"psigamma(1e-10, 2.0)",
+"expected":"-1.9999999999999953e+30"
+},
+{
+"args":[
+1e-10
+],
+"kwargs":{
+"deriv":3.0
+},
+"r":"psigamma(1e-10, 3.0)",
+"expected":"6.0000000000000101e+40"
+},
+{
+"args":[
+1e-10
+],
+"kwargs":{
+"deriv":5.0
+},
+"r":"psigamma(1e-10, 5.0)",
+"expected":"1.1999999999999943e+62"
+},
+{
+"args":[
+1e-10
+],
+"kwargs":{
+"deriv":10.0
+},
+"r":"psigamma(1e-10, 10.0)",
+"expected":"-3.6288000000000026e+116"
+},
+{
+"args":[
+1.0
+],
+"kwargs":{
+"deriv":0.0
+},
+"r":"psigamma(1.0, 0.0)",
+"expected":"-0.57721566490153231"
+},
+{
+"args":[
+1.0
+],
+"kwargs":{
+"deriv":1.0
+},
+"r":"psigamma(1.0, 1.0)",
+"expected":"1.6449340668482264"
+},
+{
+"args":[
+1.0
+],
+"kwargs":{
+"deriv":2.0
+},
+"r":"psigamma(1.0, 2.0)",
+"expected":"-2.4041138063191885"
+},
+{
+"args":[
+1.0
+],
+"kwargs":{
+"deriv":3.0
+},
+"r":"psigamma(1.0, 3.0)",
+"expected":"6.4939394022668289"
+},
+{
+"args":[
+1.0
+],
+"kwargs":{
+"deriv":5.0
+},
+"r":"psigamma(1.0, 5.0)",
+"expected":"122.08116743813392"
+},
+{
+"args":[
+1.0
+],
+"kwargs":{
+"deriv":10.0
+},
+"r":"psigamma(1.0, 10.0)",
+"expected":"-3630593.3116066279"
+},
+{
+"args":[
+2.0
+],
+"kwargs":{
+"deriv":0.0
+},
+"r":"psigamma(2.0, 0.0)",
+"expected":"0.42278433509846747"
+},
+{
+"args":[
+2.0
+],
+"kwargs":{
+"deriv":1.0
+},
+"r":"psigamma(2.0, 1.0)",
+"expected":"0.64493406684822641"
+},
+{
+"args":[
+2.0
+],
+"kwargs":{
+"deriv":2.0
+},
+"r":"psigamma(2.0, 2.0)",
+"expected":"-0.40411380631918858"
+},
+{
+"args":[
+2.0
+],
+"kwargs":{
+"deriv":3.0
+},
+"r":"psigamma(2.0, 3.0)",
+"expected":"0.4939394022668292"
+},
+{
+"args":[
+2.0
+],
+"kwargs":{
+"deriv":5.0
+},
+"r":"psigamma(2.0, 5.0)",
+"expected":"2.0811674381338969"
+},
+{
+"args":[
+2.0
+],
+"kwargs":{
+"deriv":10.0
+},
+"r":"psigamma(2.0, 10.0)",
+"expected":"-1793.3116066287128"
+},
+{
+"args":[
+30.0
+],
+"kwargs":{
+"deriv":0.0
+},
+"r":"psigamma(30.0, 0.0)",
+"expected":"3.3844381326855251"
+},
+{
+"args":[
+30.0
+],
+"kwargs":{
+"deriv":1.0
+},
+"r":"psigamma(30.0, 1.0)",
+"expected":"0.03389506035773994"
+},
+{
+"args":[
+30.0
+],
+"kwargs":{
+"deriv":2.0
+},
+"r":"psigamma(30.0, 2.0)",
+"expected":"-0.0011487652037285997"
+},
+{
+"args":[
+30.0
+],
+"kwargs":{
+"deriv":3.0
+},
+"r":"psigamma(30.0, 3.0)",
+"expected":"7.7860036647361296e-05"
+},
+{
+"args":[
+30.0
+],
+"kwargs":{
+"deriv":5.0
+},
+"r":"psigamma(30.0, 5.0)",
+"expected":"1.0726994936161613e-06"
+},
+{
+"args":[
+30.0
+],
+"kwargs":{
+"deriv":10.0
+},
+"r":"psigamma(30.0, 10.0)",
+"expected":"-7.2320510345856944e-10"
+},
+{
+"args":[
+170.0
+],
+"kwargs":{
+"deriv":0.0
+},
+"r":"psigamma(170.0, 0.0)",
+"expected":"5.1328543770833077"
+},
+{
+"args":[
+170.0
+],
+"kwargs":{
+"deriv":1.0
+},
+"r":"psigamma(170.0, 1.0)",
+"expected":"0.0058996879026080359"
+},
+{
+"args":[
+170.0
+],
+"kwargs":{
+"deriv":2.0
+},
+"r":"psigamma(170.0, 2.0)",
+"expected":"-3.4806216393761042e-05"
+},
+{
+"args":[
+170.0
+],
+"kwargs":{
+"deriv":3.0
+},
+"r":"psigamma(170.0, 3.0)",
+"expected":"4.1068924522257855e-07"
+},
+{
+"args":[
+170.0
+],
+"kwargs":{
+"deriv":5.0
+},
+"r":"psigamma(170.0, 5.0)",
+"expected":"1.7153147981799568e-10"
+},
+{
+"args":[
+170.0
+],
+"kwargs":{
+"deriv":10.0
+},
+"r":"psigamma(170.0, 10.0)",
+"expected":"-1.8535176673203721e-17"
+},
+{
+"args":[
+200.0
+],
+"kwargs":{
+"deriv":0.0
+},
+"r":"psigamma(200.0, 0.0)",
+"expected":"5.2958152832199117"
+},
+{
+"args":[
+200.0
+],
+"kwargs":{
+"deriv":1.0
+},
+"r":"psigamma(200.0, 1.0)",
+"expected":"0.00501252083322917"
+},
+{
+"args":[
+200.0
+],
+"kwargs":{
+"deriv":2.0
+},
+"r":"psigamma(200.0, 2.0)",
+"expected":"-2.5125312497395915e-05"
+},
+{
+"args":[
+200.0
+],
+"kwargs":{
+"deriv":3.0
+},
+"r":"psigamma(200.0, 3.0)",
+"expected":"2.5188124992187814e-07"
+},
+{
+"args":[
+200.0
+],
+"kwargs":{
+"deriv":5.0
+},
+"r":"psigamma(200.0, 5.0)",
+"expected":"7.5942187390630927e-11"
+},
+{
+"args":[
+200.0
+],
+"kwargs":{
+"deriv":10.0
+},
+"r":"psigamma(200.0, 10.0)",
+"expected":"-3.6331558065944957e-18"
+},
+{
+"args":[
+10000000000.0
+],
+"kwargs":{
+"deriv":0.0
+},
+"r":"psigamma(10000000000.0, 0.0)",
+"expected":"23.025850929890456"
+},
+{
+"args":[
+10000000000.0
+],
+"kwargs":{
+"deriv":1.0
+},
+"r":"psigamma(10000000000.0, 1.0)",
+"expected":"1.0000000000499996e-10"
+},
+{
+"args":[
+10000000000.0
+],
+"kwargs":{
+"deriv":2.0
+},
+"r":"psigamma(10000000000.0, 2.0)",
+"expected":"-1.0000000000999992e-20"
+},
+{
+"args":[
+10000000000.0
+],
+"kwargs":{
+"deriv":3.0
+},
+"r":"psigamma(10000000000.0, 3.0)",
+"expected":"2.0000000003000049e-30"
+},
+{
+"args":[
+10000000000.0
+],
+"kwargs":{
+"deriv":5.0
+},
+"r":"psigamma(10000000000.0, 5.0)",
+"expected":"2.4000000005999869e-49"
+},
+{
+"args":[
+10000000000.0
+],
+"kwargs":{
+"deriv":10.0
+},
+"r":"psigamma(10000000000.0, 10.0)",
+"expected":"-3.6288000018143606e-95"
+},
+{
+"args":[
+"nan"
+],
+"kwargs":{
+"deriv":0.0
+},
+"r":"psigamma(NaN, 0.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan"
+],
+"kwargs":{
+"deriv":1.0
+},
+"r":"psigamma(NaN, 1.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan"
+],
+"kwargs":{
+"deriv":2.0
+},
+"r":"psigamma(NaN, 2.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan"
+],
+"kwargs":{
+"deriv":3.0
+},
+"r":"psigamma(NaN, 3.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan"
+],
+"kwargs":{
+"deriv":5.0
+},
+"r":"psigamma(NaN, 5.0)",
+"expected":"nan"
+},
+{
+"args":[
+"nan"
+],
+"kwargs":{
+"deriv":10.0
+},
+"r":"psigamma(NaN, 10.0)",
+"expected":"nan"
+}
+]
+}

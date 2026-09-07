@@ -1,0 +1,62 @@
+name: test
+
+on:
+  push:
+    branches: [main, claude]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  checks:
+    name: generated files and inventory
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python tools/regen.py --check
+      - run: python tools/check_inventory.py
+
+  test:
+    name: ${{ matrix.os }} / py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        include:
+          - os: ubuntu-24.04-arm
+            python: "3.12"
+          - os: macos-15-intel
+            python: "3.12"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Build and install (isolated build, like a user's pip install)
+        run: python -m pip install ".[test]"
+      - name: Install mpmath for the utility checks
+        run: python -m pip install mpmath
+      - name: Smoke test outside the source tree
+        run: python -c "import accudist as ad; assert abs(ad.ppois(200, 0.1, lower_tail=False, log=True) + 1331.4544006) < 1e-6; print(ad.__version__, ad.__r_version__)"
+        working-directory: ${{ runner.temp }}
+      - name: Test
+        # the pytest entry point (not `python -m pytest`) so the cwd's source tree
+        # does not shadow the installed package
+        run: pytest -q -p no:cacheprovider tests
+
+  uv:
+    name: uv install from source
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - run: uv venv
+      - run: uv pip install . pytest hypothesis
+      - run: uv run --no-project python -c "import accudist; print(accudist.ppois(200, 0.1, lower_tail=False, log=True))"
+      - run: uv run --no-project pytest -q -p no:cacheprovider tests -m "not slow" -k "reference or api"

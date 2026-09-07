@@ -1,0 +1,159 @@
+accudist patch 0002: allocation failure returns instead of exit(1).
+With MATHLIB_ERROR no longer exiting, every call site must return; callers of the
+void w_init_maybe() helpers check the cache pointer and return NaN.
+
+--- a/src/bessel_i.c	2026-09-07 08:18:08
++++ b/src/bessel_i.c	2026-09-07 08:19:42
+@@ -66,7 +66,7 @@
+     alpha -= (double)(nb-1);
+ #ifdef MATHLIB_STANDALONE
+     bi = (double *) calloc(nb, sizeof(double));
+-    if (!bi) MATHLIB_ERROR("%s", _("bessel_i allocation error"));
++    if (!bi) { MATHLIB_ERROR("%s", _("bessel_i allocation error")); return ML_NAN; }
+ #else
+     vmax = vmaxget();
+     bi = (double *) R_alloc((size_t) nb, sizeof(double));
+--- a/src/bessel_j.c	2026-09-07 08:18:08
++++ b/src/bessel_j.c	2026-09-07 08:19:42
+@@ -69,7 +69,7 @@
+     alpha -= (double)(nb-1); // ==> alpha' in [0, 1)
+ #ifdef MATHLIB_STANDALONE
+     bj = (double *) calloc(nb, sizeof(double));
+-    if (!bj) MATHLIB_ERROR("%s", _("bessel_j allocation error"));
++    if (!bj) { MATHLIB_ERROR("%s", _("bessel_j allocation error")); return ML_NAN; }
+ #else
+     vmax = vmaxget();
+     bj = (double *) R_alloc((size_t) nb, sizeof(double));
+--- a/src/bessel_k.c	2026-09-07 08:18:08
++++ b/src/bessel_k.c	2026-09-07 08:19:42
+@@ -60,7 +60,7 @@
+     alpha -= (double)(nb-1);
+ #ifdef MATHLIB_STANDALONE
+     bk = (double *) calloc(nb, sizeof(double));
+-    if (!bk) MATHLIB_ERROR("%s", _("bessel_k allocation error"));
++    if (!bk) { MATHLIB_ERROR("%s", _("bessel_k allocation error")); return ML_NAN; }
+ #else
+     vmax = vmaxget();
+     bk = (double *) R_alloc((size_t) nb, sizeof(double));
+--- a/src/bessel_y.c	2026-09-07 08:18:08
++++ b/src/bessel_y.c	2026-09-07 08:19:42
+@@ -68,7 +68,7 @@
+     alpha -= (double)(nb-1);
+ #ifdef MATHLIB_STANDALONE
+     by = (double *) calloc(nb, sizeof(double));
+-    if (!by) MATHLIB_ERROR("%s", _("bessel_y allocation error"));
++    if (!by) { MATHLIB_ERROR("%s", _("bessel_y allocation error")); return ML_NAN; }
+ #else
+     vmax = vmaxget();
+     by = (double *) R_alloc((size_t) nb, sizeof(double));
+--- a/src/wilcox.c	2026-09-07 08:18:08
++++ b/src/wilcox.c	2026-09-07 08:19:42
+@@ -82,7 +82,7 @@
+ 	n = imax2(n, WILCOX_MAX);
+ 	w = (double ***) calloc((size_t) m + 1, sizeof(double **));
+ #ifdef MATHLIB_STANDALONE
+-	if (!w) MATHLIB_ERROR(_("wilcox allocation error %d"), 1);
++	if (!w) { MATHLIB_ERROR(_("wilcox allocation error %d"), 1); return; }
+ #endif
+ 	for (i = 0; i <= m; i++) {
+ 	    w[i] = (double **) calloc((size_t) n + 1, sizeof(double *));
+@@ -93,6 +93,7 @@
+ 		/* first free all earlier allocations */
+ 		w_free(i-1, n);
+ 		MATHLIB_ERROR(_("wilcox allocation error %d"), 2);
++		return;
+ 	    }
+ #endif
+ 	}
+@@ -150,7 +151,7 @@
+     if (w[i][j] == 0) {
+ 	w[i][j] = (double *) calloc((size_t) c + 1, sizeof(double));
+ #ifdef MATHLIB_STANDALONE
+-	if (!w[i][j]) MATHLIB_ERROR(_("wilcox allocation error %d"), 3);
++	if (!w[i][j]) { MATHLIB_ERROR(_("wilcox allocation error %d"), 3); return ML_NAN; }
+ #endif
+ 	for (int l = 0; l <= c; l++)
+ 	    w[i][j][l] = -1;
+@@ -185,6 +186,7 @@
+ 
+     int mm = (int) m, nn = (int) n, xx = (int) x;
+     w_init_maybe(mm, nn);
++    if (!w) return ML_NAN; /* accudist: allocation failed */
+     double d = give_log ?
+ 	log(cwilcox(xx, mm, nn)) - lchoose(m + n, n) :
+ 	    cwilcox(xx, mm, nn)  /  choose(m + n, n);
+@@ -215,6 +217,7 @@
+ 
+     int mm = (int) m, nn = (int) n;
+     w_init_maybe(mm, nn);
++    if (!w) return ML_NAN; /* accudist: allocation failed */
+     double c = choose(m + n, n),
+ 	p = 0;
+     /* Use summation of probs over the shorter range */
+@@ -259,6 +262,7 @@
+ 
+     int mm = (int) m, nn = (int) n;
+     w_init_maybe(mm, nn);
++    if (!w) return ML_NAN; /* accudist: allocation failed */
+     double c = choose(m + n, n),
+ 	p = 0.;
+     int q = 0;
+@@ -308,7 +312,7 @@
+     k = (int) (m + n);
+     x = (int *) calloc((size_t) k, sizeof(int));
+ #ifdef MATHLIB_STANDALONE
+-    if (!x) MATHLIB_ERROR(_("wilcox allocation error %d"), 4);
++    if (!x) { MATHLIB_ERROR(_("wilcox allocation error %d"), 4); return ML_NAN; }
+ #endif
+     for (i = 0; i < k; i++)
+ 	x[i] = i;
+--- a/src/signrank.c	2026-09-07 08:18:08
++++ b/src/signrank.c	2026-09-07 08:19:42
+@@ -74,7 +74,7 @@
+     if(!w) {
+ 	w = (double *) calloc((size_t) c + 1, sizeof(double));
+ #ifdef MATHLIB_STANDALONE
+-	if (!w) MATHLIB_ERROR("%s", _("signrank allocation error"));
++	if (!w) { MATHLIB_ERROR("%s", _("signrank allocation error")); return; }
+ #endif
+ 	allocated_n = n;
+     }
+@@ -132,6 +132,7 @@
+ 
+     int nn = (int) n;
+     w_init_maybe(nn);
++    if (!w) return ML_NAN; /* accudist: allocation failed */
+     d = R_D_exp(log(csignrank((int) x, nn)) - n * M_LN2);
+ 
+     return(d);
+@@ -158,6 +159,7 @@
+ 
+     int nn = (int) n;
+     w_init_maybe(nn);
++    if (!w) return ML_NAN; /* accudist: allocation failed */
+     f = exp(- n * M_LN2);
+     p = 0;
+     if (x <= (n * (n + 1) / 4)) {
+@@ -200,6 +202,7 @@
+ 
+     int nn = (int) n;
+     w_init_maybe(nn);
++    if (!w) return ML_NAN; /* accudist: allocation failed */
+     f = exp(- n * M_LN2);
+     p = 0;
+     int q = 0;
+--- a/src/rmultinom.c	2026-09-07 08:18:08
++++ b/src/rmultinom.c	2026-09-07 08:19:42
+@@ -74,9 +74,11 @@
+ 	p_tot += pp;
+ 	rN[k] = 0;
+     }
+-    if(fabs((double)(p_tot - 1.)) > 1e-7)
++    if(fabs((double)(p_tot - 1.)) > 1e-7) {
+ 	MATHLIB_ERROR(_("rbinom: probability sum should be 1, but is %g"),
+ 		      (double) p_tot);
++	return;
++    }
+     if (n == 0) return;
+     if (K == 1 && p_tot == 0.) return;/* trivial border case: do as rbinom */
+ 

@@ -1,0 +1,193 @@
+{
+"meta":{
+"function":"tetragamma",
+"r_version":"4.5.2",
+"generator":"tools/gen_reference.py"
+},
+"cases":[
+{
+"args":[
+"-inf"
+],
+"kwargs":{},
+"r":"psigamma(-Inf, 2)",
+"expected":"nan"
+},
+{
+"args":[
+-100.5
+],
+"kwargs":{},
+"r":"psigamma(-100.5, 2)",
+"expected":"-9.802720241474782e-05"
+},
+{
+"args":[
+-5.5
+],
+"kwargs":{},
+"r":"psigamma(-5.5, 2)",
+"expected":"-0.02758791070672488"
+},
+{
+"args":[
+-2.5
+],
+"kwargs":{},
+"r":"psigamma(-2.5, 2)",
+"expected":"-0.10820405164170843"
+},
+{
+"args":[
+-1.0
+],
+"kwargs":{},
+"r":"psigamma(-1.0, 2)",
+"expected":"nan"
+},
+{
+"args":[
+-0.5
+],
+"kwargs":{},
+"r":"psigamma(-0.5, 2)",
+"expected":"-0.8287966442343162"
+},
+{
+"args":[
+-1e-10
+],
+"kwargs":{},
+"r":"psigamma(-1e-10, 2)",
+"expected":"1.9999999999999998e+30"
+},
+{
+"args":[
+0.0
+],
+"kwargs":{},
+"r":"psigamma(0.0, 2)",
+"expected":"nan"
+},
+{
+"args":[
+1e-10
+],
+"kwargs":{},
+"r":"psigamma(1e-10, 2)",
+"expected":"-1.9999999999999953e+30"
+},
+{
+"args":[
+0.5
+],
+"kwargs":{},
+"r":"psigamma(0.5, 2)",
+"expected":"-16.82879664423432"
+},
+{
+"args":[
+1.0
+],
+"kwargs":{},
+"r":"psigamma(1.0, 2)",
+"expected":"-2.4041138063191885"
+},
+{
+"args":[
+1.5
+],
+"kwargs":{},
+"r":"psigamma(1.5, 2)",
+"expected":"-0.82879664423431998"
+},
+{
+"args":[
+2.0
+],
+"kwargs":{},
+"r":"psigamma(2.0, 2)",
+"expected":"-0.40411380631918858"
+},
+{
+"args":[
+10.0
+],
+"kwargs":{},
+"r":"psigamma(10.0, 2)",
+"expected":"-0.011049834970802063"
+},
+{
+"args":[
+30.0
+],
+"kwargs":{},
+"r":"psigamma(30.0, 2)",
+"expected":"-0.0011487652037285997"
+},
+{
+"args":[
+100.0
+],
+"kwargs":{},
+"r":"psigamma(100.0, 2)",
+"expected":"-0.00010100499983334991"
+},
+{
+"args":[
+170.0
+],
+"kwargs":{},
+"r":"psigamma(170.0, 2)",
+"expected":"-3.4806216393761042e-05"
+},
+{
+"args":[
+171.7
+],
+"kwargs":{},
+"r":"psigamma(171.7, 2)",
+"expected":"-3.4118409307536243e-05"
+},
+{
+"args":[
+200.0
+],
+"kwargs":{},
+"r":"psigamma(200.0, 2)",
+"expected":"-2.5125312497395915e-05"
+},
+{
+"args":[
+100000.0
+],
+"kwargs":{},
+"r":"psigamma(100000.0, 2)",
+"expected":"-1.0000100000499997e-10"
+},
+{
+"args":[
+10000000000.0
+],
+"kwargs":{},
+"r":"psigamma(10000000000.0, 2)",
+"expected":"-1.0000000000999992e-20"
+},
+{
+"args":[
+"inf"
+],
+"kwargs":{},
+"r":"psigamma(Inf, 2)",
+"expected":"-0"
+},
+{
+"args":[
+"nan"
+],
+"kwargs":{},
+"r":"psigamma(NaN, 2)",
+"expected":"nan"
+}
+]
+}
