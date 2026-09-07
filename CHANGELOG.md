@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.0 (released)
 
 First release. Wraps R 4.5.2's `nmath` library as NumPy ufuncs.
 
