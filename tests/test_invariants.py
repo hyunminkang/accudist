@@ -41,7 +41,7 @@ def test_norm_tails_and_log(x, mean, sd):
         assert ad.qnorm(up, mean, sd, lower_tail=False) == pytest.approx(x, rel=1e-8, abs=1e-8 * sd)
     assert ad.dnorm(x, mean, sd) >= 0
     d = ad.dnorm(x, mean, sd)
-    if d > 0:
+    if d > 1e-300:  # below that d is subnormal and log(d) itself has lost digits
         assert ad.dnorm(x, mean, sd, log=True) == pytest.approx(np.log(d), rel=1e-12)
 
 
