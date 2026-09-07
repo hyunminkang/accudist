@@ -59,12 +59,8 @@ jobs:
       - run: uv venv
       - run: uv pip install . pytest hypothesis
       # run from outside the checkout so the source tree cannot shadow the
-      # installed package; point uv at the workspace's environment explicitly
-      - run: uv run --no-project python -c "import accudist; print(accudist.ppois(200, 0.1, lower_tail=False, log=True))"
+      # installed package (uv run cannot discover the venv from there, so call it directly)
+      - run: $GITHUB_WORKSPACE/.venv/bin/python -c "import accudist; print(accudist.ppois(200, 0.1, lower_tail=False, log=True))"
         working-directory: ${{ runner.temp }}
-        env:
-          UV_PROJECT_ENVIRONMENT: ${{ github.workspace }}/.venv
-      - run: uv run --no-project pytest -q -p no:cacheprovider "$GITHUB_WORKSPACE/tests" -m "not slow" -k "reference or api"
+      - run: $GITHUB_WORKSPACE/.venv/bin/pytest -q -p no:cacheprovider "$GITHUB_WORKSPACE/tests" -m "not slow" -k "reference or api"
         working-directory: ${{ runner.temp }}
-        env:
-          UV_PROJECT_ENVIRONMENT: ${{ github.workspace }}/.venv

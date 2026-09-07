@@ -13,9 +13,16 @@ positive = st.floats(min_value=0.1, max_value=100.0, allow_nan=False, allow_infi
 unit = st.floats(min_value=1e-6, max_value=1 - 1e-6)
 real = st.floats(min_value=-50, max_value=50, allow_nan=False, allow_infinity=False)
 
-CONTINUOUS = {
-    "norm": (lambda: (real,), lambda x, mean: (x, mean), None),
-}
+
+
+def roundtrip_tol(p, q, density):
+    """Tolerance for p(q(p)) == p: relative 1e-7 plus the effect of one ulp of q.
+
+    Near a support boundary the density can be huge, so the quantile is exact to
+    the last bit yet p(q) moves by density * ulp(q); that is representability,
+    not an algorithm error.
+    """
+    return 1e-7 * abs(p) + 1e-12 + 8 * np.spacing(q) * density
 
 
 @settings(**SETTINGS)
@@ -46,7 +53,8 @@ def test_gamma_identities(q, shape, scale):
     assert lo + up == pytest.approx(1.0, abs=1e-13)
     assert ad.pgamma(q, shape, scale=scale, log=True) <= 1e-15
     if 1e-10 < lo < 1 - 1e-10:
-        assert ad.qgamma(lo, shape, scale=scale) == pytest.approx(q, rel=1e-7)
+        qq = ad.qgamma(lo, shape, scale=scale)
+        assert abs(qq - q) <= 1e-7 * q + 8 * np.spacing(q) / max(ad.dgamma(q, shape, scale=scale), 1e-300)
     assert ad.pgamma(q, shape, rate=1 / scale) == pytest.approx(lo, rel=1e-12)
 
 
@@ -56,16 +64,20 @@ def test_beta_quantile_roundtrip(p, shape1, shape2):
     q = ad.qbeta(p, shape1, shape2)
     assert 0 <= q <= 1
     if 1e-300 < q < 1 - 1e-15:
-        assert ad.pbeta(q, shape1, shape2) == pytest.approx(p, rel=1e-7, abs=1e-12)
-        assert ad.qbeta(1 - p, shape1, shape2, lower_tail=False) == pytest.approx(q, rel=1e-7, abs=1e-12)
+        tol = roundtrip_tol(p, q, ad.dbeta(q, shape1, shape2))
+        assert abs(ad.pbeta(q, shape1, shape2) - p) <= tol
+        assert abs(ad.qbeta(1 - p, shape1, shape2, lower_tail=False) - q) <= 1e-7 * q + 8 * np.spacing(1 - p) / max(ad.dbeta(q, shape1, shape2), 1e-300) + 1e-12
 
 
 @settings(**SETTINGS)
 @given(p=unit, df=positive)
 def test_t_and_chisq_quantile_roundtrip(p, df):
-    assert ad.pt(ad.qt(p, df), df) == pytest.approx(p, rel=1e-7)
-    assert ad.pchisq(ad.qchisq(p, df), df) == pytest.approx(p, rel=1e-7)
-    assert ad.pchisq(ad.qchisq(p, df, ncp=1.5), df, ncp=1.5) == pytest.approx(p, rel=1e-6)
+    qt = ad.qt(p, df)
+    assert abs(ad.pt(qt, df) - p) <= roundtrip_tol(p, qt, ad.dt(qt, df))
+    qc = ad.qchisq(p, df)
+    assert abs(ad.pchisq(qc, df) - p) <= roundtrip_tol(p, qc, ad.dchisq(qc, df))
+    qn = ad.qchisq(p, df, ncp=1.5)
+    assert abs(ad.pchisq(qn, df, ncp=1.5) - p) <= 10 * roundtrip_tol(p, qn, ad.dchisq(qn, df, ncp=1.5))
 
 
 @settings(**SETTINGS)
