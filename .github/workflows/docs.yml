@@ -1,19 +1,12 @@
 name: docs
 
+# Build-only check. The site is published by hand with `mkdocs gh-deploy`
+# (pushes to the gh-pages branch); see docs/development.md.
 on:
   push:
     branches: [main, claude]
   pull_request:
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 jobs:
   build:
@@ -25,18 +18,3 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install mkdocs-material
       - run: python -m mkdocs build --strict
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-
-  deploy:
-    # the github-pages environment only allows deployments from main
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4

@@ -59,6 +59,18 @@ beyond a C compiler. CI fails if they are stale.
 | `-fvisibility=hidden` | only `PyInit__ufuncs` is exported; nmath's plain C names cannot collide with another Rmath in the process |
 | `-O2`, never `-ffast-math` | nmath relies on IEEE `Inf`/`NaN` semantics |
 
+## Documentation site
+
+The site is published by hand from a checkout of `main`:
+
+```console
+uv pip install mkdocs-material
+mkdocs build --strict        # catches broken links; CI runs this on every push
+mkdocs gh-deploy             # builds and pushes to the gh-pages branch
+```
+
+GitHub Pages must be configured to serve from the `gh-pages` branch.
+
 ## Release
 
 Wheels are built by `.github/workflows/wheels.yml` with cibuildwheel for CPython
